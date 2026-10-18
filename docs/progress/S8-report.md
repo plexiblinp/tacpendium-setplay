@@ -148,3 +148,81 @@ GitHub Actions: CI run 39117763196(9f22180)success / Local release run 391176818
  42 files changed, 1592 insertions(+), 105 deletions(-)
 ```
 （全文は下の「最終確認」に貼る。テストのファイルは追加のみで、消した試験は無い）
+
+## レビュー
+
+- 1 回目（`docs/progress/S8-review.md`）: 高 3・中 4・低 8。高はすべて採用して直した。中-2 は一部採用、低-8 は不採用（理由は review の「取り込み」）。
+- 再レビュー: 高 1（高-3 の試験が元の不具合を捕まえない）・中 1・低 4。高・中・低-A〜C は採用、低-D は一部採用（「再レビューの取り込み」）。往復は 2 回で止めた。
+
+## 最終確認（レビュー 2 往復の取り込み後、HEAD `b247ddb` で回した結果）
+
+出力はファイルへ書き、合否は `EXIT=` と件数で見た。並行させずに順に回した。
+
+```
+$ SKIP_ASSETS=1 bash scripts/local/build.sh build/local linux/amd64 windows/amd64 darwin/arm64 → EXIT=0
+  tacpendium-setplay-local_linux_amd64: 12877986 bytes / _windows_amd64.exe: 13033472 bytes / _darwin_arm64: 12574626 bytes / 版: b247ddb
+$ cd web && pnpm build → EXIT=0(ファイル: 41(上限 20000)/ 違反: 0 件)
+$ go test -count=1 -v -timeout 35m ./... → EXIT=0  PASS(全階層)=359 FAIL=0 SKIP=0   (S7 の最終 348)
+$ go vet ./... → EXIT=0 / gofmt -l(追跡中の .go 全部)→ 出力なし / go mod tidy -diff → EXIT=0
+$ pnpm exec tsc --noEmit → EXIT=0
+$ pnpm exec vitest --run → EXIT=0  Test Files 18 passed (18) / Tests 174 passed (174)   (S7 の最終 16 / 161)
+$ bash scripts/local/smoke.sh build/local/tacpendium-setplay-local_linux_amd64 → EXIT=0  失敗: 0 件
+$ PW_CHROMIUM_PATH=/opt/pw-browsers/chromium-1194/chrome-linux/chrome pnpm exec playwright test → EXIT=0  28 passed (1.1m)   (site 25 + local 3)
+$ GOVULNCHECK_DB=https://storage.googleapis.com/go-vulndb bash scripts/govulncheck.sh → EXIT=0  対象: 5 件 / 違反: 0 件
+$ python3 scripts/check-licenses.py → EXIT=0 違反: 0 件
+$ python3 -I scripts/check-private-refs.py → EXIT=0 走査: 292 ファイル / 違反: 0 件(試験 check_private_refs_test.py も EXIT=0)
+$ bash scripts/check-actions-pinned.sh → EXIT=0 workflow: 5 本 / uses 参照: 25 件 / 違反: 0 件
+$ python3 -I scripts/ci/verify-plan.py check → EXIT=0 違反: 0 件(試験 verify_plan_test.py も EXIT=0)
+```
+
+GitHub Actions（push 時点）: CI run 39117763196（`9f22180`）success、Local release run 39117681817（`e96c14a`。3 OS の起動確認）success。取り込み後のコミットの run は push 後に GitHub で確かめる（下の追記）。
+
+### git diff --stat c6d5ded（報告のコミット前。テストのファイルは追加・増加のみ）
+
+```
+ .github/workflows/ci.yml                 |  19 +-
+ .github/workflows/govulncheck.yml        |  40 ++++
+ .github/workflows/local-release.yml      | 208 +++++++++++++++++++++
+ .gitignore                               |   5 +
+ AGENTS.md                                |   1 +
+ README.md                                |   5 +-
+ cmd/local/main.go                        | 152 +++++++++++++++
+ cmd/local/main_test.go                   |  73 ++++++++
+ cmd/local/site/.gitkeep                  |   0
+ docs/frontend.md                         |   6 +-
+ docs/local.md                            |  89 +++++++++
+ docs/progress/S8-report.md               | 182 ++++++++++++++++++
+ docs/progress/S8-review.md               | 307 +++++++++++++++++++++++++++++++
+ docs/release-checklist.md                |  12 +-
+ internal/localserver/localserver.go      | 220 ++++++++++++++++++++++
+ internal/localserver/localserver_test.go | 187 +++++++++++++++++++
+ scripts/ci/logic-version.json            |  36 +++-
+ scripts/govulncheck.sh                   |  50 +++++
+ scripts/local/build.sh                   |  43 +++++
+ scripts/local/smoke.sh                   |  72 ++++++++
+ web/e2e/local.spec.ts                    |  70 +++++++
+ web/edge/imports.test.ts                 |  46 +++++
+ web/edge/index.ts                        |   4 +-
+ web/playwright.config.ts                 |  40 +++-
+ web/src/components/App.test.tsx          |  74 +++++++-
+ web/src/components/App.tsx               |  57 ++++--
+ web/src/components/ConditionsPanel.tsx   |  35 +++-
+ web/src/components/Footer.tsx            |  17 +-
+ web/src/components/Guide.tsx             |   6 +-
+ web/src/components/Results.tsx           |  66 ++++---
+ web/src/lib/conditions.test.ts           |  13 ++
+ web/src/lib/conditions.ts                |  11 +-
+ web/src/lib/constants.ts                 |  19 +-
+ web/src/lib/flavor.test.ts               |  24 +++
+ web/src/lib/flavor.ts                    |  18 ++
+ web/src/lib/formState.test.ts            |   9 +
+ web/src/lib/formState.ts                 |  11 +-
+ web/src/locales/en.json                  |   7 +-
+ web/src/locales/ja.json                  |   7 +-
+ web/src/locales/ko.json                  |   7 +-
+ web/src/locales/zh-Hans.json             |   7 +-
+ web/src/locales/zh-Hant.json             |   7 +-
+ web/src/shared/api.ts                    |   8 +-
+ web/src/styles.css                       |   1 +
+ 44 files changed, 2166 insertions(+), 105 deletions(-)
+```
