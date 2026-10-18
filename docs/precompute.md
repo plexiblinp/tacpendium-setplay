@@ -51,7 +51,7 @@ S5 でブラウザ（Chromium・WASM・Worker）の所要を測ったところ�
 重い検査は、検査済みの組を CI のキャッシュ（`actions/cache`。`.verify/<種類>.txt`）に残し、同じ組は二度と回さない。判定は `scripts/ci/verify-plan.py`（試験は `scripts/ci/verify_plan_test.py`）。
 
 - 鍵 = sha256(検査の種類, キャラ, そのキャラの `calcFingerprint`, その種類の計算の版, そのキャラの追加の版)。`calcFingerprint` はセットプレイの計算に効く列だけの指紋（表記・名前・メモ・ヒット時の有利・硬直は含まない）なので、それ以外の列だけの変更では回らない。
-- **コードの変更は鍵に直接入れない。** 計算に効くコード（`scripts/ci/logic-version.json` の `watched`。今は `internal/`・`engine/`・`cmd/`・`go.mod`・`upstream/tacpendium.lock`・`scripts/wasm/`）の中身が記録と違うと、リポジトリ検査 job の `verify-plan.py check` が赤になる。変更した人が影響を判断し、`verify-plan.py ack` で理由つきで記録する（`--none` 何も回さない／`--kinds … --chars …` そのキャラ・検査だけ／`--all` 全部）。記録は `logic-version.json` の `log` に残る。手順は `.claude/commands/sync_upstream.md`。
+- **コードの変更は鍵に直接入れない。** 計算に効くコード（`scripts/ci/logic-version.json` の `watched`。今は `internal/`・`engine/`・`cmd/`・`go.mod`・`upstream/tacpendium.lock`・`scripts/wasm/`。`go.mod` だけはファイル全体ではなく、`go`・`toolchain` の行と、計算のパッケージ（`engine`・`internal/service`・`internal/repository`・`cmd/precompute`・`cmd/wasm`。テストを含む。ネイティブと WASM）が `go list -deps` で使うモジュールの版を見る。取込 CLI だけが使う依存（sqlite 等）の Dependabot の更新では赤にならない）の中身が記録と違うと、リポジトリ検査 job の `verify-plan.py check` が赤になる。変更した人が影響を判断し、`verify-plan.py ack` で理由つきで記録する（`--none` 何も回さない／`--kinds … --chars …` そのキャラ・検査だけ／`--all` 全部）。記録は `logic-version.json` の `log` に残る。手順は `.claude/commands/sync_upstream.md`。
 - ★計算に効くコードを `watched` の外（新しいトップレベルのディレクトリ等）に置いたら、`watched` に足すこと（足さないと変更に気づかない）。今は計算に関わるコードが `watched` の中に全部ある。
 - **安全網**: 「影響なし」の判断の誤りに備え、Go job は本家の正解との突き合わせを KA 61 以下だけ全キャラで毎回回す（`SETPLAY_ORACLE_SMOKE_MAX_KA=61`。手元 4 コアで約 14 秒・7,812 回）。
 

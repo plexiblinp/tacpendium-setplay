@@ -78,13 +78,6 @@ jobs:
       - name: 差分実行の判定スクリプトの試験
         if: ${{ !cancelled() }}
         run: python3 -I scripts/ci/verify_plan_test.py
-      # 見張るコード(scripts/ci/logic-version.json の watched)を変えたのに影響の記録(ack)が無ければ止める
-      # (S4 後の開発者決定 3・4。コードの変更をそのまま再計算のきっかけにしない＝案 A)。
-      - name: 計算に効くコードの変更の記録
-        if: ${{ !cancelled() }}
-        run: |
-          set -o pipefail
-          python3 -I scripts/ci/verify-plan.py check | tee /tmp/logic-check.txt
       - name: シェルスクリプトの構文
         if: ${{ !cancelled() }}
         run: |
@@ -98,6 +91,14 @@ jobs:
         if: ${{ !cancelled() }}
         with:
           node-version: "22"
+      # 見張るコード(scripts/ci/logic-version.json の watched)を変えたのに影響の記録(ack)が無ければ止める
+      # (S4 後の開発者決定 3・4。コードの変更をそのまま再計算のきっかけにしない＝案 A)。
+      # go.mod は計算に効く部分だけを go list で見るので、setup-go の後に回す。
+      - name: 計算に効くコードの変更の記録
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          python3 -I scripts/ci/verify-plan.py check | tee /tmp/logic-check.txt
       - name: go mod tidy
         if: ${{ !cancelled() }}
         run: go mod tidy -diff
