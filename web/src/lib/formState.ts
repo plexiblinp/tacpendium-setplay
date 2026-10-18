@@ -83,7 +83,7 @@ export interface Validated {
  * 欄を検査して条件にする。いまのモードが使う欄だけを検査する(使わない欄が誤っていても押せる。本家と同じ)。
  * 使わない欄の値は既定値で埋める(エンジンには送らない＝toEngineQuery)。
  * safeJump はここでは null(安全飛びのボタンは validateForm の後で remain と種類を差し替える)。
- * kaMax は KA の上限(既定はサイトの 100。ローカル版は呼び出し側が kaMaxFor("local") を渡す)。
+ * kaMax は KA の上限(既定はサイトの 100。ローカル版は呼び出し側が kaMaxFor("local") を渡す。既定を残す理由は conditions.ts の parseSearch と同じ)。
  */
 export function validateForm(f: FormState, kaMax: number = KA_MAX_SITE): Validated {
   const errors: FormError[] = [];

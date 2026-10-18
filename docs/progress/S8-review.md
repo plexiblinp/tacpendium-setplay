@@ -185,3 +185,123 @@ $ git diff --stat c6d5ded HEAD | tail -1
 | 低-6 JSDoc が 2 つ並ぶ | 採用 | 1 つにまとめた |
 | 低-7 ko・zh の言い回しの揺れ | 採用 | `kaHelp` と同じ前半に揃えた（zh-Hant は再生成） |
 | 低-8 site の E2E だけでもバイナリが要る | 不採用 | CI は両方を回すので常に作る。手元の手順は `docs/frontend.md` に書いた。片方だけ起動する分岐は設定を複雑にする割に得が小さい |
+
+## 再レビュー
+
+- 対象: `git diff 85a6163 a2a09cc`（取り込み。21 files changed, 324 insertions(+), 36 deletions(-)。うち 187 行は本ファイル）。全体（`git diff c6d5ded a2a09cc`）は、取り込みで触れた箇所の周り（`ServeHTTP`・`run`・`kaMax` の呼び出し元・edge の import）を見直した。
+- 手順: `.claude/commands/review.md`（読み取り専用。書いたのはこの節だけ。変異はスクラッチの `git archive a2a09cc` の写しで行い、作業ツリーは変えていない）
+
+### 要約
+
+取り込みは 15 件中 14 件を採用し、高-1・高-2・低-1〜7 は指摘どおりに直っている。edge の import の試験は、`conditions.ts` に flavor の import を足すと赤になることを自分でも確かめた。ただし **高-3 の試験 `TestRun_ExplicitPortBusy` は、もとの不具合（`*port == defaultPort`）に戻しても緑のまま**（変異で再現）。コードの直しは正しいが、守りたい不具合を守っていない。試験のコメント（「8787 を指定したときも同じ」）もこの点で試験の中身と食い違う（高）。ほかに、その試験が中身入りのツリーでは失敗せず止まらなくなる点（中）、小さな食い違い・漏れが 4 件（低）。低-8 の不採用は妥当。中-1（最終確認の節）はまだ無い（取り込み後に書く予定のとおり。未了）。
+
+### 取り込みの確認
+
+| 指摘 | 判定 | 根拠 |
+|---|---|---|
+| 高-1 | 済 | `conditions.ts`・`formState.ts` から flavor の import が消え、既定は `KA_MAX_SITE`。呼び出し元 4 か所（`App.tsx:281`・`ConditionsPanel.tsx:74,251`・`formState.ts:145`）はすべて `kaMax` を渡している。flavor を値で読むのは `components/App.tsx:8` だけ（`ConditionsPanel.tsx`・`constants.ts` は `import type`）。`web/edge/imports.test.ts` は変異（`conditions.ts` に `import { FLAVOR } from "./flavor"` と使う 1 行）で `1 failed | 1 passed` になった。報告の判断 3 も実態に合わせてある |
+| 高-2 | 済 | `grep -rn "mode local"`（.ts/.tsx/.go/.md/.sh、node_modules・.upstream・本ファイルを除く）は `S8-report.md:22` の計画の記録 1 件だけ |
+| 高-3 | 一部 | コードは `fl.Visit` で明示を判定し、docs（`local.md:28`）・フラグの説明（`main.go:59`）・パッケージの注記（`main.go:11`）と揃った。試験は効いていない（下の高-A） |
+| 中-1 | 未了 | `S8-report.md:150` は「下の『最終確認』に貼る」のまま、その節は無い |
+| 中-2 | 一部採用（妥当） | docs の「1 GB 近い」を S5 の実測に直し、4 GiB の壁は推測と明示。測らない理由（壁に届く KA を探す時間）は報告の残課題で読める。文の小さな食い違いは低-C |
+| 中-3 | 済 | AGENTS §9 の行に例外の理由。`local-release.yml` の注記と一致 |
+| 中-4 | 済 | 77 秒→110 秒、件数（55347 / 25466 / 106372）と逆転の「原因未特定」、逸脱にやり直しの未実施を記載 |
+| 低-1 | 済 | ヘッダの規則を返すファイルのパスに当てる。`/` で終わる要求は `/`。試験 `/wasm/../index.html` を追加。`fileName` が掃除したパスに当てるので、`/assets/../index.html` も同じく直る |
+| 低-2 | 済 | `govulncheck.sh` の注記と報告の「版の固定と解除条件」 |
+| 低-3 | 済 | release job で checkout（`persist-credentials: false`・`fetch-depth: 0`）→ `git merge-base --is-ancestor "$GITHUB_SHA" origin/main`。SHA 固定の checkout は既存と同じ版 |
+| 低-4 | 済 | `refs` を数え、0 件なら FAIL |
+| 低-5 | 済 | `syscall.SIGTERM` を追加 |
+| 低-6 | 済 | JSDoc を 1 つに |
+| 低-7 | 済 | ko・zh-Hans・zh-Hant の前半が `kaHelp` と同じ |
+| 低-8 不採用 | 妥当 | CI は両 project を回すので常にバイナリを作る。手元の手順は `docs/frontend.md` にある |
+
+### 指摘
+
+#### 高
+
+**高-A. `TestRun_ExplicitPortBusy` はもとの不具合を捕まえない（試験とそのコメントが食い違う）**
+- 場所: `cmd/local/main_test.go:49-62`（とくにコメント `:50`「既定値と同じ 8787 を指定したときも同じ」）、取り込みの表の高-3（「常に移る形に戻すと FAIL」）。
+- 内容: 試験は空いていないポートとして**ランダムなポート**を渡す。もとの不具合は「値が 8787 と同じなら明示でも移る」なので、ランダムなポートでは旧コード `listen(*port, *port == defaultPort)` でも `fallback=false` になり、誤りが返って緑になる。スクラッチの写しで `main.go:76` を旧コードに戻して回すと `--- PASS: TestRun_ExplicitPortBusy`・`EXIT=0`（再現済み）。取り込みで確かめた変異は「常に移る」で、レビューの指摘した不具合ではない（§8-3）。コメントの「8787 を指定したときも同じ」は試験していない。
+- 直し方の案: 「明示されたか」の判定を関数に出す（例 `portExplicit(fl *flag.FlagSet) bool`、または `run` の中の `fallback` を返す小関数）。表で `[]`→移る、`["-port","8787"]`→移らない、`["-port","0"]`→移らない を確かめる（実ポートを使わないので 8787 の空きに左右されない）。旧コードに戻して赤になるのを確かめる。
+
+#### 中
+
+**中-A. 同じ試験は、中身入りのツリーでは「失敗」でなく「止まらない」になる**
+- 場所: `cmd/local/main_test.go:58`（`run(...)` を直接呼ぶ）。
+- 内容: 「常に移る」に壊すと、`listen` が成功して `localserver.New` に進む。CI・`git archive` の写しのように `cmd/local/site/` が `.gitkeep` だけなら `ErrNoSite` で誤り（文言が違うので FAIL）になる。スクラッチで再現: `使われているポートを指定したのに誤りにならない: 配る中身(index.html)がありません…`・`EXIT=1`。だが `scripts/local/build.sh` の後の手元（`cmd/local/site` に中身がある）では、サーバが起動して `go test` の既定 10 分まで止まらない。試験が赤になるかどうかがツリーの状態で変わり、手元では赤を待てない。
+- 直し方の案: 高-A の小関数化で `run` を呼ばなくてよくなる。`run` 越しに残すなら、`run` に `context.Context` を渡す形にして試験で即キャンセルするか、goroutine で回して数秒で `t.Fatal` にする。
+
+#### 低
+
+**低-A. `flavor.ts` の注記が存在しない試験名を指す**
+- 場所: `web/src/lib/flavor.ts:4`（「edge.test の『import の経路』の試験」）。実体は `web/edge/imports.test.ts`。
+- 直し方の案: `edge/imports.test.ts` に直す。
+
+**低-B. import の経路の試験は、副作用だけの import と動的 import を辿らない**
+- 場所: `web/edge/imports.test.ts:21`（正規表現が `from "…"` を必須にしている）。
+- 内容: `conditions.ts` に `import "./flavor";` を足しても `Tests 2 passed (2)`・`EXIT=0`（スクラッチで再現）。副作用 import でも flavor.ts の最上位（`import.meta.env?.MODE`）は実行される。`import("./flavor")` も同様に漏れる。いまの edge の経路には該当が無い（`src/main.tsx:7` の CSS だけ）。
+- 直し方の案: `from` を省略可にする（例 `/^\s*(import|export)\s+(type\s+)?(?:[^;]*?from\s+)?"(\.[^"]+)"/gms`）と `import\(\s*"(\.[^"]+)"\s*\)` を足す。副作用 import の変異で赤を確かめる。
+
+**低-C. docs の「KA 100 を超えたときのメモリは測っていません」が報告の計測と食い違う**
+- 場所: `docs/local.md:43`。報告（`S8-report.md:71`）には Node 上の WASM で KA 150 = 646 MiB・KA 200 = 605 MiB がある。
+- 直し方の案: 「ブラウザでは測っていません（Node 上の WASM では KA 200 で約 605 MiB）」のように範囲を書く。
+
+**低-D. `kaMax` の既定がサイトの 100 なので、呼び出しの渡し忘れがローカル版で黙って 100 に戻る**
+- 場所: `web/src/lib/conditions.ts:209`、`web/src/lib/formState.ts:88,144`。
+- 内容: いまの呼び出し元はすべて渡している（上の表）。E2E local（KA 120・110）が渡し忘れの一部を拾う。1 回目の案 (a) の「必須の引数」より緩い形を選んだ理由が取り込みの表に無い。
+- 直し方の案: `kaMax` を必須にする（試験の呼び出しは `KA_MAX_SITE` を渡す）か、既定値を残す理由を報告に 1 行書く。
+
+### 指摘なし（見たもの）
+
+- **`ServeHTTP` の規則のパス**: `/` → `/`、`/assets/x.js` → `/assets/x.js`、`/wasm/../index.html` → `/index.html`。`/*` の規則はどの経路でも付く。`fileName` がディレクトリを配らないので、`/` で終わり `index.html` 以外になる経路は無い。
+- **release job**: `if: github.event_name == 'push' && github.ref_type == 'tag'` の中で checkout → main の祖先検査。`permissions: contents: write` は release job だけ。公開リポジトリなので `persist-credentials: false` でも `git fetch origin main` は通る（推測: private に戻すと fetch に認証が要る）。
+- **文言**: 3 ロケールの `kaHelpLocal` の前半が `kaHelp` と一致。キー集合・混入の検査は vitest の既存試験で緑。
+- **logic-version.json**: 取り込みの記録 1 件（`decision: none`・`internal`・`cmd`）。エンジン・計算のパッケージの木のハッシュは不変。
+- **禁止事項**: 取り込みの差分に秘密情報・公式データ・combomgr への参照は無い（差分を全行読んだ）。
+
+### 自分で回したコマンドと結果
+
+出力はスクラッチのファイルへ書き、合否は EXIT と件数で見た。
+
+```
+$ go test -count=1 -v ./cmd/local/ ./internal/localserver/ > go.txt 2>&1; echo EXIT=$?
+EXIT=0
+--- PASS(全階層)=11 / --- FAIL=0
+ok  github.com/plexiblinp/tacpendium-setplay/cmd/local
+ok  github.com/plexiblinp/tacpendium-setplay/internal/localserver
+$ cd web && pnpm exec tsc --noEmit > tsc.txt 2>&1; echo TSC=$?
+TSC=0 (出力 0 行)
+$ pnpm exec vitest --run > vitest.txt 2>&1; echo EXIT=$?
+EXIT=0
+ Test Files  18 passed (18)
+      Tests  174 passed (174)
+```
+
+変異（`git archive a2a09cc` をスクラッチへ展開した写し。`cmd/local/site` は `.gitkeep` だけ）:
+
+```
+# 高-A: main.go:76 を旧コード listen(*port, *port == defaultPort) に戻す
+$ go test -count=1 -run TestRun_ExplicitPortBusy -v ./cmd/local/; echo EXIT=$?
+--- PASS: TestRun_ExplicitPortBusy (0.00s)   EXIT=0   ← 赤にならない
+# 中-A: listen(*port, true)(常に移る)
+--- FAIL: TestRun_ExplicitPortBusy  main_test.go:60: …配る中身(index.html)がありません…   EXIT=1   ← site が空のときだけ赤
+# 高-1 の守り: conditions.ts に import { FLAVOR } from "./flavor" と使う 1 行
+$ pnpm exec vitest --run edge/imports.test.ts; echo EXIT=$?
+Tests  1 failed | 1 passed (2)   EXIT=1
+# 低-B: conditions.ts に import "./flavor";
+Tests  2 passed (2)   EXIT=0   ← 赤にならない
+```
+
+回していないもの: `go test ./...` の全体、E2E、smoke、govulncheck、GitHub Actions の run。
+
+## 再レビューの取り込み（実装担当が追記）
+
+| 指摘 | 採否 | 理由・直したこと |
+|---|---|---|
+| 高-A 高-3 の試験が元の不具合（8787 を明示したときだけ移る）を捕まえない | 採用 | 判定を `portFallback(fl)` に出し、`[]`・`-open=false`・`-port 8787`・`-port=8787`・`-port 0`・`-port 9000` の表で試験（`TestPortFallback`）。§8-3: 旧コード相当（値が 8787 なら移る）に戻すと `-port 8787` と `-port=8787` の 2 行で FAIL |
+| 中-A `run()` 越しの試験は site が入っていると止まらない | 採用 | `run()` を呼ぶ `TestRun_ExplicitPortBusy` を消し、上の小関数の試験に置き換えた（`listen` の fallback は `TestListen_Fallback` が見る） |
+| 低-A 注記の試験名の誤り | 採用 | `web/edge/imports.test.ts` に直した |
+| 低-B 副作用 import・動的 import を辿らない | 採用 | 両方を辿る。§8-3: conditions.ts に `import "./flavor";` を足すと赤 |
+| 低-C docs のメモリの記述が報告と食い違う | 採用 | 「ブラウザで」と範囲を書き、Node 上の値（約 0.6 GiB）を添えた |
+| 低-D `kaMax` の既定が黙って 100 に戻りうる | 一部採用 | 既定は残し、理由（lib/ を flavor から切り離す・既存の試験の呼び方）と「画面は全部渡す」をコメントに書いた。必須にすると既存の試験の呼び出しを数十か所変えることになり、得が小さい。渡し忘れは App.test の「ローカル版」の試験（KA 250・共有 URL の KA 150）が赤にする |
+| 未了 中-1 最終確認 | 採用 | 完了報告の「最終確認」に貼る |

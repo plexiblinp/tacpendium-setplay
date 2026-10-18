@@ -70,10 +70,7 @@ func run(args []string, out io.Writer) error {
 	if err != nil {
 		return fmt.Errorf("埋め込みの中身: %w", err)
 	}
-	// 空いているポートへ移るのは -port を指定しなかったときだけ(指定したポートが使えなければ誤り)。
-	explicit := false
-	fl.Visit(func(f *flag.Flag) { explicit = explicit || f.Name == "port" })
-	ln, err := listen(*port, !explicit)
+	ln, err := listen(*port, portFallback(fl))
 	if err != nil {
 		return err
 	}
@@ -110,6 +107,14 @@ func run(args []string, out io.Writer) error {
 		return fmt.Errorf("終了: %w", err)
 	}
 	return nil
+}
+
+// portFallback は、使われていたときに空いているポートへ移ってよいか(-port を指定しなかったときだけ)。
+// 既定値と同じ 8787 を指定したときも移らない(指定したポートが使えなければ誤り)。
+func portFallback(fl *flag.FlagSet) bool {
+	explicit := false
+	fl.Visit(func(f *flag.Flag) { explicit = explicit || f.Name == "port" })
+	return !explicit
 }
 
 // listen は 127.0.0.1:port で待ち受ける。fallback なら、使われていたときに空いているポートにする。

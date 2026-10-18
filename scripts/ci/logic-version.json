@@ -11,7 +11,7 @@
   "trees": {
     "internal": "a32ea84722a6cc0f79cba84199e69fbba178d04930c3a4653f5bbdb8c5d9df30",
     "engine": "20a06385b573e36a3248796c31c15da1f9200f0cfa941469da8555a2fa666028",
-    "cmd": "2311e123583105730e3ef3f1c3626849db13635525f0b4eb2e30eae2a47434a9",
+    "cmd": "610740a69aae39b89a544e73593478fa28f8da2078c0485d339f99bea434eb88",
     "go.mod": "904bc8f5b0edb9d45f47058633e937350ca29f7a2ae4fac06089858e37ff3376",
     "upstream/tacpendium.lock": "7da1bc2f107a4fc4d38e5d9887c2424f1b2c30f287b0b4992698970900d43efc",
     "scripts/wasm": "4ed68029b1a31954960d131bdeefec0543ecaabfcf87bfa6f445333f66bfbf82"
@@ -140,6 +140,16 @@
         "cmd"
       ],
       "reason": "S8 レビューの取り込み: cmd/local(ポートの明示・SIGTERM)と internal/localserver(ヘッダの規則のパス)だけ。計算のパッケージは変えていない"
+    },
+    {
+      "at": "2026-10-18T10:26:37Z",
+      "decision": "none",
+      "kinds": [],
+      "chars": [],
+      "changed": [
+        "cmd"
+      ],
+      "reason": "S8 再レビューの取り込み: cmd/local のポートの判定を小関数に出しただけ。計算のパッケージは変えていない"
     }
   ]
 }

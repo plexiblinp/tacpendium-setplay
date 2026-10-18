@@ -18,9 +18,15 @@ export function reachable(entry: string): Set<string> {
     if (seen.has(file)) continue;
     seen.add(file);
     const src = fs.readFileSync(file, "utf8");
+    const specs: string[] = [];
     for (const m of src.matchAll(/^\s*(import|export)\s+(type\s+)?[^;]*?from\s+"(\.[^"]+)"/gms)) {
-      if (m[2]) continue; // import type は実行時に読まない
-      const base = path.resolve(path.dirname(file), m[3]!);
+      if (!m[2]) specs.push(m[3]!); // import type は実行時に読まない
+    }
+    // 副作用だけの import "./x" と、動的な import("./x")(再レビュー低-B)。
+    for (const m of src.matchAll(/^\s*import\s+"(\.[^"]+)"/gm)) specs.push(m[1]!);
+    for (const m of src.matchAll(/\bimport\(\s*"(\.[^"]+)"\s*\)/g)) specs.push(m[1]!);
+    for (const spec of specs) {
+      const base = path.resolve(path.dirname(file), spec);
       const cand = [base, `${base}.ts`, `${base}.tsx`, path.join(base, "index.ts")].find((c) => fs.existsSync(c) && fs.statSync(c).isFile());
       if (cand != null && /\.tsx?$/.test(cand)) stack.push(cand);
     }

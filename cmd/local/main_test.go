@@ -2,8 +2,8 @@ package main
 
 import (
 	"bytes"
+	"flag"
 	"net"
-	"strconv"
 	"strings"
 	"testing"
 )
@@ -46,17 +46,28 @@ func TestListen_Fallback(t *testing.T) {
 	}
 }
 
-// -port で指定したポートが使われていれば、黙って別のポートへ移らずに誤りで終わる(S8 レビュー高-3)。
-// 既定値と同じ 8787 を指定したときも同じ(待ち受けは中身の検査より前なので、埋め込みの有無に関わらず決まる)。
-func TestRun_ExplicitPortBusy(t *testing.T) {
-	busy, err := net.Listen("tcp", listenHost+":0")
-	if err != nil {
-		t.Fatal(err)
+// -port を指定したら、既定値と同じ 8787 でも空いているポートへ移らない(S8 レビュー高-3・再レビュー高-A)。
+func TestPortFallback(t *testing.T) {
+	cases := []struct {
+		args []string
+		want bool
+	}{
+		{nil, true},
+		{[]string{"-open=false"}, true},
+		{[]string{"-port", "8787"}, false},
+		{[]string{"-port=8787"}, false},
+		{[]string{"-port", "0"}, false},
+		{[]string{"-port", "9000"}, false},
 	}
-	defer busy.Close()
-	port := busy.Addr().(*net.TCPAddr).Port
-	err = run([]string{"-open=false", "-port", strconv.Itoa(port)}, &bytes.Buffer{})
-	if err == nil || !strings.Contains(err.Error(), "待ち受けられない") {
-		t.Fatalf("使われているポートを指定したのに誤りにならない: %v", err)
+	for _, c := range cases {
+		fl := flag.NewFlagSet("t", flag.ContinueOnError)
+		fl.Int("port", defaultPort, "")
+		fl.Bool("open", true, "")
+		if err := fl.Parse(c.args); err != nil {
+			t.Fatal(err)
+		}
+		if got := portFallback(fl); got != c.want {
+			t.Errorf("%v: portFallback = %v(%v を期待)", c.args, got, c.want)
+		}
 	}
 }

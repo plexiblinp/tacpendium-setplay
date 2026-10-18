@@ -204,7 +204,7 @@ export interface ParsedSearch {
 /**
  * URL クエリを条件にする。キャラ・KA が無いか誤りなら conditions は null。それ以外のキーの誤りは、
  * そのキーだけ既定値に戻して rejected に挙げる(共有された URL が少し壊れていても開けるように)。
- * knownCharacters に無いキャラは誤り。kaMax を超える KA も誤り(既定はサイトの上限。ローカル版は呼び出し側が渡す)。
+ * knownCharacters に無いキャラは誤り。kaMax を超える KA も誤り(既定はサイトの上限。ローカル版は呼び出し側が渡す。既定を残すのは、lib/ を flavor から切り離して edge/ からも読めるようにするためと、既存の試験の呼び方を保つため。画面の呼び出しは全部 kaMaxFor(flavor) を渡す)。
  */
 export function parseSearch(search: string, knownCharacters: ReadonlySet<string>, kaMax: number = KA_MAX_SITE): ParsedSearch {
   const raw = Object.fromEntries(new URLSearchParams(search));
