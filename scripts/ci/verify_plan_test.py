@@ -153,5 +153,51 @@ class DigestTest(unittest.TestCase):
             self.assertNotEqual(d1, vp.digest(d, files))
 
 
+GO_MOD_V1 = """module example.com/m
+
+go 1.26.4
+
+toolchain go1.26.9
+
+require modernc.org/sqlite v1.58.0
+"""
+
+
+def modules(native=(), wasm=()):
+    """go list の代わり。本体のモジュール(「path@」)は常に混ぜる。"""
+    def run(env_extra):
+        return ["example.com/m@", *(wasm if env_extra else native)]
+    return run
+
+
+class GoModTest(unittest.TestCase):
+    def test_only_go_and_toolchain_lines_and_calc_modules_count(self):
+        self.assertEqual(vp.go_mod_calc_lines(GO_MOD_V1, modules()), ["go 1.26.4", "toolchain go1.26.9"])
+
+    def test_dependency_used_only_outside_calc_is_ignored(self):
+        bumped = GO_MOD_V1.replace("sqlite v1.58.0", "sqlite v1.60.1")
+        self.assertEqual(vp.go_mod_calc_lines(GO_MOD_V1, modules()), vp.go_mod_calc_lines(bumped, modules()))
+
+    def test_toolchain_change_counts(self):
+        older = GO_MOD_V1.replace("toolchain go1.26.9", "toolchain go1.26.8")
+        self.assertNotEqual(vp.go_mod_calc_lines(GO_MOD_V1, modules()), vp.go_mod_calc_lines(older, modules()))
+
+    def test_calc_module_versions_count_native_and_wasm(self):
+        base = vp.go_mod_calc_lines(GO_MOD_V1, modules())
+        native = vp.go_mod_calc_lines(GO_MOD_V1, modules(native=["golang.org/x/sys@v0.48.0"]))
+        wasm = vp.go_mod_calc_lines(GO_MOD_V1, modules(wasm=["golang.org/x/sys@v0.48.0"]))
+        self.assertIn("golang.org/x/sys@v0.48.0", native)
+        self.assertIn("golang.org/x/sys@v0.48.0", wasm)
+        self.assertNotEqual(base, native)
+        bumped = vp.go_mod_calc_lines(GO_MOD_V1, modules(native=["golang.org/x/sys@v0.49.0"]))
+        self.assertNotEqual(native, bumped)
+
+    def test_main_module_is_dropped_but_its_replacement_is_kept(self):
+        self.assertTrue(vp.is_main_module("example.com/m@"))
+        self.assertFalse(vp.is_main_module("example.com/x@ => ../x@"))
+        self.assertIn("example.com/x@ => ../x@",
+                      vp.go_mod_calc_lines(GO_MOD_V1, modules(native=["example.com/x@ => ../x@"])))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

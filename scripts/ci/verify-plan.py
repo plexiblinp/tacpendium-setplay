@@ -40,6 +40,16 @@ KINDS = {
 LOGIC_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logic-version.json")
 MAX_LINES = 5000  # 一覧ファイルの上限(古い鍵から捨てる)
 
+# go.mod は丸ごとではなく、計算に効く部分だけを見る(2026-10-18。Dependabot の取込 CLI 向けの依存の更新で
+# 毎回 check が赤になっていたため): go ・toolchain の行と、計算のパッケージ(テストを含む。ネイティブと WASM)が
+# 実際に使うモジュールの版。取込 CLI(cmd/movesdb)だけが使う依存の更新はここに出ない(その出力は CI の
+# 「moves DB の再生成と一致」と calcFingerprint で見ている)。
+GO_MOD = "go.mod"
+GO_MOD_KEYWORDS = ("go", "toolchain")
+CALC_PACKAGES = ["./engine/...", "./internal/service/...", "./internal/repository/...", "./cmd/precompute"]
+CALC_WASM_PACKAGES = ["./cmd/wasm", "./engine/", "./internal/service/setplay/", "./internal/repository/setplay/"]
+GO_LIST_FORMAT = "{{with .Module}}{{.Path}}@{{.Version}}{{with .Replace}} => {{.Path}}@{{.Version}}{{end}}{{end}}"
+
 
 # ---- 見張るコードのダイジェスト(作業ツリーの中身から。コミット前でも CI でも同じ値になる)
 
@@ -58,11 +68,45 @@ def digest(path, files=tracked_files):
     return h.hexdigest()
 
 
-def current_trees(logic, dig=digest):
+def go_list_modules(env_extra):
+    """計算のパッケージが使うモジュール(go list の 1 行 1 モジュール)。失敗したら止める(見張りを黙って外さない)。"""
+    packages = CALC_WASM_PACKAGES if env_extra else CALC_PACKAGES
+    out = subprocess.run(["go", "list", "-deps", "-test", "-f", GO_LIST_FORMAT, *packages],
+                         capture_output=True, text=True, env={**os.environ, **env_extra})
+    if out.returncode != 0:
+        raise SystemExit(f"ERROR: go list に失敗した({GO_MOD} の見張り): {out.stderr.strip()}")
+    return out.stdout.splitlines()
+
+
+def go_mod_calc_lines(go_mod_text, list_modules=go_list_modules):
+    """go.mod のうち計算に効く部分(並べ替え済みの行)。本体のモジュール(版も置き換えも無い行)は除く。"""
+    lines = sorted(ln.strip() for ln in go_mod_text.splitlines() if (ln.split() or [""])[0] in GO_MOD_KEYWORDS)
+    modules = set()
+    for env_extra in ({}, {"GOOS": "js", "GOARCH": "wasm"}):
+        modules.update(m for m in list_modules(env_extra) if m and not is_main_module(m))
+    return lines + sorted(modules)
+
+
+def is_main_module(line):
+    """本体のモジュールは版が空(「path@」)で、置き換えも無い。"""
+    return line.endswith("@") and " => " not in line
+
+
+def go_mod_digest(path=GO_MOD, list_modules=go_list_modules):
+    with open(path, encoding="utf-8") as f:
+        lines = go_mod_calc_lines(f.read(), list_modules)
+    return hashlib.sha256("\n".join(lines).encode()).hexdigest()
+
+
+def watched_digest(path):
+    return go_mod_digest(path) if path == GO_MOD else digest(path)
+
+
+def current_trees(logic, dig=watched_digest):
     return {p: dig(p) for p in logic["watched"]}
 
 
-def changed_paths(logic, dig=digest):
+def changed_paths(logic, dig=watched_digest):
     cur = current_trees(logic, dig)
     return [p for p in logic["watched"] if logic["trees"].get(p) != cur[p]]
 
@@ -115,7 +159,7 @@ def record(kind, index, logic, verified, chars):
     return lines[-MAX_LINES:]
 
 
-def ack(logic, index, reason, mode, kinds, chars, dig=digest, now=None):
+def ack(logic, index, reason, mode, kinds, chars, dig=watched_digest, now=None):
     """見張るコードの変更の影響を記録した新しい logic を返す。mode は none / all / chars。"""
     if not reason.strip():
         raise SystemExit("ERROR: --reason が要る(なぜその判断か)")
