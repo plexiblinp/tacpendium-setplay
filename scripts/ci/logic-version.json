@@ -12,7 +12,7 @@
     "internal": "1432a8173859e05472b919f42b1890f885ed76f3c665fde2f38bc2d081dda024",
     "engine": "20a06385b573e36a3248796c31c15da1f9200f0cfa941469da8555a2fa666028",
     "cmd": "f4a906944618db807ab1c95dc24e8156be86a7fe820c48c4f6a829e7947e9258",
-    "go.mod": "740fb8ea91ef5c0b709528e923ed260fadc0ccf28433e5c6d13ff1935fc2fef4",
+    "go.mod": "96f3629db88c3e94c80eb2715b0fb734ec6e9d6c4cd203328eec2f521aa4ecca",
     "upstream/tacpendium.lock": "7da1bc2f107a4fc4d38e5d9887c2424f1b2c30f287b0b4992698970900d43efc",
     "scripts/wasm": "4ed68029b1a31954960d131bdeefec0543ecaabfcf87bfa6f445333f66bfbf82"
   },
@@ -98,6 +98,16 @@
         "go.mod"
       ],
       "reason": "S7: toolchain go1.26.8→go1.26.9(標準ライブラリの脆弱性修正)。手元の go1.26.9 で go test -count=1 ./... EXIT=0・PASS 348・本家との突き合わせ 5208 条件・不一致 0 を確認したため CI で全キャラを回し直さない"
+    },
+    {
+      "at": "2026-10-18T08:43:59Z",
+      "decision": "none",
+      "kinds": [],
+      "chars": [],
+      "changed": [
+        "go.mod"
+      ],
+      "reason": "Dependabot: modernc.org/sqlite 1.58.0→1.60.1(間接 golang.org/x/sys・modernc.org/libc)。sqlite は取込 CLI(cmd/movesdb・internal/movesdb)だけが使い、engine・cmd/wasm(GOOS=js)・cmd/precompute・internal/service/setplay の依存に入らない(go list -deps で 0 件)。moves DB の再生成はコミット済みと一致(CI の PR #1 run・手元)"
     }
   ]
 }
