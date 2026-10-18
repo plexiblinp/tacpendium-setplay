@@ -93,6 +93,11 @@ func TestServe_HeadersFromRules(t *testing.T) {
 	if got := rec.Header().Get("Cache-Control"); got != "" {
 		t.Errorf("/data に /wasm の規則が当たった: %q", got)
 	}
+	// 規則は返すファイルのパスに当てる(要求の生のパスではない。S8 レビュー低-1)。
+	rec = get(t, h, http.MethodGet, "/wasm/../index.html", "localhost:18787")
+	if rec.Code != http.StatusOK || rec.Header().Get("Cache-Control") != "" {
+		t.Errorf("/wasm/../index.html: %d Cache-Control=%q(index.html に /wasm/* の規則が付いた)", rec.Code, rec.Header().Get("Cache-Control"))
+	}
 }
 
 func TestServe_Refuses(t *testing.T) {

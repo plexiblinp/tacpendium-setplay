@@ -9,9 +9,9 @@
     "scripts/wasm"
   ],
   "trees": {
-    "internal": "a6308343faf47b733be8c80656333dba2913529e1fbcd67c300139f6f9ff257f",
+    "internal": "a32ea84722a6cc0f79cba84199e69fbba178d04930c3a4653f5bbdb8c5d9df30",
     "engine": "20a06385b573e36a3248796c31c15da1f9200f0cfa941469da8555a2fa666028",
-    "cmd": "c000e2d1861ed001ee8043917287a312ef3c3658e48a0a61339d4b73fc9019ba",
+    "cmd": "2311e123583105730e3ef3f1c3626849db13635525f0b4eb2e30eae2a47434a9",
     "go.mod": "904bc8f5b0edb9d45f47058633e937350ca29f7a2ae4fac06089858e37ff3376",
     "upstream/tacpendium.lock": "7da1bc2f107a4fc4d38e5d9887c2424f1b2c30f287b0b4992698970900d43efc",
     "scripts/wasm": "4ed68029b1a31954960d131bdeefec0543ecaabfcf87bfa6f445333f66bfbf82"
@@ -129,6 +129,17 @@
         "cmd"
       ],
       "reason": "S8: ローカル版の配信(cmd/local・internal/localserver)を足した。エンジン・計算のパッケージは変えていない"
+    },
+    {
+      "at": "2026-10-18T10:21:05Z",
+      "decision": "none",
+      "kinds": [],
+      "chars": [],
+      "changed": [
+        "internal",
+        "cmd"
+      ],
+      "reason": "S8 レビューの取り込み: cmd/local(ポートの明示・SIGTERM)と internal/localserver(ヘッダの規則のパス)だけ。計算のパッケージは変えていない"
     }
   ]
 }

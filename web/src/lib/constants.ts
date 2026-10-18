@@ -1,5 +1,5 @@
 // 画面とエンジンの境目の定数。値の出どころはコメントのとおり(マジックナンバーを散らさない。AGENTS §4)。
-// ★edge/(Worker)も読むので、ビルドで変わる値(import.meta.env)はここに置かない(flavor.ts)。
+// ★edge/(Worker)も読むので、ビルドで変わる値(import.meta.env)はここに置かない(画面だけが flavor.ts を読む)。
 import type { Flavor } from "./flavor";
 
 /** KA(ダウン後の有利フレーム)の下限。 */

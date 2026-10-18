@@ -58,7 +58,7 @@
     "kaUnit": "F",
     "kaHelp": "連段最後擊倒對手後的有利幀({{min}}～{{max}})。",
     "kaOverLimit": "超過 {{max}} 時請使用本地版(在電腦上執行的下載版)",
-    "kaHelpLocal": "連段收尾擊倒後的有利幀({{min}} 以上。本地版沒有上限。數值越大計算越久)。",
+    "kaHelpLocal": "連段最後擊倒對手後的有利幀({{min}} 以上。本地版沒有上限。數值越大計算越久)。",
     "kaInvalid": "請輸入 {{min}}～{{max}} 的整數",
     "kaInvalidLocal": "請輸入 {{min}} 以上的整數",
     "characterRequired": "請選擇角色"

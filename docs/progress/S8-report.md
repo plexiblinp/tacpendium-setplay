@@ -16,7 +16,7 @@
 - 計算は既にブラウザ内の WASM（S5 の計算方式 C）。サイトとローカル版の違いは「KA の上限」と「通信（計測 beacon・票）」だけ。
 - KA の上限 100 は `web/src/lib/constants.ts` の `KA_MAX`（URL の検証・欄の検査・入力欄の max・文言）と、beacon の形（`web/src/shared/api.ts`）・Worker（`web/edge/index.ts`）で掛かる。エンジンは掛けない（`engine.KnockdownFromFloat` は int32 の範囲だけ）。
 - 中断は既にある（Worker ごと terminate）。HANDOVER §5 の「Worker と中断ボタン付き」は満たしている。
-- 予備計測（Node 上の WASM、ryu 重ねる・既定のクエリ）: KA 100 = 8.0 秒・428 MiB、KA 150 = 5.7 秒・646 MiB、KA 200 = 33.3 秒・605 MiB、KA 400 は 77 秒で打ち切り。ingrid 汚連携 KA 100 は 3 分を超えて打ち切った（推測: 既定のクエリが画面と違う。画面の条件での計測は実装後にやり直す）。→ KA を上げると時間は大きく伸びるが、中断で止められる。
+- 予備計測（Node 上の WASM、ryu 重ねる・既定のクエリ）: KA 100 = 8.0 秒・428 MiB、KA 150 = 5.7 秒・646 MiB、KA 200 = 33.3 秒・605 MiB、KA 400 は 110 秒の打ち切りで未完了（レビュー中-4 で誤記を直した）。ingrid 汚連携 KA 100 は 3 分を超えて打ち切った（推測: 既定のクエリが画面と違う。画面の条件での計測は実装後にやり直す）。→ KA を上げると時間は大きく伸びるが、中断で止められる。
 
 ### 作るもの
 1. **フロントのローカル版ビルド**: `vite build --mode local`（`web/src/lib/flavor.ts` で判定）。→ 実装では mode 名を `standalone` にした（Vite が `local` を `.env.local` と紛れるとして拒否するため）。
@@ -68,13 +68,13 @@ GitHub Actions の `Local release` run 39117681817（コミット `e96c14a`）�
 linux/arm64 と darwin/amd64 はビルドだけ（起動は確かめていない）。画面の操作（ブラウザでの計算）は Linux の E2E だけで見ている。
 
 ### 計測（予備。Node 上の WASM、ryu 重ねる・クエリ `mode=meaty` だけ）
-KA 100 = 8.0 秒・428 MiB / KA 150 = 5.7 秒・646 MiB / KA 200 = 33.3 秒・605 MiB / KA 400 は 110 秒の打ち切りで未完了。ingrid 汚連携 KA 100 は 3 分を超えたので止めた（原因未特定。S5 の画面での測定では最大 8.2 秒なので、画面と違うクエリのせいと推測）。測定はほかの処理と並行していない。
+KA 100 = 8.0 秒・428 MiB・55347 件 / KA 150 = 5.7 秒・646 MiB・25466 件 / KA 200 = 33.3 秒・605 MiB・106372 件 / KA 400 は 110 秒の打ち切りで未完了。KA 150 が KA 100 より速いのは件数が減るため（推測: 長い KA を埋める繋ぎの組み合わせが条件に合いにくくなる。原因未特定）。ingrid 汚連携 KA 100 は 3 分を超えたので止めた（原因未特定。S5 の画面での測定では最大 8.2 秒なので、画面と違うクエリのせいと推測）。測定はほかの処理と並行していない。
 
 ## 判断と理由
 
 1. **ローカル版も計算はブラウザの WASM**（HANDOVER §5 のとおり）。案: Go のネイティブで計算する API をバイナリに持たせる（速い・WASM の 4 GiB の壁が無い）。→ 採らない。§5 に「計算はブラウザ内」とあり、サイトと同じ経路（同じ試験）で済む。KA 200 でも WASM のメモリは 605 MiB で、壁はまだ遠い。
 2. **KA の上限 = エンジンが受ける最大（int32）**。案: 999 などの 3 桁で切る。→ D10・§9 の「KA 無制限」に合わせ、アプリでは数で切らない。重い条件は既存の注意（KA 80 以上）と中断で扱う（E2E で KA 400 を中断できることを確かめた）。推測: 実戦の KA が 100 を大きく超えることはまれ。
-3. **ビルドの種類は Vite の mode（`standalone`）**。`local` は Vite が受け付けない。値はビルド時に決まるが、画面のコンポーネントと検査の関数は `flavor`・`kaMax` を引数で受けるようにした（試験で両方を回せる）。`edge/`（Worker）は `flavor.ts` を読まない（wrangler の束ねには `import.meta.env` が無い）。`import.meta.env?.MODE` にして、読んでもサイトとして動くようにした。
+3. **ビルドの種類は Vite の mode（`standalone`）**。`local` は Vite が受け付けない。値はビルド時に決まるが、画面のコンポーネントと検査の関数は `flavor`・`kaMax` を引数で受けるようにした（試験で両方を回せる）。`edge/`（Worker）は `flavor.ts` を読まない（wrangler の束ねには `import.meta.env` が無い）。最初の実装では `shared/api.ts` → `lib/conditions.ts` 経由で読んでいた（レビュー高-1）ので、`lib/` の関数は flavor を読まない形に直し、`web/edge/imports.test.ts` で経路を検査する。念のため `import.meta.env?.MODE` にして、読んでもサイトとして動く。
 4. **計測・票は「無い」として扱い、0 件や unavailable に寄せない**（AGENTS §8-7）。`RunState.votes` は `LoadedVotes | null`（null = 票を使わない版）。beacon は送らないので `votesStatus` を作らない。
 5. **配信のヘッダはサイトの `_headers` をそのまま使う**。CSP・Permissions-Policy をサイトと揃えると、サイトの E2E で確かめた条件（WASM・Worker・コピー）がそのまま効く。HSTS は HTTP では無視される（RFC 6797 §8.1）ので外さない。
 6. **Content-Type は固定の表**。Go の `mime` は Windows で registry を読み、`.js` が `text/plain` になる環境がある（module script と Worker が読めなくなる）。windows の起動確認で `text/javascript` を確かめた。
@@ -86,7 +86,12 @@ KA 100 = 8.0 秒・428 MiB / KA 150 = 5.7 秒・646 MiB / KA 200 = 33.3 秒・60
 12. 追加した Action: `actions/upload-artifact@cf430e0…`（v7.0.2）・`actions/download-artifact@9000827…`（v8.0.2）。どちらも 2026-10-07 のコミット（`git fetch` で日付を確かめた）。
 
 ### 逸脱
-- 無し（計画の項目はすべて実装した）。計画の mode 名 `local` は `standalone` に変えた（Vite の制約。計画節に追記）。
+- 計画の「画面の条件での計測を実装後にやり直す」は**行わなかった**。数値は Node 上の予備計測（クエリが画面と違う）だけ。E2E で KA 120・110 が 90 秒以内に出ること、KA 400 を中断できることは確かめた。
+- 計画の mode 名 `local` は `standalone` に変えた（Vite の制約。計画節に追記）。
+
+### 版の固定と解除条件（AGENTS §5）
+- `golang.org/x/vuln/cmd/govulncheck` v1.9.0（`scripts/govulncheck.sh`）。Dependabot はシェルの中の版を見ないので、上げるのは段階のセッションで手で（公開から 7 日以上の版）。解除条件は無い（道具の版が動くと同じコードで結果が変わりうる）。
+- 追加した Action は SHA 固定（`upload-artifact` v7.0.2・`download-artifact` v8.0.2）。Dependabot（github-actions）が上げる。
 
 ## 残課題・既知の問題
 

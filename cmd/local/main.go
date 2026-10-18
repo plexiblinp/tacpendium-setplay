@@ -7,6 +7,8 @@
 // 中身の無いバイナリは起動時に理由を出して終わる。
 //
 //	tacpendium-setplay-local [-port 8787] [-open=false] [-version]
+//
+// -port を指定しなければ 8787 で待ち受け、使われていれば空いているポートにする。指定したポートが使えなければ誤りで終わる。
 package main
 
 import (
@@ -23,6 +25,7 @@ import (
 	"os/exec"
 	"os/signal"
 	"runtime"
+	"syscall"
 	"time"
 
 	"github.com/plexiblinp/tacpendium-setplay/internal/localserver"
@@ -53,7 +56,7 @@ func main() {
 
 func run(args []string, out io.Writer) error {
 	fl := flag.NewFlagSet("tacpendium-setplay-local", flag.ContinueOnError)
-	port := fl.Int("port", defaultPort, "待ち受けのポート(0 なら空いているポート。既定のポートが使われていれば空いているポートにする)")
+	port := fl.Int("port", defaultPort, "待ち受けのポート(0 なら空いているポート。指定しなければ 8787 で、使われていれば空いているポートにする)")
 	open := fl.Bool("open", true, "起動したらブラウザで開く")
 	showVersion := fl.Bool("version", false, "版を出して終わる")
 	if err := fl.Parse(args); err != nil {
@@ -67,7 +70,10 @@ func run(args []string, out io.Writer) error {
 	if err != nil {
 		return fmt.Errorf("埋め込みの中身: %w", err)
 	}
-	ln, err := listen(*port, *port == defaultPort)
+	// 空いているポートへ移るのは -port を指定しなかったときだけ(指定したポートが使えなければ誤り)。
+	explicit := false
+	fl.Visit(func(f *flag.Flag) { explicit = explicit || f.Name == "port" })
+	ln, err := listen(*port, !explicit)
 	if err != nil {
 		return err
 	}
@@ -81,7 +87,7 @@ func run(args []string, out io.Writer) error {
 	url := fmt.Sprintf("http://%s:%d/", listenHost, actual)
 	fmt.Fprintf(out, "Tacpendium-Setplay (local) %s\n%s を開いてください / Open %s\nCtrl+C で終了 / Press Ctrl+C to quit\n", version, url, url)
 
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	errc := make(chan error, 1)
 	go func() { errc <- srv.Serve(ln) }()

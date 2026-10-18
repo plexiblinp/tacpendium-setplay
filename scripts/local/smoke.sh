@@ -53,11 +53,13 @@ check "moves($first)が 200 で JSON" "$([ "$code" = 200 ] && header "$WORK/move
 
 # index.html が読むスクリプトがすべて配られる(埋め込みの漏れ)。
 missing=0
+refs=0
 for src in $(grep -oE '(src|href)="/[^"]+"' "$WORK/index.b" | sed -E 's/^[a-z]+="//; s/"$//'); do
+  refs=$((refs + 1))
   c="$(curl -s -o /dev/null -w '%{http_code}' "$BASE$src")"
   if [ "$c" != 200 ]; then echo "     $src → $c"; missing=$((missing + 1)); fi
 done
-check "index.html が読むファイルがすべて 200" "$missing"
+check "index.html が読むファイル($refs 件。1 件以上)がすべて 200" "$([ "$refs" -gt 0 ] && [ "$missing" -eq 0 ]; echo $?)"
 
 check "_headers は配らない(404)" "$([ "$(fetch /_headers h)" = 404 ]; echo $?)"
 check "別の Host は 403(DNS rebinding)" "$([ "$(fetch / evil -H "Host: evil.example:$PORT")" = 403 ]; echo $?)"

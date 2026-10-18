@@ -1,6 +1,6 @@
 // Package localserver はローカル版(HANDOVER D10・§5)の静的配信を行う。
 //
-// 配るのはフロントのローカル版ビルド(web の `vite build --mode local`。データと WASM を含む)だけで、
+// 配るのはフロントのローカル版ビルド(web の `vite build --mode standalone`。データと WASM を含む)だけで、
 // 計算はブラウザの中の WASM が行う(サーバは計算しない)。サイトと同じ `_headers`(Cloudflare の形式)を読み、
 // 同じヘッダを付ける(CSP の下で WASM ・Worker が動くこと＝サイトと同じ条件で動かす)。
 //
@@ -172,7 +172,13 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	for _, hd := range HeadersFor(h.rules, r.URL.Path) {
+	// 規則は実際に返すファイルのパスに当てる(/assets/../index.html に /assets/* の規則を付けない)。
+	// / で終わる要求は / のまま当てる(Cloudflare と同じく、規則はディレクトリの URL に書く)。
+	rulePath := "/" + name
+	if strings.HasSuffix(r.URL.Path, "/") && path.Base(name) == IndexFile {
+		rulePath = strings.TrimSuffix(rulePath, IndexFile)
+	}
+	for _, hd := range HeadersFor(h.rules, rulePath) {
 		w.Header().Set(hd.Name, hd.Value)
 	}
 	ct, ok := contentTypes[strings.ToLower(path.Ext(name))]

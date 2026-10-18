@@ -4,7 +4,9 @@
 #   GOOS=js GOARCH=wasm ./cmd/wasm/ … ブラウザで動くエンジン(サイトとローカル版)
 #   ./cmd/local/ を windows・darwin・linux で … ローカル版の単一バイナリ(OS ごとに標準ライブラリの経路が違う。S7 報告の GO-2026-6604 は Windows の os.Root)
 # 呼ばれている脆弱な関数が 1 つでもあれば赤(govulncheck の終了コード 3)。全部の対象を回してから結果を返す。
-# 版は固定(GOVULNCHECK_VERSION)。脆弱性 DB は既定の vuln.go.dev。手元の proxy で読めないときは
+# 版は固定(GOVULNCHECK_VERSION)。Dependabot はシェルの中の版を見ないので、上げるのは段階のセッションで手で行う
+#   (`go list -m -versions golang.org/x/vuln` で新しい版を見て、公開から 7 日以上たったもの＝dependabot.yml の cooldown と同じ)。
+#   固定を外す条件は無い(道具の版が動くと、同じコードで結果が変わりうるため)。脆弱性 DB は既定の vuln.go.dev。手元の proxy で読めないときは
 #   GOVULNCHECK_DB=https://storage.googleapis.com/go-vulndb を渡す(S7 報告)。
 # 使い方: bash scripts/govulncheck.sh
 # 終了コード: 0 = 検出なし / 1 = 検出あり・実行エラー

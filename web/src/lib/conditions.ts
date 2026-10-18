@@ -8,10 +8,10 @@ import {
   FILLER_REMAIN_MIN,
   GAP_G_MAX,
   GAP_G_MIN,
+  KA_MAX_SITE,
   KA_MIN,
   N_MIN_LOWER,
 } from "./constants";
-import { KA_MAX } from "./flavor";
 import type { Mode } from "./engineTypes";
 
 export type Sort = "n" | "target";
@@ -204,9 +204,9 @@ export interface ParsedSearch {
 /**
  * URL クエリを条件にする。キャラ・KA が無いか誤りなら conditions は null。それ以外のキーの誤りは、
  * そのキーだけ既定値に戻して rejected に挙げる(共有された URL が少し壊れていても開けるように)。
- * knownCharacters に無いキャラは誤り。kaMax を超える KA も誤り(既定はこのビルドの上限)。
+ * knownCharacters に無いキャラは誤り。kaMax を超える KA も誤り(既定はサイトの上限。ローカル版は呼び出し側が渡す)。
  */
-export function parseSearch(search: string, knownCharacters: ReadonlySet<string>, kaMax: number = KA_MAX): ParsedSearch {
+export function parseSearch(search: string, knownCharacters: ReadonlySet<string>, kaMax: number = KA_MAX_SITE): ParsedSearch {
   const raw = Object.fromEntries(new URLSearchParams(search));
   const rejected: string[] = [];
   const shape = urlSchema.shape;

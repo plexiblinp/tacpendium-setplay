@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"net"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -42,5 +43,20 @@ func TestListen_Fallback(t *testing.T) {
 	defer ln.Close()
 	if got := ln.Addr().(*net.TCPAddr); got.Port == port || !got.IP.IsLoopback() {
 		t.Errorf("代わりの待ち受け: %v", got)
+	}
+}
+
+// -port で指定したポートが使われていれば、黙って別のポートへ移らずに誤りで終わる(S8 レビュー高-3)。
+// 既定値と同じ 8787 を指定したときも同じ(待ち受けは中身の検査より前なので、埋め込みの有無に関わらず決まる)。
+func TestRun_ExplicitPortBusy(t *testing.T) {
+	busy, err := net.Listen("tcp", listenHost+":0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer busy.Close()
+	port := busy.Addr().(*net.TCPAddr).Port
+	err = run([]string{"-open=false", "-port", strconv.Itoa(port)}, &bytes.Buffer{})
+	if err == nil || !strings.Contains(err.Error(), "待ち受けられない") {
+		t.Fatalf("使われているポートを指定したのに誤りにならない: %v", err)
 	}
 }
