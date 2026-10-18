@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { defaultConditions } from "./conditions";
+import { KA_MAX_LOCAL } from "./constants";
 import { formFromConditions, initialForm, safeJumpConditions, validateForm, type FormState } from "./formState";
 
 const base = (): FormState => ({ ...formFromConditions(defaultConditions("ryu", 40)) });
@@ -16,6 +17,14 @@ describe("validateForm", () => {
     for (const k of ["-1", "101", "4.5", "", "abc"]) expect(validateForm({ ...base(), kaText: k }).errors).toEqual(["kaInvalid"]);
     expect(validateForm({ ...base(), kaText: "0" }).conditions?.ka).toBe(0);
     expect(validateForm({ ...base(), kaText: "100" }).conditions?.ka).toBe(100);
+  });
+  it("ローカル版は KA の上限を外す(エンジンの受ける最大まで)", () => {
+    expect(validateForm({ ...base(), kaText: "101" }, KA_MAX_LOCAL).conditions?.ka).toBe(101);
+    expect(validateForm({ ...base(), kaText: String(KA_MAX_LOCAL) }, KA_MAX_LOCAL).conditions?.ka).toBe(KA_MAX_LOCAL);
+    expect(validateForm({ ...base(), kaText: String(KA_MAX_LOCAL + 1) }, KA_MAX_LOCAL).errors).toEqual(["kaInvalid"]);
+    expect(validateForm({ ...base(), kaText: "-1" }, KA_MAX_LOCAL).errors).toEqual(["kaInvalid"]);
+    expect(safeJumpConditions({ ...base(), kaText: "150" }, "f5", 42, KA_MAX_LOCAL).conditions?.ka).toBe(150);
+    expect(safeJumpConditions({ ...base(), kaText: "150" }, "f5", 42).conditions).toBeNull();
   });
   it("いまのモードの欄だけを検査する", () => {
     const f = { ...base(), gMinText: "x", remainText: "" };

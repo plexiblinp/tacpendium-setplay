@@ -7,7 +7,8 @@ import { PRIVACY_HASH } from "./PrivacyPolicy";
 /** データ版の表示の長さ(取込元の SHA の先頭)。 */
 const SHORT_SHA = 7;
 
-export function Footer({ dataVersion, onPrivacy }: { dataVersion: string; onPrivacy: () => void }) {
+/** online: サイト(計測・票の通信がある)か。ローカル版はプライバシーポリシーの代わりに「通信しない」を出す。 */
+export function Footer({ dataVersion, online, onPrivacy }: { dataVersion: string; online: boolean; onPrivacy: () => void }) {
   const { t } = useTranslation();
   return (
     <footer className="site-footer">
@@ -26,11 +27,15 @@ export function Footer({ dataVersion, onPrivacy }: { dataVersion: string; onPriv
         </a>
       </p>
       <p>{t("footer.unofficial")}</p>
-      <p>
-        <a href={PRIVACY_HASH} onClick={onPrivacy} data-testid="privacy-link">
-          {t("footer.privacy")}
-        </a>
-      </p>
+      {online ? (
+        <p>
+          <a href={PRIVACY_HASH} onClick={onPrivacy} data-testid="privacy-link">
+            {t("footer.privacy")}
+          </a>
+        </p>
+      ) : (
+        <p data-testid="local-notice">{t("footer.localNotice")}</p>
+      )}
     </footer>
   );
 }

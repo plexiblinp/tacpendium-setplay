@@ -10,6 +10,7 @@ import {
   toEngineQuery,
   type Conditions,
 } from "./conditions";
+import { KA_MAX_LOCAL } from "./constants";
 import { formFromConditions, validateForm, type FormState } from "./formState";
 
 const KNOWN = new Set(["ryu", "ken", "c_viper"]);
@@ -178,5 +179,17 @@ describe("hasAppliedFilters(エンジンに実際に送る絞り込み)", () => 
           const c = { ...d, mode, safeJump: mode === "filler" ? safeJump : null, approachOnly: a!, blockSafeOnly: b!, chainCancelOnly: ch! };
           expect(hasAppliedFilters(c), JSON.stringify(c)).toBe(/approach_only|block_safe_only|chain_cancel_only/.test(toEngineQuery(c)));
         }
+  });
+});
+
+describe("parseSearch の KA の上限(S8)", () => {
+  it("サイト(既定)は 100 まで。超えたら共有の条件ではない(ka を捨てる)", () => {
+    expect(parseSearch("c=ryu&ka=100", KNOWN).conditions?.ka).toBe(100);
+    expect(parseSearch("c=ryu&ka=101", KNOWN)).toEqual({ conditions: null, rejected: ["ka"] });
+  });
+  it("ローカル版はエンジンの受ける最大まで", () => {
+    expect(parseSearch("c=ryu&ka=101", KNOWN, KA_MAX_LOCAL).conditions?.ka).toBe(101);
+    expect(parseSearch(`c=ryu&ka=${KA_MAX_LOCAL}`, KNOWN, KA_MAX_LOCAL).conditions?.ka).toBe(KA_MAX_LOCAL);
+    expect(parseSearch(`c=ryu&ka=${KA_MAX_LOCAL + 1}`, KNOWN, KA_MAX_LOCAL).rejected).toEqual(["ka"]);
   });
 });

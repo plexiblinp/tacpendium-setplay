@@ -4,7 +4,7 @@ import {
   FILLER_REMAIN_MIN,
   GAP_G_MAX,
   GAP_G_MIN,
-  KA_MAX,
+  KA_MAX_SITE,
   KA_MIN,
   N_MIN_LOWER,
 } from "./constants";
@@ -83,12 +83,13 @@ export interface Validated {
  * 欄を検査して条件にする。いまのモードが使う欄だけを検査する(使わない欄が誤っていても押せる。本家と同じ)。
  * 使わない欄の値は既定値で埋める(エンジンには送らない＝toEngineQuery)。
  * safeJump はここでは null(安全飛びのボタンは validateForm の後で remain と種類を差し替える)。
+ * kaMax は KA の上限(既定はサイトの 100。ローカル版は呼び出し側が kaMaxFor("local") を渡す。既定を残す理由は conditions.ts の parseSearch と同じ)。
  */
-export function validateForm(f: FormState): Validated {
+export function validateForm(f: FormState, kaMax: number = KA_MAX_SITE): Validated {
   const errors: FormError[] = [];
   const d = defaultConditions(f.character, KA_MIN);
   if (f.character === "") errors.push("characterRequired");
-  const ka = parseIntInRange(f.kaText, KA_MIN, KA_MAX);
+  const ka = parseIntInRange(f.kaText, KA_MIN, kaMax);
   if (ka == null) errors.push("kaInvalid");
 
   const nMin = parseIntInRange(f.nMinText, N_MIN_LOWER);
@@ -140,8 +141,8 @@ export function validateForm(f: FormState): Validated {
 }
 
 /** 安全飛びのボタン: 有利調整を remain = そのキャラの値で出す(本家と同じ計算)。KA・キャラの誤りは validateForm と同じ。 */
-export function safeJumpConditions(f: FormState, kind: SafeJumpKind, value: number): Validated {
-  const v = validateForm({ ...f, mode: "filler", remainText: String(value) });
+export function safeJumpConditions(f: FormState, kind: SafeJumpKind, value: number, kaMax: number = KA_MAX_SITE): Validated {
+  const v = validateForm({ ...f, mode: "filler", remainText: String(value) }, kaMax);
   if (v.conditions == null) return v;
   return { conditions: { ...v.conditions, safeJump: kind, targetMove: null }, errors: [] };
 }

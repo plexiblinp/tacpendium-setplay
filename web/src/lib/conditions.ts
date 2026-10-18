@@ -8,7 +8,7 @@ import {
   FILLER_REMAIN_MIN,
   GAP_G_MAX,
   GAP_G_MIN,
-  KA_MAX,
+  KA_MAX_SITE,
   KA_MIN,
   N_MIN_LOWER,
 } from "./constants";
@@ -147,7 +147,8 @@ const intString = z.string().regex(/^\d+$/).transform(Number).pipe(z.number().ma
 const flag = z.literal("1").transform(() => true);
 const urlSchema = z.object({
   c: z.string().regex(/^[a-z0-9_]+$/),
-  ka: intString.pipe(z.number().int().min(KA_MIN).max(KA_MAX)),
+  // 上限は parseSearch の kaMax で見る(サイトとローカル版で違う)。
+  ka: intString.pipe(z.number().int().min(KA_MIN)),
   mode: z.enum(["meaty", "gap", "filler"]).optional(),
   n_min: intString.pipe(z.number().int().min(N_MIN_LOWER)).optional(),
   n_max: intString.pipe(z.number().int().min(0)).optional(),
@@ -203,9 +204,9 @@ export interface ParsedSearch {
 /**
  * URL クエリを条件にする。キャラ・KA が無いか誤りなら conditions は null。それ以外のキーの誤りは、
  * そのキーだけ既定値に戻して rejected に挙げる(共有された URL が少し壊れていても開けるように)。
- * knownCharacters に無いキャラは誤り。
+ * knownCharacters に無いキャラは誤り。kaMax を超える KA も誤り(既定はサイトの上限。ローカル版は呼び出し側が渡す。既定を残すのは、lib/ を flavor から切り離して edge/ からも読めるようにするためと、既存の試験の呼び方を保つため。画面の呼び出しは全部 kaMaxFor(flavor) を渡す)。
  */
-export function parseSearch(search: string, knownCharacters: ReadonlySet<string>): ParsedSearch {
+export function parseSearch(search: string, knownCharacters: ReadonlySet<string>, kaMax: number = KA_MAX_SITE): ParsedSearch {
   const raw = Object.fromEntries(new URLSearchParams(search));
   const rejected: string[] = [];
   const shape = urlSchema.shape;
@@ -213,7 +214,7 @@ export function parseSearch(search: string, knownCharacters: ReadonlySet<string>
   for (const key of Object.keys(shape) as (keyof typeof shape)[]) {
     if (!(key in raw)) continue;
     const r = shape[key].safeParse(raw[key]);
-    if (r.success) ok[key] = r.data;
+    if (r.success && !(key === "ka" && (r.data as number) > kaMax)) ok[key] = r.data;
     else rejected.push(key);
   }
   const character = ok.c as string | undefined;

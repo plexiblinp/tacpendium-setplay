@@ -39,3 +39,8 @@ __pycache__/
 # Worker の束ね(web/scripts/build-edge.mjs。デプロイは wrangler が自分で束ねる)・wrangler の手元の状態
 /web/dist-edge/
 /web/.wrangler/
+
+# ローカル版に埋め込む中身(scripts/local/build.sh が置く)と、ローカル版のビルド出力
+/cmd/local/site/*
+!/cmd/local/site/.gitkeep
+/web/dist-local/

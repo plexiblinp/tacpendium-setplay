@@ -46,7 +46,7 @@ pnpm e2e             # Playwright。dist を public/_headers どおりのヘッ�
 | URL のキー | 条件 | 既定 |
 |---|---|---|
 | `c` | キャラ（manifest の code） | 必須 |
-| `ka` | KA（0〜100 の整数） | 必須 |
+| `ka` | KA（0〜100 の整数。ローカル版は 0 以上で上限なし＝`docs/local.md`） | 必須 |
 | `mode` | `meaty` / `gap` / `filler` | `meaty` |
 | `n_min` / `n_max` | 重ねる持続の位置（`n_max` 0 は上限なし） | 1 / 0 |
 | `g_min` / `g_max` | 汚連携の空振りの位置（1〜13） | 1 / 13 |
@@ -75,7 +75,7 @@ pnpm e2e             # Playwright。dist を public/_headers どおりのヘッ�
 画面冒頭の説明と、折りたたみ 3 つ（使い方・注意と対策・レシピのルール）。`web/src/components/Guide.tsx`、文言は `guide.*`（5 言語）。開発者の案（2026-10-18）を要約したもので、旧「提案の制約について」（`limitations.*`）を置き換えた。
 
 - エンジンのコメント（`internal/service/setplay/*.go` の「M19-LIMITATION-NOTICE」「ヒント文面（web i18n `setplay.limitations.*`）」）は公開版 tacpendium から移したままで、本家の画面の文言を指す。**このリポジトリで対応する文は `guide.*`**。連打キャンセル（`refine.go`）・ラッシュ・target の列挙・filler の規則を変えたら `guide.ruleChain`・`guide.ruleExcluded`・`guide.rush` 等を見直す。
-- 旧項目のうち、要約の方針（長いと読まれない）で**載せなかったもの**: 有利フレームが 100 を超える場合（入力欄が 0〜100 しか受け付けない）・持続未入力の技・単独で最速でも当たらない技・ダメージ 0 の技（既定）・派生技の扱い（親を前に置く表記）・候補が多いときは上位のみ（「さらに表示」がある）・安全飛びは通常の前ジャンプのみ・汚連携は相手次第・状態を前提とする技が繋ぎに混じる・設置技の硬直を持続として扱う・提案が無くても無いとは限らない。計算の挙動は変えていない。
+- 旧項目のうち、要約の方針（長いと読まれない）で**載せなかったもの**: 有利フレームが 100 を超える場合（入力欄が 0〜100 しか受け付けない。S8 で KA の説明にローカル版への案内を足した）・持続未入力の技・単独で最速でも当たらない技・ダメージ 0 の技（既定）・派生技の扱い（親を前に置く表記）・候補が多いときは上位のみ（「さらに表示」がある）・安全飛びは通常の前ジャンプのみ・汚連携は相手次第・状態を前提とする技が繋ぎに混じる・設置技の硬直を持続として扱う・提案が無くても無いとは限らない。計算の挙動は変えていない。
 - 本家への導線は公開版 tacpendium（`DATA_SOURCE_URL`）。
 
 ## コピー（D16）
@@ -118,7 +118,7 @@ pnpm e2e             # Playwright。dist を public/_headers どおりのヘッ�
 | 計測と投票の通し（S6。画面 → beacon → Worker → Analytics Engine／画面 → D1 → WASM → 画面） | `web/e2e/telemetry.spec.ts`（`docs/telemetry.md`） |
 | 実際に配ったときのセキュリティのヘッダ（S7。静的アセットと `/api` の両方） | `web/e2e/headers.spec.ts` |
 
-E2E は `retries: 0`・直列（AGENTS §8-10）。CI の Web job が vitest → サイトデータと WASM の用意 → ビルド（配信の上限）→ E2E の順に回す。
+E2E は `retries: 0`・直列（AGENTS §8-10）。CI の Web job が vitest → サイトデータと WASM の用意 → ビルド（配信の上限）→ ローカル版のビルド → E2E の順に回す。E2E は project `site`（`serve.mjs` の dist）と `local`（ローカル版の実バイナリ。`e2e/local.spec.ts`。`docs/local.md`）の 2 つで、両方のサーバを起動するので、先に `bash scripts/local/build.sh` でこの OS 向けのバイナリを作っておく。
 
 ## 計測（参考）
 

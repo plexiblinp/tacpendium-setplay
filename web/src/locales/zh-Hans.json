@@ -1,6 +1,7 @@
 {
   "app": {
     "title": "定式起身压制推荐(非官方)",
+    "localBadge": "本地版",
     "loadingData": "正在加载数据...",
     "loadError": "数据加载失败。请重新加载页面",
     "urlRejected": "共享链接中的部分条件无法读取，已恢复为默认值: {{keys}}"
@@ -56,7 +57,10 @@
     "ka": "击倒后的有利帧",
     "kaUnit": "F",
     "kaHelp": "连段最后击倒对手后的有利帧({{min}}～{{max}})。",
+    "kaOverLimit": "超过 {{max}} 时请使用本地版(在电脑上运行的下载版)",
+    "kaHelpLocal": "连段最后击倒对手后的有利帧({{min}} 以上。本地版没有上限。数值越大计算越久)。",
     "kaInvalid": "请输入 {{min}}～{{max}} 的整数",
+    "kaInvalidLocal": "请输入 {{min}} 以上的整数",
     "characterRequired": "请选择角色"
   },
   "setplay": {
@@ -176,7 +180,8 @@
     "source": "源代码(AGPL-3.0)",
     "dataCredit": "招式与帧数数据 © plexiblinp and the Tacpendium contributors(CC BY-SA 4.0。有格式转换、表记追加与计算)",
     "unofficial": "个人开发的非官方、非营利工具。不包含游戏标志或图像。帧数据为手工测量。",
-    "privacy": "隐私政策"
+    "privacy": "隐私政策",
+    "localNotice": "本地版:在这台电脑的浏览器中计算。不发送使用数据和投票。"
   },
   "privacy": {
     "title": "隐私政策",

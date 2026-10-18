@@ -8,7 +8,7 @@ Tacpendium のセットプレイ自動提案機能を、単体で使えるよう
 
 サーバでは計算しません。配信は静的ファイル（画面・技データ・計算エンジンの WebAssembly）だけで、
 計算は利用者のブラウザの中（Web Worker）で行います。KA 60 以下はほぼ一瞬、KA 80〜100 の重い条件は数秒かかります。
-KA 100 を超える計算には、本リポジトリから配布するローカル実行版を使う予定です。
+KA 100 を超える計算には、本リポジトリの [Releases](https://github.com/plexiblinp/tacpendium-setplay/releases) から配布するローカル版（Windows・macOS・Linux の単一バイナリ。外へは通信しない）を使ってください。使い方は [`docs/local.md`](docs/local.md)。
 
 動くコードは、実行回数の計測とグッド/バッドの受け口（Cloudflare Worker）だけです。止まっても提案は止まりません。
 計測と投票で記録するものは、画面のプライバシーポリシーと [`docs/telemetry.md`](docs/telemetry.md) に書いています（cookie・ブラウザのストレージは使いません）。
@@ -39,6 +39,7 @@ KA 100 を超える計算には、本リポジトリから配布するローカ�
 
 - 作業規約: [`AGENTS.md`](AGENTS.md)（Claude Code は `CLAUDE.md` 経由で読む）
 - フロント（`web/`）: [`docs/frontend.md`](docs/frontend.md)
+- ローカル版（`cmd/local`）: [`docs/local.md`](docs/local.md)
 - 計画の正本: [`docs/handover/HANDOVER-001-setplay-standalone.md`](docs/handover/HANDOVER-001-setplay-standalone.md)
 - 段階ごとの報告: `docs/progress/`
-- 検査: `python3 scripts/check-licenses.py`（ライセンス宣言）、`bash scripts/check-actions-pinned.sh`（Action の SHA 固定）、`python3 scripts/check-private-refs.py`（公開してはいけない語）
+- 検査: `python3 scripts/check-licenses.py`（ライセンス宣言）、`bash scripts/check-actions-pinned.sh`（Action の SHA 固定）、`python3 scripts/check-private-refs.py`（公開してはいけない語）、`bash scripts/govulncheck.sh`（Go の既知の脆弱性）

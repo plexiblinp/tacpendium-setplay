@@ -9,9 +9,9 @@
     "scripts/wasm"
   ],
   "trees": {
-    "internal": "1432a8173859e05472b919f42b1890f885ed76f3c665fde2f38bc2d081dda024",
+    "internal": "a32ea84722a6cc0f79cba84199e69fbba178d04930c3a4653f5bbdb8c5d9df30",
     "engine": "20a06385b573e36a3248796c31c15da1f9200f0cfa941469da8555a2fa666028",
-    "cmd": "f4a906944618db807ab1c95dc24e8156be86a7fe820c48c4f6a829e7947e9258",
+    "cmd": "610740a69aae39b89a544e73593478fa28f8da2078c0485d339f99bea434eb88",
     "go.mod": "904bc8f5b0edb9d45f47058633e937350ca29f7a2ae4fac06089858e37ff3376",
     "upstream/tacpendium.lock": "7da1bc2f107a4fc4d38e5d9887c2424f1b2c30f287b0b4992698970900d43efc",
     "scripts/wasm": "4ed68029b1a31954960d131bdeefec0543ecaabfcf87bfa6f445333f66bfbf82"
@@ -118,6 +118,38 @@
         "go.mod"
       ],
       "reason": "go.mod の見張りを、ファイル全体から計算に効く部分(go ・toolchain の行と、計算のパッケージがネイティブと WASM で使うモジュールの版)に変えた。中身(go 1.26.4・toolchain go1.26.9・外部モジュール 0)は変わっていない"
+    },
+    {
+      "at": "2026-10-18T09:59:51Z",
+      "decision": "none",
+      "kinds": [],
+      "chars": [],
+      "changed": [
+        "internal",
+        "cmd"
+      ],
+      "reason": "S8: ローカル版の配信(cmd/local・internal/localserver)を足した。エンジン・計算のパッケージは変えていない"
+    },
+    {
+      "at": "2026-10-18T10:21:05Z",
+      "decision": "none",
+      "kinds": [],
+      "chars": [],
+      "changed": [
+        "internal",
+        "cmd"
+      ],
+      "reason": "S8 レビューの取り込み: cmd/local(ポートの明示・SIGTERM)と internal/localserver(ヘッダの規則のパス)だけ。計算のパッケージは変えていない"
+    },
+    {
+      "at": "2026-10-18T10:26:37Z",
+      "decision": "none",
+      "kinds": [],
+      "chars": [],
+      "changed": [
+        "cmd"
+      ],
+      "reason": "S8 再レビューの取り込み: cmd/local のポートの判定を小関数に出しただけ。計算のパッケージは変えていない"
     }
   ]
 }

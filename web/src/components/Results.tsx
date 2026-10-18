@@ -14,7 +14,7 @@ import type { VoteValue } from "../shared/api";
 export type RunState =
   | { status: "idle" }
   | { status: "running"; conditions: Conditions }
-  | { status: "done"; conditions: Conditions; outcome: Extract<SuggestOutcome, { kind: "result" }>; fromCache: boolean; votes: LoadedVotes }
+  | { status: "done"; conditions: Conditions; outcome: Extract<SuggestOutcome, { kind: "result" }>; fromCache: boolean; votes: LoadedVotes | null }
   | { status: "error"; conditions: Conditions; code: string }
   | { status: "canceled" };
 
@@ -129,9 +129,12 @@ export function Results({ run, onCancel, movesByCode, notation, myVotes, onVote 
               {fromCache ? t("setplay.cached") : t("setplay.timing", { ms: Math.round(outcome.wallMs) })}
             </span>
           </p>
-          <p className="muted small" data-testid="votes-note" data-votes-status={votes.status}>
-            {votes.status === "unavailable" ? t("setplay.votesUnavailable") : t("setplay.votesOrderNote")}
-          </p>
+          {/* 票を使わない版(ローカル版。votes が null)では票の案内もボタンも出さない。 */}
+          {votes != null && (
+            <p className="muted small" data-testid="votes-note" data-votes-status={votes.status}>
+              {votes.status === "unavailable" ? t("setplay.votesUnavailable") : t("setplay.votesOrderNote")}
+            </p>
+          )}
           {hidden.size > 0 && (
             <p className="muted small inline" data-testid="hidden-note">
               {t("setplay.hiddenCount", { count: hidden.size })}{" "}
@@ -143,7 +146,7 @@ export function Results({ run, onCancel, movesByCode, notation, myVotes, onVote 
           <ul className="rows">
             {visible.map((it) => {
               const mine = myVotes[`${c.character}|${c.ka}|${it.recipeKey}`];
-              const counted = votes.counts[it.recipeKey];
+              const counted = votes?.counts[it.recipeKey];
               return (
                 <Row
                   key={itemKey(it, c.safeJump)}
@@ -154,6 +157,7 @@ export function Results({ run, onCancel, movesByCode, notation, myVotes, onVote 
                   good={mine?.good ?? counted?.[0] ?? 0}
                   bad={mine?.bad ?? counted?.[1] ?? 0}
                   mine={mine}
+                  voting={votes != null}
                   onVote={(v) => onVote(c, it.recipeKey, v)}
                   onHide={() => setHidden((h) => new Set(h).add(it.recipeKey))}
                 />
@@ -195,6 +199,8 @@ interface RowProps {
   good: number;
   bad: number;
   mine: MyVote | undefined;
+  /** グッド/バッドを出すか(票を使わない版では出さない)。 */
+  voting: boolean;
   onVote: (v: VoteValue) => void;
   onHide: () => void;
 }
@@ -208,7 +214,7 @@ function ThumbIcon({ down }: { down?: boolean }) {
   );
 }
 
-function Row({ recipe, frameLabel, canonical, recipeKey, good, bad, mine, onVote, onHide }: RowProps) {
+function Row({ recipe, frameLabel, canonical, recipeKey, good, bad, mine, voting, onVote, onHide }: RowProps) {
   const { t } = useTranslation();
   const [copy, setCopy] = useState<"idle" | "copied" | "failed">("idle");
   useEffect(() => {
@@ -246,28 +252,32 @@ function Row({ recipe, frameLabel, canonical, recipeKey, good, bad, mine, onVote
       </button>
       {/* グッド/バッド(D17)。同じ票をもう一度押すと取り消す。 */}
       <span className="votes">
-        <button
-          type="button"
-          className="vote good"
-          aria-pressed={mine?.value === 1}
-          aria-label={t("setplay.voteGoodAria", { recipe })}
-          disabled={mine?.state === "sending"}
-          onClick={() => onVote(1)}
-          data-testid="vote-good"
-        >
-          <ThumbIcon /> <span data-testid="good-count">{good}</span>
-        </button>
-        <button
-          type="button"
-          className="vote bad"
-          aria-pressed={mine?.value === -1}
-          aria-label={t("setplay.voteBadAria", { recipe })}
-          disabled={mine?.state === "sending"}
-          onClick={() => onVote(-1)}
-          data-testid="vote-bad"
-        >
-          <ThumbIcon down /> <span data-testid="bad-count">{bad}</span>
-        </button>
+        {voting && (
+          <>
+            <button
+              type="button"
+              className="vote good"
+              aria-pressed={mine?.value === 1}
+              aria-label={t("setplay.voteGoodAria", { recipe })}
+              disabled={mine?.state === "sending"}
+              onClick={() => onVote(1)}
+              data-testid="vote-good"
+            >
+              <ThumbIcon /> <span data-testid="good-count">{good}</span>
+            </button>
+            <button
+              type="button"
+              className="vote bad"
+              aria-pressed={mine?.value === -1}
+              aria-label={t("setplay.voteBadAria", { recipe })}
+              disabled={mine?.state === "sending"}
+              onClick={() => onVote(-1)}
+              data-testid="vote-bad"
+            >
+              <ThumbIcon down /> <span data-testid="bad-count">{bad}</span>
+            </button>
+          </>
+        )}
         <button type="button" className="hide" onClick={onHide} aria-label={t("setplay.hideAria", { recipe })} data-testid="hide">
           {t("setplay.hide")}
         </button>

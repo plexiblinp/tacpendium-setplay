@@ -4,6 +4,8 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import type { SuggestOutcome } from "../lib/engineClient";
 import type { SuggestResponse } from "../lib/engineTypes";
+import { KA_MAX_LOCAL, RELEASES_URL } from "../lib/constants";
+import type { Flavor } from "../lib/flavor";
 import { initI18n } from "../lib/i18n";
 import { beaconSchema, type BeaconEvent } from "../shared/api";
 import type { SuggestRequest } from "../worker/protocol";
@@ -83,7 +85,7 @@ class FakeEngine implements SuggestEngine {
   }
 }
 
-function renderApp(search = "", languages = ["ja"], fetchImpl: typeof fetchFn = fetchFn) {
+function renderApp(search = "", languages = ["ja"], fetchImpl: typeof fetchFn = fetchFn, flavor?: Flavor) {
   const engine = new FakeEngine();
   const replaceSearch = vi.fn();
   const view = render(
@@ -96,6 +98,7 @@ function renderApp(search = "", languages = ["ja"], fetchImpl: typeof fetchFn = 
       onLangChange={() => undefined}
       sendBeacon={sendBeacon}
       random={() => 0}
+      flavor={flavor}
     />,
   );
   return { engine, replaceSearch, view };
@@ -674,3 +677,72 @@ describe("隠す(開発者の要望 2026-10-17)", () => {
   });
 });
 
+describe("ローカル版(HANDOVER D10・S8)", () => {
+  it("KA 100 を超えても押せ、エンジンにそのまま渡す。説明は上限なしの文", async () => {
+    const user = userEvent.setup();
+    const { f } = withApi({ votes: { "lp2|hado": [5, 1] }, sampleRate: 1 });
+    const { engine } = renderApp("", ["ja"], f, "local");
+    expect(await screen.findByTestId("local-badge")).toHaveTextContent("ローカル版");
+    expect(screen.getByTestId("ka-help")).toHaveTextContent("0 以上。ローカル版は上限なし");
+    expect(screen.queryByTestId("local-version-link")).toBeNull();
+    expect(screen.getByTestId("ka-input")).toHaveAttribute("max", String(KA_MAX_LOCAL));
+    await search(user, "ryu", "250");
+    expect(screen.queryByTestId("form-errors")).toBeNull();
+    await engine.finish();
+    expect(engine.calls[0]).toMatchObject({ character: "ryu", ka: 250 });
+    expect(await screen.findAllByTestId("result-row")).toHaveLength(200);
+  });
+
+  it("計測・票の通信をしない(config.json・/api を読まない・beacon を送らない)。票のボタンと案内を出さない", async () => {
+    const user = userEvent.setup();
+    const { f } = withApi({ votes: { "lp2|hado": [5, 1] }, sampleRate: 1 });
+    const { engine } = renderApp("", ["ja"], f, "local");
+    await search(user);
+    await engine.finish();
+    await screen.findAllByTestId("result-row");
+    // 2 回目(キャッシュ)と中断も送らない。
+    await user.click(screen.getByTestId("generate"));
+    await search(user, "ryu", "41");
+    await user.click(await screen.findByTestId("cancel"));
+    expect(engine.calls[0]!.votes).toBeUndefined();
+    expect(sendBeacon).not.toHaveBeenCalled();
+    const urls = f.mock.calls.map(([u]) => new URL(String(u)).pathname);
+    expect(urls.filter((p) => p.startsWith("/api/") || p.endsWith("config.json"))).toEqual([]);
+    expect(urls.some((p) => p.endsWith("manifest.json"))).toBe(true);
+    expect(screen.queryByTestId("vote-good")).toBeNull();
+    expect(screen.queryByTestId("votes-note")).toBeNull();
+    expect(screen.getByTestId("guide-howto")).not.toHaveTextContent("グッド/バッド");
+    // プライバシーポリシーの代わりに「通信しない」を出す。#privacy でも開かない。
+    expect(screen.queryByTestId("privacy-link")).toBeNull();
+    expect(screen.getByTestId("local-notice")).toHaveTextContent("計測・投票の通信はしません");
+  });
+
+  it("共有 URL の KA 100 超えを受ける(サイトは誤りとして捨てる)", async () => {
+    const local = renderApp("c=ryu&ka=150", ["ja"], fetchFn, "local");
+    await waitFor(() => expect(local.engine.calls).toHaveLength(1));
+    expect(local.engine.calls[0]).toMatchObject({ ka: 150 });
+    cleanup();
+    const site = renderApp("c=ryu&ka=150", ["ja"], fetchFn, "site");
+    expect(await site.view.findByTestId("url-rejected")).toHaveTextContent("ka");
+    expect(site.engine.calls).toHaveLength(0);
+  });
+
+  it("サイトは KA 100 を超えると押せず、ローカル版への案内を出す", async () => {
+    const user = userEvent.setup();
+    const { engine } = renderApp("", ["ja"], fetchFn, "site");
+    const link = await screen.findByTestId("local-version-link");
+    expect(link).toHaveAttribute("href", RELEASES_URL);
+    expect(link).toHaveTextContent("100 を超える場合はローカル版");
+    expect(screen.queryByTestId("local-badge")).toBeNull();
+    await search(user, "ryu", "101");
+    expect(screen.getByTestId("form-error-kaInvalid")).toHaveTextContent("0〜100 の整数");
+    expect(engine.calls).toHaveLength(0);
+  });
+
+  it("ローカル版の KA の誤りは上限なしの文", async () => {
+    const user = userEvent.setup();
+    renderApp("", ["ja"], fetchFn, "local");
+    await search(user, "ryu", "-1");
+    expect(await screen.findByTestId("form-error-kaInvalid")).toHaveTextContent("0 以上の整数を入れてください");
+  });
+});

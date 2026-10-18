@@ -12,7 +12,7 @@ import {
   voteRequestSchema,
   type ApiErrorReply,
 } from "../src/shared/api";
-import { KA_MAX, KA_MIN } from "../src/lib/constants";
+import { KA_MAX_SITE, KA_MIN } from "../src/lib/constants";
 import { parseBeacon, toDataPoint } from "./beacon";
 import type { Env } from "./env";
 import { WindowLimiter } from "./rate";
@@ -135,7 +135,7 @@ async function handleVotes(req: Request, env: Env): Promise<Response> {
   const char = q.get("char") ?? "";
   const kaText = q.get("ka") ?? "";
   const ka = Number(kaText);
-  if (!CODE_RE.test(char) || !/^\d{1,3}$/.test(kaText) || ka < KA_MIN || ka > KA_MAX) return fail(400, "invalid_query");
+  if (!CODE_RE.test(char) || !/^\d{1,3}$/.test(kaText) || ka < KA_MIN || ka > KA_MAX_SITE) return fail(400, "invalid_query");
   // ★キャッシュさせない(no-store): 投票した直後の検索で、ブラウザに残った古い票で並べないため(S6 の E2E で見つけた)。
   //   読む行はそのキャラ・KA の票の付いたレシピだけで、同じ条件の再表示は画面のメモリのキャッシュが受けるので、D1 の読みは少ない。
   return json(200, await listVotes(env.DB, char, ka));

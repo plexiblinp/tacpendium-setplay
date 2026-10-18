@@ -3,8 +3,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { cacheKey, conditionsToSearch, parseSearch, toEngineQuery, type Conditions } from "../lib/conditions";
-import { APP_NAME, RESULT_CACHE_ENTRIES } from "../lib/constants";
+import { APP_NAME, kaMaxFor, RESULT_CACHE_ENTRIES } from "../lib/constants";
 import { resolveDataUrl, type MovesDb, type NotationKind } from "../lib/data";
+import { FLAVOR, type Flavor } from "../lib/flavor";
 import type { SuggestOutcome } from "../lib/engineClient";
 import { formFromConditions, initialForm, type FormState } from "../lib/formState";
 import { detectLang, type Lang } from "../lib/i18n";
@@ -44,12 +45,15 @@ export interface AppProps {
   random?: () => number;
   /** 経過時間の時計(ms)。 */
   now?: () => number;
+  /** ビルドの種類。ローカル版は計測・票の通信をしない(既定はこのビルドの種類。試験では差し替える)。 */
+  flavor?: Flavor;
 }
 
 /** 結果のキャッシュに置くもの(計算の結果と、そのとき使った票)。 */
 interface CachedRun {
   outcome: Extract<SuggestOutcome, { kind: "result" }>;
-  votes: LoadedVotes;
+  /** 票を使わない版(ローカル版)では null。 */
+  votes: LoadedVotes | null;
   votesApplied: number;
 }
 
@@ -58,6 +62,7 @@ interface Pending {
   token: number;
   conditions: Conditions;
   started: number;
+  /** まだ読んでいない・票を使わない版では null。 */
   votes: LoadedVotes | null;
   votesApplied: number;
 }
@@ -74,7 +79,9 @@ export function App({
   sendBeacon,
   random = Math.random,
   now = () => performance.now(),
+  flavor = FLAVOR,
 }: AppProps) {
+  const online = flavor === "site";
   const { t, i18n } = useTranslation();
   const [lang, setLang] = useState<Lang>(() => detectLang(languages));
   // 表記は、利用者が選ぶまで言語の既定に従う(HANDOVER §4.4)。
@@ -93,7 +100,7 @@ export function App({
   const runToken = useRef(0);
   // 自分の票(キャラ|KA|鍵 → 票と数)。メモリだけ(§7.3)。
   const [myVotes, setMyVotes] = useState<Record<string, MyVote>>({});
-  const [showPrivacy, setShowPrivacy] = useState(() => new URL(location.href).hash === PRIVACY_HASH);
+  const [showPrivacy, setShowPrivacy] = useState(() => online && new URL(location.href).hash === PRIVACY_HASH);
 
   useEffect(() => {
     if (i18n.language !== lang) void i18n.changeLanguage(lang);
@@ -103,12 +110,13 @@ export function App({
   }, [lang, i18n, t, onLangChange]);
 
   useEffect(() => {
+    if (!online) return;
     let alive = true;
     void loadConfig(fetchFn, location.href).then((c) => alive && setSampleRate(c.beaconSampleRate));
     return () => {
       alive = false;
     };
-  }, [fetchFn, location.href]);
+  }, [online, fetchFn, location.href]);
 
   useEffect(() => {
     let alive = true;
@@ -139,13 +147,14 @@ export function App({
     };
   }, [manifest, character, moves, fetchFn]);
 
-  /** 実行 1 回の計測を送る(HANDOVER §7.1)。 */
+  /** 実行 1 回の計測を送る(HANDOVER §7.1)。票を使わない版(votes が null)では送らない(ローカル版は通信しない)。 */
   const report = useCallback(
-    (r: Omit<RunRecord, "notation" | "lang" | "dataVersion">) => {
-      if (manifest.status !== "ready") return;
-      sendRun(sendBeacon, location.href, { ...r, notation, lang, dataVersion: manifest.data.manifest.dataVersion }, sampleRate, random);
+    ({ votes, ...r }: Omit<RunRecord, "notation" | "lang" | "dataVersion" | "votesStatus"> & { votes: LoadedVotes | null }) => {
+      if (!online || votes == null || manifest.status !== "ready") return;
+      const record = { ...r, votesStatus: votes.status, notation, lang, dataVersion: manifest.data.manifest.dataVersion };
+      sendRun(sendBeacon, location.href, record, sampleRate, random);
     },
-    [manifest, sendBeacon, location.href, notation, lang, sampleRate, random],
+    [online, manifest, sendBeacon, location.href, notation, lang, sampleRate, random],
   );
 
   const execute = useCallback(
@@ -169,7 +178,7 @@ export function App({
           cacheHit: true,
           wallMs: now() - started,
           computeMs: null,
-          votesStatus: hit.votes.status,
+          votes: hit.votes,
           votesApplied: hit.votesApplied,
         });
         return;
@@ -178,17 +187,18 @@ export function App({
       pending.current = { token, conditions: c, started, votes: null, votesApplied: 0 };
       setRun({ status: "running", conditions: c });
       // 票を先に読む(HANDOVER D17: 票は並べ替えの第一キー)。読めなければ票なし(本家の順)で計算する。
-      const votes = await fetchVotes(fetchFn, location.href, c.character, c.ka);
+      // ローカル版は票を使わない(通信しない。並びは本家の順)。
+      const votes = online ? await fetchVotes(fetchFn, location.href, c.character, c.ka) : null;
       if (runToken.current !== token) return; // 票を待つ間に中断された
       // 読み直した票の数を表示に使う(投票の時点の数を残さない。押した状態 value は残す。レビュー低-1)。
       const prefix = `${c.character}|${c.ka}|`;
       // 票を読めなかったときは、押した時点の数を残す(0/0 に見せない。再レビュー低-1)。
-      if (votes.status !== "unavailable") setMyVotes((m) => {
+      if (votes != null && votes.status !== "unavailable") setMyVotes((m) => {
         const next: Record<string, MyVote> = {};
         for (const [k, v] of Object.entries(m)) next[k] = k.startsWith(prefix) ? { ...v, good: null, bad: null } : v;
         return next;
       });
-      const scores = scoresForEngine(votes.counts);
+      const scores = scoresForEngine(votes?.counts ?? {});
       const votesApplied = Object.keys(scores).length;
       pending.current = { token, conditions: c, started, votes, votesApplied };
       const outcome = await engine.suggest({
@@ -200,7 +210,7 @@ export function App({
       });
       if (outcome.kind === "canceled") return; // 中断は cancel 側が状態を変え、計測を送る。
       pending.current = null;
-      const base = { conditions: c, cacheHit: false, wallMs: now() - started, votesStatus: votes.status, votesApplied };
+      const base = { conditions: c, cacheHit: false, wallMs: now() - started, votes, votesApplied };
       if (outcome.kind === "result") {
         cache.current.set(key, { outcome, votes, votesApplied });
         setRun({ status: "done", conditions: c, outcome, fromCache: false, votes });
@@ -238,11 +248,12 @@ export function App({
         cacheHit: false,
         wallMs: now() - p.started,
         computeMs: null,
-        votesStatus: p.votes?.status ?? "unavailable",
+        // 票を待つ間の中断は、票を読めていない(unavailable)として送る(S6 からの扱い)。ローカル版は送らない。
+        votes: online ? (p.votes ?? { status: "unavailable", counts: {} }) : null,
         votesApplied: p.votesApplied,
       });
     }
-  }, [engine, report, now]);
+  }, [online, engine, report, now]);
 
   /** グッド/バッド(D17)。同じ票をもう一度押すと取り消す。並びは次の検索から変わる(押した行を動かさない)。 */
   const vote = useCallback(
@@ -267,7 +278,7 @@ export function App({
     if (manifest.status !== "ready" || autoRunDone.current) return;
     autoRunDone.current = true;
     const known = new Set(manifest.data.manifest.characters.map((c) => c.code));
-    const parsed = parseSearch(location.search, known);
+    const parsed = parseSearch(location.search, known, kaMaxFor(flavor));
     setUrlRejected(parsed.rejected);
     const c = parsed.conditions;
     if (c == null) return;
@@ -280,7 +291,7 @@ export function App({
     }
     setForm(formFromConditions(c));
     void execute(c);
-  }, [manifest, location.search, execute]);
+  }, [manifest, location.search, execute, flavor]);
 
   /** 条件・結果・URL を最初の状態に戻す(S5 目視の要望)。言語と表記は利用者の設定なので戻さない。 */
   const reset = () => {
@@ -313,6 +324,11 @@ export function App({
       <header className="site-header">
         <h1>
           {APP_NAME} <span className="subtitle">{t("app.title")}</span>
+          {!online && (
+            <span className="badge" data-testid="local-badge">
+              {t("app.localBadge")}
+            </span>
+          )}
         </h1>
         <SettingsBar
           lang={lang}
@@ -322,7 +338,7 @@ export function App({
         />
       </header>
       <main className="page">
-        <Guide />
+        <Guide voting={online} />
         {urlRejected.length > 0 && (
           <p className="notice" role="status" data-testid="url-rejected">
             {t("app.urlRejected", { keys: urlRejected.join(", ") })}
@@ -336,6 +352,7 @@ export function App({
           moves={movesDb?.moves ?? []}
           notation={notation}
           running={run.status === "running"}
+          flavor={flavor}
           onRun={(c) => void execute(c)}
           onReset={reset}
         />
@@ -349,7 +366,7 @@ export function App({
         />
         {showPrivacy && <PrivacyPolicy onClose={() => setShowPrivacy(false)} lang={lang} />}
       </main>
-      <Footer dataVersion={manifest.data.manifest.dataVersion} onPrivacy={() => setShowPrivacy(true)} />
+      <Footer dataVersion={manifest.data.manifest.dataVersion} online={online} onPrivacy={() => setShowPrivacy(true)} />
     </>
   );
 }

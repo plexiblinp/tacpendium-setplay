@@ -85,7 +85,17 @@ GitHub 設定の項目は、本家（非公開）の公開手順書を S7 で読
 | G-4 | Secret scanning と Push protection を有効 | public なら無料 |
 | G-5 | Code scanning（CodeQL default setup。Go・JavaScript/TypeScript） | public なら無料。Actions を使うが public は無料 |
 | G-6 | main の ruleset: 削除と force push を禁止、PR 必須、必須 check に `Go・WASM・リポジトリ検査` と `Web` | 必須 check を登録したら `paths` フィルタを入れない（AGENTS §9）。public にした直後に有効か確かめ直す |
-| G-7 | Actions: Workflow permissions を「Read repository contents」、「Allow GitHub Actions to create and approve pull requests」を off、外部からの PR の workflow は承認を必須（初回の協力者） | 全 workflow が `contents: read` を明示しているが、既定も絞る |
+| G-7 | Actions: Workflow permissions を「Read repository contents」、「Allow GitHub Actions to create and approve pull requests」を off、外部からの PR の workflow は承認を必須（初回の協力者） | 全 workflow が `contents: read` を明示しているが、既定も絞る。例外は `local-release.yml` の `release` job だけ（タグ v* の push のとき draft の Release を作るので job に `contents: write`。S8） |
 | G-8 | アカウントの 2FA | HANDOVER §7.4 |
 | G-9 | 集計用の Secrets（`CLOUDFLARE_ACCOUNT_ID`・`CLOUDFLARE_ANALYTICS_TOKEN`）を使うなら Environment に置き、必須レビュアーを付ける | `docs/telemetry.md`「集計用の API トークンの扱い」 |
 | G-10 | Issues を有効にする（意見・不具合・翻訳の改善とプライバシーの問い合わせの窓口。`CONTRIBUTING.md`）。Pull requests の機能は Dependabot が使うので有効のまま、外からの PR は `CONTRIBUTING.md` のとおり閉じる。Discussions・Wiki・Projects は無効 | 開発者決定 2026-10-18（Google フォーム＋Issues） |
+| G-11 | **About の Website** に、Cloudflare にデプロイしたサイトの URL を入れる（リポジトリの画面の右上 About の歯車 → Website） | **S9 の手番。デプロイが済んでから**（開発者指示 2026-10-18。S8 で記載） |
+
+## 6. S9 の手番（S8 で追加）
+
+| # | 手番 | 備考 |
+|---|---|---|
+| S9-1 | Cloudflare へのデプロイ後、GitHub の About の **Website** にサイトの URL を入れる（§5 G-11） | 開発者指示 2026-10-18 |
+| S9-2 | ローカル版の最初の Release: main で `v<版>`（例 `v1.0.0`）のタグを push → `local-release.yml` が 3 OS の起動確認の後に **draft** の Release を作る → 中身（5 種の圧縮・`SHA256SUMS`）を確かめて公開する | 手順は `docs/local.md`「配布」。サイトの KA の説明は Releases（`RELEASES_URL`）へ案内するので、**サイトを公開する前か同時に**出す（無いと空の Releases を指す） |
+| S9-3 | `govulncheck.yml` の週 1 回の定期実行は default branch（main）に入ってから動く。マージ後に Actions の画面で 1 度手動起動し、緑を確かめる | S8 |
+| S9-4 | ヘッダ診断（§3）・§5 の「済」付け・S9 の報告 | 開発者指示 2026-10-18（S8 ではやらない） |
