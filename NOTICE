@@ -1,13 +1,10 @@
-tacpendium-setplay — NOTICE
+Tacpendium-Setplay — NOTICE
 ===========================
 
-本ファイルは tacpendium-setplay（Tacpendium のセットプレイ自動提案の単体版。以下
+本ファイルは Tacpendium-Setplay（Tacpendium のセットプレイ自動提案の単体版。以下
 「本サービス」）に付随する告知である。ライセンス本文は `LICENSE`（アプリ本体＝
 AGPL-3.0-or-later）と `LICENSES/` 配下、パス単位の割当は `REUSE.toml` を参照すること。
 データ層の説明は `DATA-LICENSE.md` にある。
-
-★サイト名は未定である。本ファイルの「tacpendium-setplay」はリポジトリ名による仮の呼称。
-
 
 1. 非公式であること
 -------------------
@@ -64,7 +61,9 @@ AGPL-3.0-or-later）と `LICENSES/` 配下、パス単位の割当は `REUSE.tom
 ---------------
 
 本サービスのソースコードは本リポジトリにある（AGPL-3.0-or-later）。画面のフッターから
-ソースへのリンクを置く。リポジトリの公開 URL は公開時に本節へ記す。
+ソースへのリンクを置く。
+
+    ソースコード: https://github.com/plexiblinp/tacpendium-setplay
 
 
 5. 第三者ライブラリ

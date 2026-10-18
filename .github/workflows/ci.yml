@@ -1,7 +1,6 @@
-# CI。Actions の分数を抑えるため(S7・開発者決定 2026-10-18。private の間は無料枠が月 2,000 分で、使い切った):
-# - claude/ ブランチへの push では走らない。走るのは main 向けの PR(Dependabot を含む)・main への push・手動起動。
-#   作業中の検査は手元で回し、完了報告に EXIT= と件数を貼る(AGENTS §8-1)。PR を作れば必ず通る(門の強さは同じ)。
-#   解除条件: public 化で Actions が無料になったら、push での起動を戻すかを開発者が決める(S7 報告)。
+# CI:
+# - 走るのは main 向けの PR(Dependabot を含む)・main と claude/** への push・手動起動。
+#   claude/** への push での起動は、public 化で Actions が無料になったので戻した(開発者決定 2026-10-18)。
 # - 課金は job ごとに 1 分単位で切り上げなので、job は 2 つにまとめる(Go 側・Web 側)。1 つの job の中で
 #   互いに独立な検査は `!cancelled()` で前の段の失敗に関わらず回し、結果をすべて job summary に出す。
 # - paths フィルタは入れない(必須 check を登録するまで。skip された必須 check は pending のまま残る)
@@ -13,7 +12,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [main]
+    branches: [main, 'claude/**']
   workflow_dispatch:
 
 permissions:

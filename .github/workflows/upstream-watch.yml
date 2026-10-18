@@ -5,9 +5,9 @@ name: Upstream watch
 
 on:
   workflow_dispatch:
-  # ★開発中は停止(開発者指示)。再開するときは下の 2 行のコメントを外す(週 1 回・月曜 09:13 JST)。
-  # schedule:
-  #   - cron: "13 0 * * 1"
+  # 日 1 回(09:13 JST)。公開後に再開した(開発者決定 2026-10-18。public は Actions が無料)。
+  schedule:
+    - cron: "13 0 * * *"
 
 permissions:
   contents: read

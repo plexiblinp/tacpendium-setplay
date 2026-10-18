@@ -153,8 +153,8 @@ GitHub Actions を書くときは次を守る。どれも本家で「失敗し�
 - テスト件数をログから抜いて job summary に出す。Vitest は CI で色を付けるので **ANSI エスケープを落としてから** grep する。件数が読めなければ「読めなかった」と出す（空欄にしない）。
 - `permissions: contents: read` を既定に、`concurrency` で同じ ref の古い実行を打ち切る（private の間は Actions の分数が有限）。Action はコミット SHA 固定。
 - `paths` フィルタは、必須 check を登録するまで入れない（skip された必須 check は pending のままになり、マージできなくなる）。
-- 既存の `upstream-watch.yml` は開発中は手動起動のみ（定期実行はコメントアウトで停止中）。
-- **CI は `claude/` ブランチへの push では走らない**（S7・開発者決定 2026-10-18。private の間の無料枠を使い切ったため）。走るのは main 向けの PR・main への push・手動起動。作業中の「緑」は手元で回した `EXIT=` と件数で示す（§8-1）。CI の結果は PR を作ったときに確かめる。public 化の後に push での起動を戻すかは開発者が決める。
+- 既存の `upstream-watch.yml` は日 1 回の定期実行と手動起動（公開後に定期実行を再開。開発者決定 2026-10-18）。
+- **CI は main 向けの PR・main と `claude/**` への push・手動起動で走る**（public 化で Actions が無料になったので、`claude/` への push での起動を戻した。開発者決定 2026-10-18）。それでも完了報告の「緑」は手元で回した `EXIT=` と件数で示す（§8-1）。
 - 課金は job ごとに 1 分単位で切り上げなので、**job を増やさない**（いまは Go 側・Web 側の 2 つ）。同じ job の中で互いに独立な検査は `if: ${{ !cancelled() }}` で回し、1 つの失敗で他の結果が消えないようにする。
 
 ---
