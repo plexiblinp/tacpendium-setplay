@@ -1,0 +1,28 @@
+# Cloudflare Worker の設定(S6)。デプロイ・アカウント・D1 の作成は開発者が行う(AGENTS §3 の 3・4。手順は docs/telemetry.md)。
+# ★無料プランのまま使う(カードを登録しない。HANDOVER D13・§7.5)。無料枠を超えたら止まるだけで、課金には移らない(S1 ⑥⑦)。
+name = "tacpendium-setplay"
+main = "edge/index.ts"
+compatibility_date = "2026-09-01"
+workers_dev = true
+
+# Workers Logs(要求の記録)を止める。既定で有効になることがあり、記録には IP が含まれうる(S7。docs/progress/S7-privacy-research.md §2.3)。
+# 障害の調査で一時的に使うときは、使い終えたら戻す。
+[observability]
+enabled = false
+
+# 静的アセット(pnpm build の出力)。アセットに当たる要求は Worker を通さずに返る(/api/* だけが Worker に来る)。
+# run_worker_first は使わない(無料枠の超過時に 429 になり、静的アセットに戻らないため。S1 ⑥)。
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+
+# 実行計測(edge/beacon.ts)。dataset は書いたときに自動でできる。
+[[analytics_engine_datasets]]
+binding = "TELEMETRY"
+dataset = "setplay_runs"
+
+# 票と日替わりソルト(edge/schema.sql)。database_id は `wrangler d1 create tacpendium-setplay` の出力を入れる(秘密情報ではない)。
+[[d1_databases]]
+binding = "DB"
+database_name = "tacpendium-setplay"
+database_id = "00000000-0000-0000-0000-000000000000"

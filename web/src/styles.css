@@ -1,0 +1,121 @@
+/* 画面のスタイル(外部の CSS・フォントは読まない。CSP default-src 'self')。 */
+:root {
+  --bg: #f7f8fa;
+  --fg: #1d2330;
+  --muted: #5b6475;
+  --line: #d7dce5;
+  --panel: #ffffff;
+  --accent: #2357d6;
+  --accent-fg: #ffffff;
+  --warn: #9a5b00;
+  --error: #b42318;
+  --good: #1a7f37;
+  --bad: #c0392b;
+  --radius: 6px;
+  /* 言語ごとの字形のフォントを先に並べる(下の :lang)。日本語の画面に中国語の字形のフォントを混ぜない(S7)。 */
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--fg);
+  background: var(--bg);
+  line-height: 1.5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12151b;
+    --fg: #e6e9ef;
+    --muted: #9aa3b2;
+    --line: #2e3542;
+    --panel: #1a1f28;
+    --accent: #6b93ff;
+    --accent-fg: #0b0e14;
+    --warn: #f0b45a;
+    --error: #ff8a80;
+    --good: #4cc26a;
+    --bad: #ff7b6b;
+  }
+}
+:root:lang(ja) { font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic", YuGothic, Meiryo, "BIZ UDPGothic", "Noto Sans JP", system-ui, sans-serif; }
+:root:lang(ko) { font-family: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif; }
+:root:lang(zh-Hans) { font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif; }
+:root:lang(zh-Hant) { font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", system-ui, sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+a { color: var(--accent); }
+.site-header { padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--panel); }
+.site-header h1 { font-size: 1.25rem; margin: 0 0 8px; }
+.site-header h1 .subtitle { font-size: 0.9rem; font-weight: 400; color: var(--muted); margin-left: 6px; }
+.settings { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.settings label { display: inline-flex; gap: 6px; align-items: center; }
+.page { max-width: 960px; margin: 0 auto; padding: 16px; }
+.lead { color: var(--muted); margin-top: 0; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 16px; display: grid; gap: 12px; }
+.row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.field { display: grid; gap: 4px; }
+.label, .field > span:first-child { font-size: 0.9rem; color: var(--muted); }
+.inline { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.group { display: grid; gap: 4px; }
+fieldset { border: 1px solid var(--line); border-radius: var(--radius); margin: 0; padding: 8px 12px; }
+fieldset.segmented { border: none; padding: 0; display: inline-flex; gap: 0; align-items: center; }
+fieldset.segmented legend { float: left; margin-right: 6px; font-size: 0.9rem; color: var(--muted); }
+legend { font-size: 0.9rem; color: var(--muted); padding: 0 4px; }
+.checks { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.checks label, fieldset > label, .target-types > label { display: inline-flex; gap: 4px; align-items: center; }
+.target-types { display: grid; gap: 4px; margin-top: 6px; }
+input, select, button { font: inherit; color: inherit; }
+input, select { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 4px 6px; }
+input.num { width: 4.5em; }
+input.num.wide { width: 6.5em; }
+button { cursor: pointer; border-radius: 4px; border: 1px solid var(--line); background: var(--panel); padding: 4px 10px; }
+button:disabled { cursor: not-allowed; opacity: 0.5; }
+button.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); padding: 6px 16px; font-weight: 600; }
+button.link { border: none; background: none; color: var(--accent); padding: 0; text-decoration: underline; }
+.segmented button { border-radius: 0; margin-left: -1px; }
+.segmented button:first-of-type { border-radius: 4px 0 0 4px; }
+.segmented button:last-of-type { border-radius: 0 4px 4px 0; }
+.segmented button[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.help { font-size: 0.85rem; color: var(--muted); margin: 0; }
+.warn { color: var(--warn); font-size: 0.9rem; margin: 0; }
+ul.warn { padding-left: 1.2em; }
+.error { color: var(--error); }
+.muted { color: var(--muted); }
+.small { font-size: 0.85rem; }
+.notice { border-left: 3px solid var(--warn); padding-left: 8px; }
+.machine-translation { font-size: 0.85rem; color: var(--muted); margin: 0; flex-basis: 100%; }
+.actions { display: flex; gap: 12px; align-items: center; }
+.actions .reset { margin-left: auto; }
+.picker { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.picker label { display: inline-flex; gap: 6px; align-items: center; }
+.picker select { max-width: 100%; }
+.guide { margin-bottom: 12px; }
+.guide .lead { margin-bottom: 4px; }
+.guide details { margin: 6px 0; font-size: 0.9rem; }
+.guide summary { cursor: pointer; color: var(--accent); }
+.guide ol, .guide ul { margin: 4px 0; padding-left: 1.4em; }
+.results { margin-top: 16px; }
+.rows { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.row-item { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 10px; }
+.recipe { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; overflow-wrap: anywhere; flex: 1 1 20em; }
+.frame { font-size: 0.85rem; color: var(--accent); }
+.copy { margin-left: auto; font-size: 0.85rem; min-width: 5.5em; }
+.votes { display: inline-flex; gap: 4px; align-items: center; }
+.vote { font-size: 0.85rem; min-width: 3.5em; display: inline-flex; align-items: center; gap: 4px; }
+.vote .thumb { vertical-align: middle; }
+.vote .thumb.down { transform: rotate(180deg); } /* 向きは CSS で(CSP は style 属性を許していない) */
+.vote.good .thumb { color: var(--good); }
+.vote.bad .thumb { color: var(--bad); }
+.vote.good[aria-pressed="true"] { border-color: var(--good); color: var(--good); }
+.vote.bad[aria-pressed="true"] { border-color: var(--bad); color: var(--bad); }
+.hide { font-size: 0.8rem; color: var(--muted); }
+.privacy { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 16px; margin: 16px 0; }
+.privacy h3 { font-size: 1rem; margin: 12px 0 4px; }
+.site-footer { max-width: 960px; margin: 24px auto; padding: 0 16px; font-size: 0.8rem; color: var(--muted); }
+.site-footer p { margin: 4px 0; }
+/* キャラの選択(検索欄つきの一覧。CharacterSelect.tsx)。 */
+.combo { position: relative; }
+.combo-trigger { display: inline-flex; justify-content: space-between; align-items: center; gap: 8px; min-width: 14em; text-align: left; }
+.combo-pop { position: absolute; z-index: 10; top: calc(100% + 2px); left: 0; width: 16em; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px; box-shadow: 0 4px 12px rgb(0 0 0 / 0.15); display: grid; gap: 6px; }
+.combo-pop input { width: 100%; }
+.combo-list { list-style: none; margin: 0; padding: 0; max-height: 14em; overflow-y: auto; }
+.combo-list button { width: 100%; text-align: left; border: none; border-radius: 0; background: none; padding: 4px 8px; }
+.combo-list button:hover, .combo-list button:focus { background: var(--bg); outline: none; }
+.combo-list button[aria-selected="true"] { font-weight: 600; color: var(--accent); }
+

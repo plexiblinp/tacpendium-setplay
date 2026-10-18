@@ -1,0 +1,49 @@
+# 実行計測の集計(S6・HANDOVER §12-4 の開発者決定: 集計スクリプト)。手動起動だけ。結果を job summary に貼る。
+# 要るもの(開発者が Settings → Secrets and variables → Actions に置く。docs/telemetry.md):
+#   CLOUDFLARE_ACCOUNT_ID         … アカウント ID
+#   CLOUDFLARE_ANALYTICS_TOKEN    … 「Account Analytics: Read」だけの読み取り専用トークン
+# どちらも無ければ、その旨を summary に出して緑で終わる(まだデプロイしていない間)。
+name: 計測の集計
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: 集計する日数(1〜92)
+        required: false
+        default: "7"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: analytics-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  report:
+    name: 集計
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+      - name: 集計
+        working-directory: web
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ANALYTICS_TOKEN }}
+          DAYS: ${{ inputs.days }}
+        run: |
+          set -o pipefail
+          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ] || [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            printf '### 計測の集計\n\n- Secrets(CLOUDFLARE_ACCOUNT_ID・CLOUDFLARE_ANALYTICS_TOKEN)が無い: 省いた\n' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          if ! printf '%s' "$DAYS" | grep -qE '^[0-9]{1,2}$'; then echo "days は 1〜92 の整数"; exit 1; fi
+          node scripts/analytics/report.mjs "$DAYS" | tee /tmp/report.md
+          cat /tmp/report.md >> "$GITHUB_STEP_SUMMARY"

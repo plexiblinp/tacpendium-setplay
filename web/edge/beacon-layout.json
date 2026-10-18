@@ -1,0 +1,42 @@
+{
+  "_comment": "beacon(実行計測)を Analytics Engine の 1 点へ並べる順(S6・HANDOVER §7.1)。書く側 edge/beacon.ts と集計 scripts/analytics/ が同じこのファイルを読む。列を足すときは末尾に足し、順を変えない(過去の点の読み方が変わる)。blob1..blob20 / double1..double20 の番号は配列の位置 + 1。null(当てはまらない)は double で -1、blob で空文字。真偽値は 1 / 0。index は抽出の鍵。",
+  "index": "char",
+  "nullDouble": -1,
+  "nullBlob": "",
+  "blobs": [
+    "char",
+    "mode",
+    "targetTypes",
+    "notation",
+    "lang",
+    "dataVersion",
+    "outcome",
+    "errorCode",
+    "targetMove",
+    "sort",
+    "safeJump",
+    "votesStatus",
+    "visitor"
+  ],
+  "doubles": [
+    "v",
+    "ka",
+    "nMin",
+    "nMax",
+    "gMin",
+    "gMax",
+    "remain",
+    "includeZeroDamage",
+    "approachOnly",
+    "blockSafeOnly",
+    "chainCancelOnly",
+    "resultCount",
+    "items",
+    "truncated",
+    "cacheHit",
+    "ms",
+    "computeMs",
+    "votesApplied",
+    "sampleRate"
+  ]
+}

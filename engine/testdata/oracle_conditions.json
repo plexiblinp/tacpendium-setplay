@@ -1,0 +1,27 @@
+{
+  "comment": "本家との突合(engine/conformance_test.go と scripts/upstream-oracle)が回す条件。全キャラ × kas × queries。{safe_jump.true|f5|f6} はキャラごとの安全飛びの値(本家 characters.custom_states.safe_jump ＝ moves DB の safeJump)に置き換えて回す。queries は本家ハンドラのクエリ(target_move は code。本家側は target_move_id に直して渡す)。",
+  "kas": [-1, 0, 7, 25, 43, 61, 79, 100],
+  "queries": [
+    "",
+    "limit=3000&target_types=normal,unique,special,special_projectile,throw,normal_rush,unique_rush&include_zero_damage=true",
+    "sort=target&n_min=2&n_max=4&limit=3000",
+    "mode=gap&limit=3000",
+    "mode=gap&g_min=2&g_max=5&sort=target&limit=3000",
+    "mode=filler&remain=0&limit=3000",
+    "mode=filler&remain=4&limit=3000",
+    "mode=filler&remain={safe_jump.true}&limit=3000",
+    "mode=filler&remain={safe_jump.f5}&limit=3000",
+    "mode=filler&remain={safe_jump.f6}&limit=3000",
+    "approach_only=true&block_safe_only=true&limit=3000",
+    "mode=gap&chain_cancel_only=true&limit=3000",
+    "target_move=standing_medium_punch&limit=3000",
+    "mode=meaty&limit=7&n_min=0&g_min=99",
+    "mode=xxx",
+    "mode=filler",
+    "mode=filler&remain=-1",
+    "n_min=abc",
+    "sort=zzz",
+    "limit=1.5",
+    "approach_only=maybe"
+  ]
+}

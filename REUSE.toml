@@ -1,0 +1,58 @@
+# REUSE.toml — tacpendium-setplay のライセンス宣言（パス単位）
+#
+# ファイル 1 本ずつに SPDX ヘッダは書かず、本ファイルに集約する。
+# 全表に `precedence = "override"` を付け、本宣言を権威とする。
+#
+# 三層（何の内容か）:
+#   層 A アプリ本体               AGPL-3.0-or-later   （既定。利用者向けの文書 README・NOTICE 等も含む）
+#   層 B ゲームデータと派生データ CC-BY-SA-4.0
+#   層 C 開発運用の文書・道具     MIT
+#
+# ★並び順が意味を持つ。REUSE 仕様 3.3: 同じファイルに複数の表が当たるときは
+#   「最後に当たった表だけ」が使われる。⇒ 既定 → 層 C → 層 B の順。並べ替えないこと。
+# ★グロブ: `*` は `/` を跨がない。`**` は跨ぐ。
+# ★LICENSES/ と LICENSE は対象外（同仕様 §Covered Files）。
+#
+# 検査: python3 scripts/check-licenses.py
+#   - 使っている識別子ごとに LICENSES/<id>.txt があるか、使わない LICENSES が無いか
+#   - 各表の各グロブが「勝つ」ファイルが 1 件以上あるか（並べ替え・覆い隠しの検出）、代表パスが期待どおりの
+#     ライセンスに解決されるか
+#   - 各表のグロブが追跡ファイルに 1 件以上当たるか（グロブはファイルを動かすと黙って外れ、
+#     外れた先が既定の層 A なので、ほかの検査は緑のままになる）。
+#     まだファイルの無い予定パスは同スクリプトの PENDING に段階付きで載せる。
+
+version = 1
+
+# (1) 既定 = 層 A（アプリ本体: Go / TypeScript のコード、スキーマ、設定、利用者向けの文書）
+[[annotations]]
+path = "**"
+precedence = "override"
+SPDX-FileCopyrightText = "2026 plexiblinp"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+# (2) 層 C = MIT（AI 運用ルール群 / 検査スクリプト / CI 設定 / 開発運用の文書 / 上流追従の道具）
+[[annotations]]
+path = [
+  "CLAUDE.md", "AGENTS.md",
+  ".claude/**",
+  ".github/**",
+  "scripts/**",
+  "upstream/**",
+  "docs/upstream-diff.md",
+  "docs/handover/**",
+  "docs/progress/**",
+]
+precedence = "override"
+SPDX-FileCopyrightText = "2026 plexiblinp"
+SPDX-License-Identifier = "MIT"
+
+# (3) 層 B = CC-BY-SA-4.0（公開版 tacpendium から取り込んだゲームデータと、その派生データ）
+#     moves DB（data/moves/ キャラ別 JSON）・上書き表（data/overrides/）と、事前計算結果（S4）の置き場。
+#     置き場を変えたら本表と scripts/check-licenses.py の PENDING を同時に直すこと。
+#     engine/testdata/upstream_oracle.json は、ゲームデータで本家の計算を回した結果の要約（件数と sha256）で、
+#     派生データとして同じ層に置く（S3）。
+[[annotations]]
+path = ["data/**", "engine/testdata/upstream_oracle.json"]
+precedence = "override"
+SPDX-FileCopyrightText = "2026 plexiblinp and the Tacpendium contributors"
+SPDX-License-Identifier = "CC-BY-SA-4.0"

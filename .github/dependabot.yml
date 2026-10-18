@@ -1,0 +1,41 @@
+# Action の SHA 固定と依存を最新に保つ(HANDOVER §7.4)。npm(web/)は S5、gomod は S7 で足した。
+# どれも週 1 回・まとめて 1 本の PR にする(PR ごとに CI が走るため。Actions の分数を抑える＝S7)。
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    # 公開から 7 日待ってから PR を作る(乗っ取られた版を掴まないため。security update には効かず、即時に来る)
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      actions:
+        patterns: ["*"]
+  # フロント(web/)。pnpm の lockfile を更新する。メジャー版はリリースノートで入力・挙動の変更を確かめる(AGENTS §5)。
+  - package-ecosystem: npm
+    directory: /web
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      web-minor-patch:
+        update-types: ["minor", "patch"]
+  # Go(ルートの go.mod)。依存は少ない(modernc.org/sqlite とその間接依存)。toolchain 行の更新は Dependabot では来ないので、
+  # 標準ライブラリの修正版は govulncheck で見る(S7 報告)。
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      go:
+        patterns: ["*"]

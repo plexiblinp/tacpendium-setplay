@@ -1,0 +1,378 @@
+{
+  "schemaVersion": 1,
+  "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+  "characters": [
+    {
+      "code": "ryu",
+      "name": {
+        "ja": "リュウ",
+        "en": "Ryu"
+      },
+      "file": "ryu.json",
+      "moveCount": 94,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "9082c8513d94b0dcbfd019b1f253e7f68d16456134b7195244d7a7ec39d027c7",
+      "fileSha256": "af18be27f189c73131569e41cf620d7754da47d86f3d1724451c3b351435ed03"
+    },
+    {
+      "code": "ken",
+      "name": {
+        "ja": "ケン",
+        "en": "Ken"
+      },
+      "file": "ken.json",
+      "moveCount": 90,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "67c86eb2abb1984f77bf9ccbc349e310c0fcd4892273245e796ea69fb20455c8",
+      "fileSha256": "0e36066edfea3407cd64ef47c6a81c9fdf19d1418387738f217fe7cd066755f0"
+    },
+    {
+      "code": "ingrid",
+      "name": {
+        "ja": "イングリッド",
+        "en": "Ingrid"
+      },
+      "file": "ingrid.json",
+      "moveCount": 101,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "8478c7fdf1e6b9fa4508bb1ebd1573a066dea20950e41f6579d8f455ab1419fd",
+      "fileSha256": "63454805fa08a14bc4f43de8ed25e9b4e5c9bd6ceed7061129f92dab8f4fae3a"
+    },
+    {
+      "code": "c_viper",
+      "name": {
+        "ja": "C.ヴァイパー",
+        "en": "C.Viper"
+      },
+      "file": "c_viper.json",
+      "moveCount": 99,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "51f04f1e3df15f2266dcf37a51c588ec4cc80370251dd7cbc7586f431442dcbe",
+      "fileSha256": "63efc49bbdf28695108be997461a7c82ff852ffa618bfe201e088fb7b9d26bac"
+    },
+    {
+      "code": "dhalsim",
+      "name": {
+        "ja": "ダルシム",
+        "en": "Dhalsim"
+      },
+      "file": "dhalsim.json",
+      "moveCount": 108,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "8bdba72461e5981b7f8fbeda2722e3942640844d5196391c71c100aa18358991",
+      "fileSha256": "64476b8947b37f5e110f07978b3affc0b83a4e678c8b2edd6cbeb8d81dcdf4c2"
+    },
+    {
+      "code": "terry",
+      "name": {
+        "ja": "テリー",
+        "en": "Terry"
+      },
+      "file": "terry.json",
+      "moveCount": 80,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "df2a2fc642af0a0f287b1d88ae6728ec1ecb38c9077b4f59b57524b5590a4ae6",
+      "fileSha256": "612ec6d77bb24ac7e41b1ef19612f9ff4c82976be445e75202bb96ad29faaa96"
+    },
+    {
+      "code": "guile",
+      "name": {
+        "ja": "ガイル",
+        "en": "Guile"
+      },
+      "file": "guile.json",
+      "moveCount": 98,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "a59a2f22f09f4aa678bef983b5f4d8257b986e47bd8cc1fde9406c47283acca8",
+      "fileSha256": "f8347fa042dda71aa8b7a68c3a1eb2fb0338a364c563beb3ea942c10f7e48353"
+    },
+    {
+      "code": "lily",
+      "name": {
+        "ja": "リリー",
+        "en": "Lily"
+      },
+      "file": "lily.json",
+      "moveCount": 91,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "ae2d937d67d7190d6967a771610e58327421d0276adc386302240a64d48264ac",
+      "fileSha256": "d056d0c469f864c98174cf13ad55b24d9191dfb1766926627c9acd8b47e8625c"
+    },
+    {
+      "code": "kimberly",
+      "name": {
+        "ja": "キンバリー",
+        "en": "Kimberly"
+      },
+      "file": "kimberly.json",
+      "moveCount": 105,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "16ecdf0119d1e18e391b0656d44cd09c43eebd2af68644e838aaf9aebaa745b9",
+      "fileSha256": "8f7b54e652fc4c7559d3e8abd1b20347ae65125a0521a516ce2267a430bc1676"
+    },
+    {
+      "code": "juri",
+      "name": {
+        "ja": "ジュリ",
+        "en": "Juri"
+      },
+      "file": "juri.json",
+      "moveCount": 83,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "866d87805e461d1702eef9eddfab186566e3201f076631f6cee2fe172e288f56",
+      "fileSha256": "2b1cfe5f888eec3b43c49801a5f2b84c3407f4dc98206b5e2fe39041b7c9280c"
+    },
+    {
+      "code": "mai",
+      "name": {
+        "ja": "舞",
+        "en": "Mai"
+      },
+      "file": "mai.json",
+      "moveCount": 106,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "741aadea5d26261998f34c275777699d4a68235270d97616a7b142e9158e3b34",
+      "fileSha256": "0fe0614d98288d22bfd268bc790c10bba592bfb136c6c9b3f467a2ebc6088879"
+    },
+    {
+      "code": "zangief",
+      "name": {
+        "ja": "ザンギエフ",
+        "en": "Zangief"
+      },
+      "file": "zangief.json",
+      "moveCount": 91,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "a2ac06d8257815de902ef0c131fb44051a5159f6180a16134a1d0aafc57e7908",
+      "fileSha256": "4d9b88f19b10a3e305bbe902ac34c921c975cbe584b4e5ace43c1a4ea12c7d24"
+    },
+    {
+      "code": "manon",
+      "name": {
+        "ja": "マノン",
+        "en": "Manon"
+      },
+      "file": "manon.json",
+      "moveCount": 82,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "5038c557c7e3da3d5304da040dcb8211d3ce7ce890160e30e757f330afb5446b",
+      "fileSha256": "d5314c5fc870356cbc0434175d2c56f3fb6afd40291fb5bec8116685d8f2d9de"
+    },
+    {
+      "code": "m_bison",
+      "name": {
+        "ja": "ベガ",
+        "en": "M. Bison"
+      },
+      "file": "m_bison.json",
+      "moveCount": 89,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "a105903881a2492393886ea885fec41cfd15d6ae4554555a7994bf3fa1ee7c8b",
+      "fileSha256": "6ab26b21d82637a6648a004d80dbdb8371a174181bb0c4a5b673d2886acc40ba"
+    },
+    {
+      "code": "rashid",
+      "name": {
+        "ja": "ラシード",
+        "en": "Rashid"
+      },
+      "file": "rashid.json",
+      "moveCount": 109,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "33757e758e17380dab35ec2ebd67f26c8da06769d74aaec2b9f46b742cc57174",
+      "fileSha256": "a721ea10114e42386e1897293acc1d011f9b156744c3d0f6e80ced1e1a1e122d"
+    },
+    {
+      "code": "jamie",
+      "name": {
+        "ja": "ジェイミー",
+        "en": "Jamie"
+      },
+      "file": "jamie.json",
+      "moveCount": 137,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "9851a219dfe5c50778ab95c4a08c254b8b27f2bad86bc58ecd1b4b5547f65ed1",
+      "fileSha256": "246608900f96eda9ca8eea45065a66f5749294be3541e2f754f03863b1d5ea30"
+    },
+    {
+      "code": "luke",
+      "name": {
+        "ja": "ルーク",
+        "en": "Luke"
+      },
+      "file": "luke.json",
+      "moveCount": 93,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "8c385f3eb9dc549242906b73f6cd2f48148903b0b7681817dd5f70f38ae0c6c5",
+      "fileSha256": "31b77f35fab24db10e48d68e34beeb1509ec6bdf22186f3aec66208ec658c2d7"
+    },
+    {
+      "code": "marisa",
+      "name": {
+        "ja": "マリーザ",
+        "en": "Marisa"
+      },
+      "file": "marisa.json",
+      "moveCount": 118,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "da81784dec13df8a3d6edbf7be4013f2de7fe21cb03db823fb34aef06e570b51",
+      "fileSha256": "1506fb5ef84cc9408b5cacc2d16c3a813c8aaf6328c9d53a132bc92bbccee98f"
+    },
+    {
+      "code": "jp",
+      "name": {
+        "ja": "JP",
+        "en": "JP"
+      },
+      "file": "jp.json",
+      "moveCount": 85,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "1c305cd7500e8ecc5ef96f6b3ebd8d4b302c43984525c8fa82209d391265e329",
+      "fileSha256": "9aa881e0ec81a27b39df2a9b389d3d27b096edae828563cafa959b9363e01ae4"
+    },
+    {
+      "code": "aki",
+      "name": {
+        "ja": "AKI",
+        "en": "A.K.I."
+      },
+      "file": "aki.json",
+      "moveCount": 82,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "b93ef0b89bcdad61bbacb5ac1818efe48bbdf53d83ef7fd1b53987892fcd7073",
+      "fileSha256": "8f8aea9af45e0b2b99e7b3297d3e47a776c6c95d52850a01d7cc7d6928ab14d5"
+    },
+    {
+      "code": "akuma",
+      "name": {
+        "ja": "豪鬼",
+        "en": "Akuma"
+      },
+      "file": "akuma.json",
+      "moveCount": 117,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "d74e69e0c330a0431bfbeccda41563540f0abe2538c7ea2c1d3ac2f27e999698",
+      "fileSha256": "ed169adde2af5fee1e598436da207396b7b2069a6b8ae8c4587ece048b43a708"
+    },
+    {
+      "code": "alex",
+      "name": {
+        "ja": "アレックス",
+        "en": "Alex"
+      },
+      "file": "alex.json",
+      "moveCount": 108,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "af35f6cd14898468ecb6e76152075639d6d8f20060a14f1dea88244eeaf21e6d",
+      "fileSha256": "d30daab496dcfb3a74c3bae49d751de6a7872ad82f52cac0361ab6fe6be334b3"
+    },
+    {
+      "code": "blanka",
+      "name": {
+        "ja": "ブランカ",
+        "en": "Blanka"
+      },
+      "file": "blanka.json",
+      "moveCount": 128,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "3bbe04652b4141a11d04fbba16b8077a63687fe2233ca059ef0ca620751ef02b",
+      "fileSha256": "556dc208ef6c5235e86fe1beb3f2f6583b2c73be1c1716a879e4e4411e1d0018"
+    },
+    {
+      "code": "cammy",
+      "name": {
+        "ja": "キャミィ",
+        "en": "Cammy"
+      },
+      "file": "cammy.json",
+      "moveCount": 109,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "f1c0e6ca892b0af05000d1d337ba63429410db3a1ca801be939c0d4c6f19fd9b",
+      "fileSha256": "adfb6f508ced10ca2774fac4bb4799276b3b91bc994311a3d5e75c76847a876e"
+    },
+    {
+      "code": "chun_li",
+      "name": {
+        "ja": "春麗",
+        "en": "Chun-Li"
+      },
+      "file": "chun_li.json",
+      "moveCount": 97,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "eb94f5b65bdbd36be2ec63843817e10bf7e339c6d9a3aa35cca49b0ca1092464",
+      "fileSha256": "9fdb143b3de63f659b514bb3ad0841b24cd263f2890d1292c456002a6c014d28"
+    },
+    {
+      "code": "dee_jay",
+      "name": {
+        "ja": "ディージェイ",
+        "en": "Dee Jay"
+      },
+      "file": "dee_jay.json",
+      "moveCount": 94,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "3a36a9eff11f93ecf20cc05366e6a657bb368843514778b445946eaa1832c8c3",
+      "fileSha256": "166ab530ba4b26b4d52855af23170d5fd54eb9ae45f08376c15bbf2ab35f8a3e"
+    },
+    {
+      "code": "e_honda",
+      "name": {
+        "ja": "E.本田",
+        "en": "E.Honda"
+      },
+      "file": "e_honda.json",
+      "moveCount": 88,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "7152ac1526dddf4cc269743edc26a377a6bef487f18b8c5f9d3ad13706a7020e",
+      "fileSha256": "8042d9963e2d2caa22a5cc4cf9f0a6b875066b17ea7941ee182e24d5879f022b"
+    },
+    {
+      "code": "ed",
+      "name": {
+        "ja": "エド",
+        "en": "Ed"
+      },
+      "file": "ed.json",
+      "moveCount": 85,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "5f506e5ac72299d0d0ee8d5c10b870fc5ba49f041efddb125bccc7d5848ca5bb",
+      "fileSha256": "7a3b1b8b3dea82b7df05cbef4573a50da194ac3c5b676801057e747e75b74603"
+    },
+    {
+      "code": "elena",
+      "name": {
+        "ja": "エレナ",
+        "en": "Elena"
+      },
+      "file": "elena.json",
+      "moveCount": 109,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "3938d8cf80a83a04c4ce70a045429c2778045f29952e84337885b71ad581e84e",
+      "fileSha256": "b0ab1da033771c9615f6398051fc28eb79a79f9767a3f569941fe461a31f6969"
+    },
+    {
+      "code": "sagat",
+      "name": {
+        "ja": "サガット",
+        "en": "Sagat"
+      },
+      "file": "sagat.json",
+      "moveCount": 87,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "f79404a95852e8493c0290b5a870b9d5957bb47d37c5ee41a2a9c0f936d0a329",
+      "fileSha256": "7bf191aa940232010fb5334f6e4d4cf142e4da09927b03339fa3e7462f99f15e"
+    },
+    {
+      "code": "yasmine",
+      "name": {
+        "ja": "ヤスミン",
+        "en": "Yasmine"
+      },
+      "file": "yasmine.json",
+      "moveCount": 94,
+      "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+      "calcFingerprint": "7a7289eb4686a0ab8bd7fb095f9f55230822ad7a6ada6433e121b72c6141232c",
+      "fileSha256": "0ec726f732306f0a50255bddf7296c86a0b4c928fa68d04434d5cdc8b20c16c5"
+    }
+  ]
+}

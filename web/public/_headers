@@ -1,0 +1,32 @@
+# 配信のレスポンスヘッダ(Cloudflare の _headers 形式。HANDOVER §7.4)。
+# E2E の静的サーバ(web/scripts/serve.mjs)が同じファイルを読んで同じヘッダを付ける(手元で CSP 等を確かめるため)。
+# ★clipboard-write は拒否するとコピー(D16)の writeText が失敗しうるため (self) だけ許可する。
+# ★X-Frame-Options は CSP の frame-ancestors を解さない古いブラウザ向け。HSTS は preload を付けない(workers.dev は自分のドメインでない)。
+#   /api の応答(Worker)は edge/index.ts の API_SECURITY_HEADERS で同じ値を付ける(S7)。
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'none'; object-src 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: accelerometer=(), autoplay=(), camera=(), clipboard-read=(), clipboard-write=(self), display-capture=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), hid=(), idle-detection=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), usb=(), xr-spatial-tracking=()
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  X-Frame-Options: DENY
+  Strict-Transport-Security: max-age=31536000
+
+# 中身のハッシュ入りの名前のファイルは変わらない(docs/precompute.md)。
+/data/moves/*
+  Cache-Control: public, max-age=31536000, immutable
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# WASM と wasm_exec.js は名前にハッシュが無い(同じ Go で作った組で置く)。キャッシュがあってもサーバに確かめる。
+/wasm/*
+  Cache-Control: no-cache
+
+# 唯一の可変ファイル。毎回サーバに確かめる。
+/data/manifest.json
+  Cache-Control: no-cache
+
+# 配信の設定(計測の抽出率。混雑時に下げる。HANDOVER §7.1)。毎回サーバに確かめる。
+/config.json
+  Cache-Control: no-cache

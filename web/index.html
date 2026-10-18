@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <title>Tacpendium-Setplay | セットプレイ自動提案(非公式)</title>
+  </head>
+  <body>
+    <!-- 画面が動き出すまでの表示。止まったときは public/boot.js が理由をここに書く(真っ白にしない)。 -->
+    <div id="root"><p id="boot-status">読み込み中… / Loading…</p></div>
+    <noscript>JavaScript を有効にしてください / Please enable JavaScript.</noscript>
+    <script src="/boot.js"></script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,281 @@
+// 単体版(tacpendium-setplay)の適合性テストの正解(oracle)を、本家の実装そのもので作る。
+//
+// ★このファイルは単体版のリポジトリでは .go.txt として置き、scripts/upstream-oracle/run.sh が
+// 公開版 tacpendium のチェックアウトの internal/api/setplay/ へ一時的に写して回す(回した後に消す)。
+// 本家の HTTP ハンドラ(GetSuggestions)・サービス(SuggestForCombo)・リポジトリ(SQL)を、
+// migrations を流した本物の DB で通す。単体版側は engine/conformance_test.go が同じ条件を moves DB で回し、
+// 1 件ずつ突き合わせる。
+//
+// 環境変数: ORACLE_CONDITIONS(条件の JSON)・ORACLE_OUT(書き出し先)。
+package setplay
+
+import (
+	"context"
+	"crypto/sha256"
+	"database/sql"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"os"
+	"strconv"
+	"strings"
+	"testing"
+
+	"github.com/labstack/echo/v4"
+
+	"github.com/plexiblinp/tacpendium/internal/model"
+	setplayrepo "github.com/plexiblinp/tacpendium/internal/repository/setplay"
+	setplaysvc "github.com/plexiblinp/tacpendium/internal/service/setplay"
+	"github.com/plexiblinp/tacpendium/internal/testutil/dbtest"
+)
+
+type standaloneOracleConditions struct {
+	KAs     []int    `json:"kas"`
+	Queries []string `json:"queries"`
+}
+
+type standaloneOracleCell struct {
+	Character  string `json:"character"`
+	KA         int    `json:"ka"`
+	Query      string `json:"query"`
+	Status     int    `json:"status"`
+	Error      string `json:"error,omitempty"`
+	TotalFound int    `json:"totalFound"`
+	Truncated  bool   `json:"truncated"`
+	Reason     string `json:"reason,omitempty"`
+	Items      int    `json:"items"`
+	SHA256     string `json:"sha256"`
+}
+
+// standaloneOracleCandidates はキャラごとの読み口の要約(本家の repository が DB から読む候補行と親子関係)。
+type standaloneOracleCandidates struct {
+	Character   string `json:"character"`
+	Moves       int    `json:"moves"`
+	Derivations int    `json:"derivations"`
+	SHA256      string `json:"sha256"`
+}
+
+type standaloneOracleFile struct {
+	Comment    string                       `json:"comment"`
+	Candidates []standaloneOracleCandidates `json:"candidates"`
+	Cells      []standaloneOracleCell       `json:"cells"`
+}
+
+func standaloneOracleIntp(p *int) string {
+	if p == nil {
+		return "null"
+	}
+	return strconv.Itoa(*p)
+}
+
+// standaloneOracleCandidateLines は候補行と親子関係の正準形(単体版の engine/conformance_test.go の
+// canonicalCandidates と同じ書式)。ID 昇順(=本家の並び)のまま、ID の代わりに code で書く。
+func standaloneOracleCandidateLines(cands []setplayrepo.MoveCandidate, derivs []setplayrepo.MoveDerivation) string {
+	codeByID := make(map[int64]string, len(cands))
+	for _, m := range cands {
+		codeByID[m.ID] = m.Code
+	}
+	var b strings.Builder
+	for _, m := range cands {
+		orig := "null"
+		if m.OriginalMoveID != nil {
+			orig = codeByID[*m.OriginalMoveID]
+		}
+		fmt.Fprintf(&b, "M|%s|%s|%s|%s|%s|%s|%s|%t|%t|%t|%t|%s|%s|%t|%s\n", m.Code, m.Category, orig,
+			standaloneOracleIntp(m.Startup), standaloneOracleIntp(m.Active), standaloneOracleIntp(m.Total), standaloneOracleIntp(m.Damage),
+			m.IsDerived, m.IsAerial, m.IsProjectile, m.SetupOnly, m.StartupBasis,
+			standaloneOracleIntp(m.ChainCancelTotal), m.FastestUnreachable, standaloneOracleIntp(m.OnBlock))
+	}
+	for _, d := range derivs {
+		fmt.Fprintf(&b, "D|%s|%s\n", codeByID[d.ChildMoveID], codeByID[d.ParentMoveID])
+	}
+	sum := sha256.Sum256([]byte(b.String()))
+	return hex.EncodeToString(sum[:])
+}
+
+type standaloneOracleCombo struct {
+	characterID int64
+	ka          int
+}
+
+func (c standaloneOracleCombo) FindByID(ctx context.Context, id int64) (*model.Combo, error) {
+	ka := c.ka
+	return &model.Combo{ID: id, CharacterID: c.characterID, KnockdownAdvantage: &ka}, nil
+}
+
+type standaloneOracleNoDup struct{}
+
+func (standaloneOracleNoDup) FindDuplicateInCombo(ctx context.Context, comboID, characterID int64, recipeHash string, excludeSetupID *int64) (*int64, error) {
+	return nil, nil
+}
+
+// standaloneOracleCanonical は行の正準形(単体版の engine/conformance_test.go の canonicalItems と同じ書式)。
+// 技は code で書く(数値 ID は単体版に無い)。alreadyAdopted は単体版に無いので含めない。
+func standaloneOracleCanonical(items []SuggestionDTO) string {
+	var b strings.Builder
+	for _, it := range items {
+		fmt.Fprintf(&b, "%s|%d|%d|%d|%d|%d|%d|", it.Mode, it.S, it.N, it.Landing, it.TargetActive, it.G, it.Remain)
+		for j, st := range it.Steps {
+			if j > 0 {
+				b.WriteByte(',')
+			}
+			fmt.Fprintf(&b, "%s:%s:%t", st.Code, st.Role, st.Counted)
+		}
+		b.WriteByte('\n')
+	}
+	sum := sha256.Sum256([]byte(b.String()))
+	return hex.EncodeToString(sum[:])
+}
+
+func TestStandaloneOracle(t *testing.T) {
+	condPath, outPath := os.Getenv("ORACLE_CONDITIONS"), os.Getenv("ORACLE_OUT")
+	if condPath == "" || outPath == "" {
+		t.Skip("ORACLE_CONDITIONS / ORACLE_OUT が無い(scripts/upstream-oracle/run.sh から回す)")
+	}
+	raw, err := os.ReadFile(condPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var conds standaloneOracleConditions
+	if err := json.Unmarshal(raw, &conds); err != nil {
+		t.Fatal(err)
+	}
+
+	db := dbtest.Setup(t)
+	repo := setplayrepo.New(db)
+	type char struct {
+		id   int64
+		code string
+	}
+	rows, err := db.Query(`SELECT id, code FROM characters ORDER BY id`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var chars []char
+	for rows.Next() {
+		var c char
+		if err := rows.Scan(&c.id, &c.code); err != nil {
+			t.Fatal(err)
+		}
+		chars = append(chars, c)
+	}
+	if err := rows.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	out := standaloneOracleFile{Comment: "scripts/upstream-oracle/run.sh が本家の実装で作った正解。手で編集しない。"}
+	for _, c := range chars {
+		cands, err := repo.ListCharacterMoveCandidates(context.Background(), c.id)
+		if err != nil {
+			t.Fatal(err)
+		}
+		derivs, err := repo.ListCharacterMoveDerivations(context.Background(), c.id)
+		if err != nil {
+			t.Fatal(err)
+		}
+		out.Candidates = append(out.Candidates, standaloneOracleCandidates{
+			Character: c.code, Moves: len(cands), Derivations: len(derivs),
+			SHA256: standaloneOracleCandidateLines(cands, derivs),
+		})
+	}
+	for _, c := range chars {
+		for _, ka := range conds.KAs {
+			svc := setplaysvc.NewService(standaloneOracleCombo{characterID: c.id, ka: ka}, repo, standaloneOracleNoDup{})
+			h := NewHandler(svc)
+			for _, q := range conds.Queries {
+				upstreamQ, err := standaloneOracleUpstreamQuery(db, c.id, q)
+				if err != nil {
+					t.Fatalf("%s %q: %v", c.code, q, err)
+				}
+				cell := standaloneOracleCell{Character: c.code, KA: ka, Query: q}
+				rec := standaloneOracleDo(t, h, upstreamQ)
+				cell.Status = rec.Code
+				if rec.Code != http.StatusOK {
+					var body struct {
+						Error struct {
+							Code    string `json:"code"`
+							Message string `json:"message"`
+						} `json:"error"`
+					}
+					if err := json.Unmarshal(rec.Body.Bytes(), &body); err != nil {
+						t.Fatalf("%s %q: %v", c.code, q, err)
+					}
+					cell.Error = body.Error.Code + ": " + body.Error.Message
+				} else {
+					var res SuggestionsResponse
+					if err := json.Unmarshal(rec.Body.Bytes(), &res); err != nil {
+						t.Fatalf("%s %q: %v", c.code, q, err)
+					}
+					cell.TotalFound, cell.Truncated, cell.Reason = res.TotalFound, res.Truncated, res.Reason
+					cell.Items = len(res.Items)
+					cell.SHA256 = standaloneOracleCanonical(res.Items)
+				}
+				out.Cells = append(out.Cells, cell)
+			}
+		}
+	}
+	b, err := json.MarshalIndent(out, "", "  ")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(outPath, append(b, '\n'), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("cells: %d", len(out.Cells))
+}
+
+// standaloneOracleSafeJumpKeys は条件のクエリに書ける安全飛びの差し込み({safe_jump.true} 等)と、
+// 本家の characters.custom_states の JSON パス。値はキャラごとに違う(000010_data_seed_safe_jump)。
+var standaloneOracleSafeJumpKeys = map[string]string{
+	"{safe_jump.true}": "$.safe_jump.true",
+	"{safe_jump.f5}":   "$.safe_jump.f5",
+	"{safe_jump.f6}":   "$.safe_jump.f6",
+}
+
+// standaloneOracleUpstreamQuery は単体版のクエリを本家のクエリへ直す
+// ({safe_jump.*} → そのキャラの安全飛びの値、target_move の code → target_move_id)。
+func standaloneOracleUpstreamQuery(db *sql.DB, characterID int64, q string) (string, error) {
+	for ph, path := range standaloneOracleSafeJumpKeys {
+		if !strings.Contains(q, ph) {
+			continue
+		}
+		var n sql.NullInt64
+		if err := db.QueryRow(`SELECT json_extract(custom_states, ?) FROM characters WHERE id = ?`, path, characterID).Scan(&n); err != nil {
+			return "", fmt.Errorf("%s: %w", ph, err)
+		}
+		if !n.Valid {
+			return "", fmt.Errorf("%s: 安全飛びの値が無い", ph)
+		}
+		q = strings.ReplaceAll(q, ph, strconv.FormatInt(n.Int64, 10))
+	}
+	v, err := url.ParseQuery(q)
+	if err != nil {
+		return "", err
+	}
+	if code := v.Get("target_move"); code != "" {
+		var id int64
+		if err := db.QueryRow(`SELECT id FROM moves WHERE character_id = ? AND code = ?`, characterID, code).Scan(&id); err != nil {
+			return "", fmt.Errorf("target_move %q: %w", code, err)
+		}
+		v.Del("target_move")
+		v.Set("target_move_id", strconv.FormatInt(id, 10))
+	}
+	return v.Encode(), nil
+}
+
+func standaloneOracleDo(t *testing.T, h *Handler, q string) *httptest.ResponseRecorder {
+	t.Helper()
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/api/combos/1/setplay-suggestions?"+q, nil)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.SetParamNames("comboId")
+	c.SetParamValues("1")
+	if err := h.GetSuggestions(c); err != nil {
+		t.Fatalf("handler error: %v", err)
+	}
+	return rec
+}

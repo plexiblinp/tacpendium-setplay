@@ -1,0 +1,2 @@
+# 公開から 7 日経っていない版は入れない(乗っ取られた版を掴まないため。Dependabot の cooldown と同じ考え方)。
+minimumReleaseAge: 10080

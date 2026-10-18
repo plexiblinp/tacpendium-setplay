@@ -1,0 +1,86 @@
+tacpendium-setplay — NOTICE
+===========================
+
+本ファイルは tacpendium-setplay（Tacpendium のセットプレイ自動提案の単体版。以下
+「本サービス」）に付随する告知である。ライセンス本文は `LICENSE`（アプリ本体＝
+AGPL-3.0-or-later）と `LICENSES/` 配下、パス単位の割当は `REUSE.toml` を参照すること。
+データ層の説明は `DATA-LICENSE.md` にある。
+
+★サイト名は未定である。本ファイルの「tacpendium-setplay」はリポジトリ名による仮の呼称。
+
+
+1. 非公式であること
+-------------------
+
+本サービスは個人が開発する非公式のツールであり、いかなるゲーム会社とも提携・承認・
+後援の関係を持たない。ゲームタイトル名・キャラクター名・技名は各権利者の商標または
+それに準ずるものである。
+
+**本サービスはゲームのロゴ・画像・音声・その他のゲームアセットを一切含まない。**
+
+
+2. 同梱するゲームデータについて
+-------------------------------
+
+同梱するフレームデータ・技データは、公開版 Tacpendium
+（https://github.com/plexiblinp/tacpendium）の `character_data/` とデータ SQL
+（`migrations/*_data_*.sql`）のうち、同プロジェクトの `REUSE.toml` で CC-BY-SA-4.0 と
+宣言された範囲から
+取り込むものであり、**同プロジェクトの開発者およびコミュニティによる手入力と観測に
+基づく事実情報**である。公式配布物の複製ではなく、公式サイト等から取得したデータは
+取り込まない。
+
+技名・キャラクター名の日本語表記も同じ原則による。分かれ目は表記が独自か公式かでは
+なく、**どこから取得したか**である。英語技名・SRK 表記・ナンバリング表記は、取り込んだ
+データ（技コード・コマンド）から規則で生成し、英語技名は規則で表せない少数を本リポジトリの
+上書き表（`data/overrides/`）で人が補う（生成器は `cmd/movesdb`、出力は `data/moves/`）。上書き表も同じ原則に従い、公式サイト等
+からは転記しない。
+
+これら（および、これらから事前計算したセットプレイの結果）は `CC-BY-SA-4.0` で提供する
+（`REUSE.toml` の層 B）。
+
+    クレジット: データ © plexiblinp and the Tacpendium contributors
+                https://github.com/plexiblinp/tacpendium
+                CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/
+                本サービスで形式の変換・表記の追加・事前計算を行っている（改変あり）
+
+
+3. 撤退ポリシー
+---------------
+
+**権利者から申し出があった場合、該当するデータを速やかに取り下げる。**
+公開版 Tacpendium の撤退ポリシーを引き継ぎ、同プロジェクトで取り下げられたデータは
+本サービスからも取り下げる。
+
+お申し出の内容を確かめるため、いただいた連絡先へ折り返し照会することがある。これは
+取り下げの条件ではない。
+
+    権利者・一般問い合わせ: plexiblinp.contact@gmail.com
+
+個人が開発する OSS であり、返答の期限は約束しない。
+
+
+4. ソースコード
+---------------
+
+本サービスのソースコードは本リポジトリにある（AGPL-3.0-or-later）。画面のフッターから
+ソースへのリンクを置く。リポジトリの公開 URL は公開時に本節へ記す。
+
+
+5. 第三者ライブラリ
+-------------------
+
+直接依存（2026-10 時点）:
+
+    modernc.org/sqlite   BSD-3-Clause   取込 CLI（cmd/movesdb）だけが使う。公開版 Tacpendium の
+                                        migrations を一時 DB へ流して読むため。配信物には含まれない。
+
+公開版 Tacpendium（AGPL-3.0-or-later）から次のコードを移植している（同じライセンス）:
+internal/seedgen・internal/moveindex・internal/sanumber・internal/gameversion（S2）、
+internal/service/setplay・internal/repository/setplay・internal/model の一部（S3）。
+変更点の一覧は docs/upstream-diff.md にある。
+
+エンジンの WASM（cmd/wasm）には Go の標準ライブラリとランタイム（BSD-3-Clause、
+The Go Authors）が含まれ、読み込みには Go 付属の wasm_exec.js（同じライセンス）を使う。
+
+推移依存を含む全数は lockfile（`go.sum` ／ `pnpm-lock.yaml`）が正本である。

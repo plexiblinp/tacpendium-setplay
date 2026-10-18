@@ -1,0 +1,32 @@
+{
+  "jamie": {
+    "phantom_sway": {
+      "nameEn": "Phantom Sway (Drink)",
+      "reason": "move_code に飲酒の印が無いが、name_ja は「幻酔舞(飲酒)」。素の技は phantom_sway_2hits(接尾辞の意味が技ごとに逆。ドメイン知識集成 §8)"
+    },
+    "phantom_sway_2hits": {
+      "nameEn": "Phantom Sway",
+      "reason": "name_ja は「幻酔舞」(素の技)。2hits は段数ではなく飲酒しない版を表す"
+    },
+    "full_moon_kick": {
+      "nameEn": "Full Moon Kick (Drink)",
+      "reason": "move_code に飲酒の印が無いが、name_ja は「円月脚(飲酒)」"
+    },
+    "full_moon_kick_2hits": {
+      "nameEn": "Full Moon Kick",
+      "reason": "name_ja は「円月脚」(素の技)。2hits は段数ではなく飲酒しない版を表す"
+    },
+    "intoxicated_assault_1hit": {
+      "nameEn": "[Drink Level 3] Intoxicated Assault (2 hits)",
+      "reason": "move_code は 1hit だが name_ja は「[酔いレベル3]酩酊襲(2発止め)」"
+    },
+    "hermits_elbow": {
+      "nameEn": "Hermit's Elbow",
+      "reason": "所有格(move_code では s が語に付いている)"
+    },
+    "drink_level_3_hermits_elbow": {
+      "nameEn": "[Drink Level 3] Hermit's Elbow",
+      "reason": "所有格(move_code では s が語に付いている)"
+    }
+  }
+}

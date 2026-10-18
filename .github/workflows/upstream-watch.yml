@@ -1,0 +1,28 @@
+# 公開版 tacpendium の見張るパスが、upstream/tacpendium.lock の基準から変わったかを調べる。
+# 変化があれば赤で終わる(定期実行の失敗通知を知らせとして使う)。リポジトリへは何も書き込まない。
+# 中身は upstream/watch.sh(ローカルでも同じものを回せる)。
+name: Upstream watch
+
+on:
+  workflow_dispatch:
+  # ★開発中は停止(開発者指示)。再開するときは下の 2 行のコメントを外す(週 1 回・月曜 09:13 JST)。
+  # schedule:
+  #   - cron: "13 0 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Compare upstream
+        run: bash upstream/watch.sh

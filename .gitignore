@@ -1,0 +1,41 @@
+# 依存・ビルド成果物
+node_modules/
+dist/
+/bin/
+*.wasm
+*.tsbuildinfo
+.vite/
+
+# テスト・計測の出力
+*.test
+coverage.out
+coverage/
+playwright-report/
+test-results/
+*.log
+
+# 秘密情報・ローカル DB
+.env*
+*.db
+
+# エディタ・OS
+.idea/
+.vscode/
+.DS_Store
+
+# Python のキャッシュ
+__pycache__/
+
+# 公開版 tacpendium の取得先(scripts/fetch-upstream.sh)
+/.upstream/
+
+# WASM のビルド出力(scripts/wasm/build.sh)。公開物は CI から出す(AGENTS §8-12)
+/build/
+
+# フロントが読むデータと WASM(web/scripts/prepare-assets.sh が作る。公開物は CI から出す)
+/web/public/data/
+/web/public/wasm/
+
+# Worker の束ね(web/scripts/build-edge.mjs。デプロイは wrangler が自分で束ねる)・wrangler の手元の状態
+/web/dist-edge/
+/web/.wrangler/

@@ -1,0 +1,401 @@
+# CI。Actions の分数を抑えるため(S7・開発者決定 2026-10-18。private の間は無料枠が月 2,000 分で、使い切った):
+# - claude/ ブランチへの push では走らない。走るのは main 向けの PR(Dependabot を含む)・main への push・手動起動。
+#   作業中の検査は手元で回し、完了報告に EXIT= と件数を貼る(AGENTS §8-1)。PR を作れば必ず通る(門の強さは同じ)。
+#   解除条件: public 化で Actions が無料になったら、push での起動を戻すかを開発者が決める(S7 報告)。
+# - 課金は job ごとに 1 分単位で切り上げなので、job は 2 つにまとめる(Go 側・Web 側)。1 つの job の中で
+#   互いに独立な検査は `!cancelled()` で前の段の失敗に関わらず回し、結果をすべて job summary に出す。
+# - paths フィルタは入れない(必須 check を登録するまで。skip された必須 check は pending のまま残る)
+# - Action はコミット SHA 固定(scripts/check-actions-pinned.sh が検査する)
+# - ブランチ名に `/` を含んでも動く(ブランチ名を条件に使わない。PR の head が claude/... でもよい)
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # リポジトリ検査 → Go(本家の正解との突き合わせ・moves DB の再生成)→ 事前計算 → 本家の正解の再生成 → WASM。
+  #
+  # WASM: エンジン(engine ・internal/service/setplay ・internal/repository/setplay)を WASM で回す(HANDOVER §5・S3)。
+  # (1) 同じ Go のテストを GOOS=js GOARCH=wasm で Node 上で回す。本家との突き合わせは 5 キャラに絞る(engine/conformance_test.go)。
+  # (2) cmd/wasm をビルドし、Node から JS の API を呼んで本家の正解と突き合わせる(Go → WASM → JS の通し)。
+  #
+  # 事前計算(S4・HANDOVER §3 ②): moves DB から配信する静的データ(manifest ・moves)を作り、
+  # 配信の上限(Cloudflare 無料: 20,000 ファイル ・1 ファイル 25 MiB)に収まることを確かめる。生成は数秒なので毎回回す。
+  # 生成物はまだ配信しない(公開物は CI からだけ出す＝AGENTS §8-12)。
+  #
+  # 本家の正解の再生成: 本家との適合性テストの正解(engine/testdata/upstream_oracle.json)を、本家の実装そのもので作り直し、
+  # コミット済みと 1 バイトも違わないことを確かめる(手元で作った正解が本家の出力と同じこと＝AGENTS §8-12 の趣旨)。
+  # 本家のハンドラ ・サービス ・SQL を migrations を流した DB で回すので約 5 分かかる。
+  # ★入力(lock ・条件 ・正解そのもの ・生成器 ・go.mod)が変わったときだけ作り直す(開発者決定 2026-10-10)。
+  #   判定は scripts/upstream-oracle/changed.sh。基準は次のとおりで、分からなければ作り直す:
+  #   - workflow_dispatch: 常に作り直す
+  #   - main への push: 直前の HEAD(github.event.before)
+  #   - PR: origin/main との分岐点(PR で入力を変えたか。main 側の変更は main で検査済み)
+  #   省いたことは job summary に出す。
+  go:
+    name: Go・WASM・リポジトリ検査
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: ライセンス宣言(REUSE.toml / LICENSES)
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          python3 scripts/check-licenses.py | tee /tmp/licenses.txt
+      # 本家(非公開)のコミット SHA と公開されていない文書の名前が無いこと(S7)。語はハッシュで持つ。
+      - name: 公開してはいけない語
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          python3 -I scripts/check_private_refs_test.py
+          python3 -I scripts/check-private-refs.py | tee /tmp/private-refs.txt
+      - name: Action の SHA 固定と permissions
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          bash scripts/check-actions-pinned.sh | tee /tmp/pinned.txt
+      # Go / フロントの段は決まった場所(ルートの go.mod / web/package.json)だけを見る。
+      # 別の場所にできると黙ってスキップして緑になるため、ここで落とす。場所を変えるなら ci.yml を直す。
+      - name: go.mod / package.json の置き場所
+        if: ${{ !cancelled() }}
+        run: |
+          bad="$(git ls-files ':(glob)**/go.mod' ':(glob)**/package.json' | grep -vxE 'go\.mod|web/package\.json' || true)"
+          if [ -n "$bad" ]; then echo "CI が見ない場所にあります(ci.yml の go / web job を直すこと):"; echo "$bad"; exit 1; fi
+      - name: 差分実行の判定スクリプトの試験
+        if: ${{ !cancelled() }}
+        run: python3 -I scripts/ci/verify_plan_test.py
+      # 見張るコード(scripts/ci/logic-version.json の watched)を変えたのに影響の記録(ack)が無ければ止める
+      # (S4 後の開発者決定 3・4。コードの変更をそのまま再計算のきっかけにしない＝案 A)。
+      - name: 計算に効くコードの変更の記録
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          python3 -I scripts/ci/verify-plan.py check | tee /tmp/logic-check.txt
+      - name: シェルスクリプトの構文
+        if: ${{ !cancelled() }}
+        run: |
+          for f in .claude/hooks/*.sh scripts/*.sh scripts/*/*.sh upstream/*.sh web/scripts/*.sh; do bash -n "$f" || exit 1; done
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        if: ${{ !cancelled() }}
+        with:
+          go-version-file: go.mod
+          cache: true
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: ${{ !cancelled() }}
+        with:
+          node-version: "22"
+      - name: go mod tidy
+        if: ${{ !cancelled() }}
+        run: go mod tidy -diff
+      # seedgen のテストと moves DB の検査は、公開版 tacpendium(upstream/tacpendium.lock の SHA)と突き合わせる。
+      - name: 公開版 tacpendium の取得
+        if: ${{ !cancelled() }}
+        run: bash scripts/fetch-upstream.sh
+      - name: gofmt
+        if: ${{ !cancelled() }}
+        run: |
+          out="$(git ls-files -z '*.go' | xargs -0 -r gofmt -l)"
+          if [ -n "$out" ]; then echo "未フォーマット:"; echo "$out"; exit 1; fi
+      - name: go vet
+        if: ${{ !cancelled() }}
+        run: go vet ./...
+      # 検査済みの組(scripts/ci/verify-plan.py の鍵)を復元し、回すキャラを決める(S4 後の開発者決定 3・4)。
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        if: ${{ !cancelled() }}
+        with:
+          path: .verify/oracle.txt
+          key: verify-oracle-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: verify-oracle-
+      - name: 回すキャラの判定(oracle)
+        if: ${{ !cancelled() }}
+        id: plan-oracle
+        env:
+          EVENT: ${{ github.event_name }}
+        run: |
+          set -o pipefail
+          all=""
+          if [ "$EVENT" = "workflow_dispatch" ]; then all="--all"; fi
+          python3 -I scripts/ci/verify-plan.py plan --kind oracle --verified .verify/oracle.txt $all | tee /tmp/plan-oracle.txt
+          echo "$(tail -n 1 /tmp/plan-oracle.txt)" >> "$GITHUB_OUTPUT"
+      # 本家の正解との突き合わせ(重い)は、検査済みでないキャラだけ全 KA で回す。安全網として、KA 61 以下は全キャラで
+      # 毎回回す(SETPLAY_ORACLE_SMOKE_MAX_KA。手元 4 コアで約 14 秒)。
+      - name: go test
+        if: ${{ !cancelled() }}
+        timeout-minutes: 40
+        env:
+          CHARS: ${{ steps.plan-oracle.outputs.chars }}
+        run: |
+          set -o pipefail
+          export SETPLAY_ORACLE_SMOKE_MAX_KA=61
+          if [ -n "$CHARS" ]; then export SETPLAY_ORACLE_CHARS="$CHARS"; fi
+          # 既定の 10 分では engine(本家の正解との突き合わせ)が足りないことがある(S4)。
+          go test -count=1 -v -timeout 35m ./... 2>&1 | tee /tmp/go-test.txt
+      # 通ったときだけ検査済みとして残す(打ち切り ・失敗では残さない＝検査が抜けない)。
+      - name: 検査済みの記録(oracle)
+        if: success() && steps.plan-oracle.outputs.chars != ''
+        env:
+          CHARS: ${{ steps.plan-oracle.outputs.chars }}
+        run: python3 -I scripts/ci/verify-plan.py record --kind oracle --verified .verify/oracle.txt --chars "$CHARS"
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        if: success() && steps.plan-oracle.outputs.chars != ''
+        with:
+          path: .verify/oracle.txt
+          key: verify-oracle-${{ github.run_id }}-${{ github.run_attempt }}
+      # moves DB(data/moves)を公開版から作り直し、コミット済みと 1 バイトも違わないことを確かめる。
+      # 同じことを go test(internal/movesdb の TestPipeline_RegeneratesCommittedData)も見るが、
+      # ここでは CLI の要約(件数)を job summary に残すために回す。
+      - name: moves DB の再生成と一致
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          # キャラごとの版は前の moves DB(コミット済み)から引き継ぐ(中身の変わらないキャラは前の版のまま)。
+          go run ./cmd/movesdb -out "$RUNNER_TEMP/moves" -prev data/moves 2>&1 | tee /tmp/movesdb.txt
+          diff -r data/moves "$RUNNER_TEMP/moves"
+      - name: 生成と上限の検査
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          go run ./cmd/precompute -out "$RUNNER_TEMP/site-data" 2>&1 | tee /tmp/precompute.txt
+      - name: 入力の変更の判定
+        id: judge
+        if: ${{ !cancelled() }}
+        env:
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          set -o pipefail
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            echo "手動実行: 作り直す" | tee /tmp/oracle-judge.txt
+            echo "changed" >> /tmp/oracle-judge.txt
+          else
+            if [ "$REF" = "refs/heads/main" ]; then
+              base="$BEFORE"
+            else
+              base="$(git merge-base origin/main HEAD || true)"
+            fi
+            bash scripts/upstream-oracle/changed.sh "$base" | tee /tmp/oracle-judge.txt
+          fi
+          echo "result=$(tail -n 1 /tmp/oracle-judge.txt)" >> "$GITHUB_OUTPUT"
+      - name: 正解の再生成
+        if: ${{ !cancelled() && steps.judge.outputs.result == 'changed' }}
+        timeout-minutes: 30
+        run: |
+          set -o pipefail
+          bash scripts/upstream-oracle/run.sh "$RUNNER_TEMP/upstream_oracle.json" 2>&1 | tee /tmp/oracle.txt
+      - name: コミット済みと一致
+        if: ${{ !cancelled() && steps.judge.outputs.result == 'changed' }}
+        run: cmp engine/testdata/upstream_oracle.json "$RUNNER_TEMP/upstream_oracle.json"
+      # 検査済みの組(scripts/ci/verify-plan.py の鍵)を復元し、回すキャラを決める(S4 後の開発者決定 3・4)。
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        if: ${{ !cancelled() }}
+        with:
+          path: .verify/wasm.txt
+          key: verify-wasm-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: verify-wasm-
+      - name: 回すキャラの判定(wasm)
+        if: ${{ !cancelled() }}
+        id: plan-wasm
+        env:
+          EVENT: ${{ github.event_name }}
+        run: |
+          set -o pipefail
+          all=""
+          if [ "$EVENT" = "workflow_dispatch" ]; then all="--all"; fi
+          python3 -I scripts/ci/verify-plan.py plan --kind wasm --verified .verify/wasm.txt $all | tee /tmp/plan-wasm.txt
+          echo "$(tail -n 1 /tmp/plan-wasm.txt)" >> "$GITHUB_OUTPUT"
+      # 重い検査(本家の正解との突き合わせ ・Node の通し)は、対象のキャラの指紋か、記録した
+      # 計算の版(scripts/ci/logic-version.json。ack)が変わったときだけ回す。軽い試験(単体)は毎回回す。
+      - name: go test(WASM)
+        if: ${{ !cancelled() }}
+        timeout-minutes: 45
+        env:
+          CHARS: ${{ steps.plan-wasm.outputs.chars }}
+        run: |
+          set -o pipefail
+          skip='^$'
+          if [ -z "$CHARS" ]; then skip='TestConformance_UpstreamOracle$'; fi
+          GOOS=js GOARCH=wasm go test -count=1 -v -timeout 40m -skip "$skip" -exec="$PWD/scripts/wasm/go-test-exec.sh" \
+            ./internal/service/setplay/ ./internal/repository/setplay/ ./engine/ 2>&1 | tee /tmp/wasm-go-test.txt
+      - name: WASM のビルド
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          bash scripts/wasm/build.sh 2>&1 | tee /tmp/wasm-build.txt
+      - name: Go → WASM → JS の通し(node --test)
+        if: ${{ !cancelled() && steps.plan-wasm.outputs.chars != '' }}
+        run: |
+          set -o pipefail
+          node --test scripts/wasm/wasm.test.mjs 2>&1 | tee /tmp/wasm-node.txt
+      # 通ったときだけ検査済みとして残す(打ち切り ・失敗では残さない＝検査が抜けない)。
+      - name: 検査済みの記録(wasm)
+        if: success() && steps.plan-wasm.outputs.chars != ''
+        env:
+          CHARS: ${{ steps.plan-wasm.outputs.chars }}
+        run: python3 -I scripts/ci/verify-plan.py record --kind wasm --verified .verify/wasm.txt --chars "$CHARS"
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        if: success() && steps.plan-wasm.outputs.chars != ''
+        with:
+          path: .verify/wasm.txt
+          key: verify-wasm-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Summary(リポジトリ検査)
+        if: always()
+        run: |
+          {
+            echo "### リポジトリ検査"
+            echo ""
+            echo "- ライセンス宣言: $(grep -E '^違反:' /tmp/licenses.txt || echo '件数を読めなかった')"
+            echo "- Action の固定: $(grep -E '^違反:' /tmp/pinned.txt || echo '件数を読めなかった')"
+            echo "- 公開してはいけない語: $(grep -E '^違反:' /tmp/private-refs.txt 2>/dev/null || echo '件数を読めなかった')"
+            echo "- 計算に効くコードの変更の記録: $(grep -E '^違反:' /tmp/logic-check.txt 2>/dev/null || echo '件数を読めなかった')"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Summary(Go)
+        if: always()
+        run: |
+          if [ -s /tmp/movesdb.txt ]; then
+            { printf '### moves DB\n\n```\n'; grep -vE '^  ' /tmp/movesdb.txt; printf '```\n\n'; } >> "$GITHUB_STEP_SUMMARY"
+          else
+            printf '### moves DB\n\n- 要約を読めなかった\n\n' >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ -s /tmp/go-test.txt ]; then
+            # grep -c は 0 件で exit 1 を返す(bash -e で段が落ちる)。件数は標準出力の 0 で読む。
+            pass="$(grep -cE '^[[:space:]]*--- PASS' /tmp/go-test.txt || true)"
+            fail="$(grep -cE '^[[:space:]]*--- FAIL' /tmp/go-test.txt || true)"
+            skip="$(grep -cE '^[[:space:]]*--- SKIP' /tmp/go-test.txt || true)"
+            line="pass=$pass fail=$fail skip=$skip"
+          else
+            line="件数を読めなかった"
+          fi
+          printf '### Go\n\n- go test: %s\n- 本家の正解との突き合わせ: %s\n' "$line" "$(head -n 1 /tmp/plan-oracle.txt 2>/dev/null || echo '判定を読めなかった')" >> "$GITHUB_STEP_SUMMARY"
+      - name: Summary(事前計算)
+        if: always()
+        run: |
+          if [ -s /tmp/precompute.txt ]; then
+            { printf '### 事前計算\n\n```\n'; grep -vE '^  [a-z_]+ ' /tmp/precompute.txt; printf '```\n\n'; } >> "$GITHUB_STEP_SUMMARY"
+          else
+            printf '### 事前計算\n\n- 要約を読めなかった\n\n' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Summary(本家の正解)
+        if: always()
+        env:
+          RESULT: ${{ steps.judge.outputs.result }}
+        run: |
+          if [ "$RESULT" = "unchanged" ]; then
+            line="入力の変更なし: 作り直しを省いた($(grep -oE '基準 [0-9a-f]+' /tmp/oracle-judge.txt || echo '基準を読めなかった'))"
+          elif [ "$RESULT" = "changed" ]; then
+            line="作り直した: $(grep -oE 'cells: [0-9]+' /tmp/oracle.txt 2>/dev/null || echo '件数を読めなかった')"
+          else
+            line="判定を読めなかった"
+          fi
+          printf '### 本家の正解\n\n- %s\n' "$line" >> "$GITHUB_STEP_SUMMARY"
+      - name: Summary(WASM)
+        if: always()
+        run: |
+          if [ -s /tmp/wasm-go-test.txt ]; then
+            pass="$(grep -cE '^[[:space:]]*--- PASS' /tmp/wasm-go-test.txt || true)"
+            fail="$(grep -cE '^[[:space:]]*--- FAIL' /tmp/wasm-go-test.txt || true)"
+            skip="$(grep -cE '^[[:space:]]*--- SKIP' /tmp/wasm-go-test.txt || true)"
+            go_line="pass=$pass fail=$fail skip=$skip"
+          else
+            go_line="件数を読めなかった"
+          fi
+          size="$(grep -E '^setplay.wasm:' /tmp/wasm-build.txt 2>/dev/null || true)"
+          node_line="$(grep -E '^# (pass|fail) ' /tmp/wasm-node.txt 2>/dev/null | tr '\n' ' ' || true)"
+          {
+            echo "### WASM"
+            echo ""
+            echo "- go test(GOOS=js GOARCH=wasm): $go_line"
+            echo "- サイズ: ${size:-読めなかった}"
+            echo "- node --test: ${node_line:-件数を読めなかった(検査済みで省いたときも空)}"
+            echo "- 重い検査: $(head -n 1 /tmp/plan-wasm.txt 2>/dev/null || echo '判定を読めなかった')"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # フロント(S5)。tsc ・vitest(単体)→ サイトデータと WASM の用意 → ビルド(配信の上限の検査を含む)→ E2E(Playwright)。
+  # E2E はビルドした dist を web/public/_headers どおりのヘッダで配って回す(CSP 等の下で WASM ・Worker ・コピーが動くこと)。
+  # ★生成物(dist)は成果物として残さない。公開物は CI からだけ出す(AGENTS §8-12)。
+  web:
+    name: Web
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # 版は web/package.json の packageManager から読む。
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          package_json_file: web/package.json
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      # サイトデータ(cmd/precompute)と WASM(cmd/wasm)を作るのに Go が要る。
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: pnpm install
+        working-directory: web
+        run: pnpm install --frozen-lockfile
+      - name: tsc
+        if: ${{ !cancelled() }}
+        working-directory: web
+        run: pnpm exec tsc --noEmit
+      - name: vitest
+        if: ${{ !cancelled() }}
+        working-directory: web
+        run: |
+          set -o pipefail
+          pnpm exec vitest --run 2>&1 | tee /tmp/vitest.txt
+      - name: サイトデータと WASM の用意
+        if: ${{ !cancelled() }}
+        working-directory: web
+        run: |
+          set -o pipefail
+          bash scripts/prepare-assets.sh 2>&1 | tee /tmp/assets.txt
+      - name: ビルドと配信の上限
+        if: ${{ !cancelled() }}
+        working-directory: web
+        run: |
+          set -o pipefail
+          pnpm build 2>&1 | tee /tmp/build.txt
+      - name: Playwright の Chromium
+        if: ${{ !cancelled() }}
+        working-directory: web
+        run: pnpm exec playwright install --with-deps chromium
+      - name: E2E(Playwright)
+        if: ${{ !cancelled() }}
+        working-directory: web
+        run: |
+          set -o pipefail
+          pnpm exec playwright test 2>&1 | tee /tmp/e2e.txt
+      - name: Summary
+        if: always()
+        run: |
+          strip() { sed -E 's/\x1b\[[0-9;]*[A-Za-z]//g' "$1" 2>/dev/null; }
+          vitest="$(strip /tmp/vitest.txt | grep -E '^[[:space:]]*Tests[[:space:]]' | tail -n 1)"
+          limits="$(strip /tmp/build.txt | grep -E '^違反:' | tail -n 1)"
+          files="$(strip /tmp/build.txt | grep -E '^ファイル:' | tail -n 1)"
+          e2e="$(strip /tmp/e2e.txt | grep -E '^[[:space:]]*[0-9]+ (passed|failed|flaky|skipped)' | tr -s ' ' | paste -sd ',' -)"
+          {
+            printf '### Web\n\n'
+            printf -- '- vitest: %s\n' "${vitest:-件数を読めなかった}"
+            printf -- '- 配信の上限: %s / %s\n' "${files:-ファイル数を読めなかった}" "${limits:-件数を読めなかった}"
+            printf -- '- E2E: %s\n' "${e2e:-件数を読めなかった}"
+          } >> "$GITHUB_STEP_SUMMARY"

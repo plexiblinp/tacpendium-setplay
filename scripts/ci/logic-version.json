@@ -1,0 +1,103 @@
+{
+  "_comment": "重い検査の差分実行の記録(scripts/ci/verify-plan.py)。watched のコードを変えたら check が CI を止める。影響を判断して ack で記録する(docs/precompute.md の「CI での差分実行」)。手で書き換えない。",
+  "watched": [
+    "internal",
+    "engine",
+    "cmd",
+    "go.mod",
+    "upstream/tacpendium.lock",
+    "scripts/wasm"
+  ],
+  "trees": {
+    "internal": "1432a8173859e05472b919f42b1890f885ed76f3c665fde2f38bc2d081dda024",
+    "engine": "20a06385b573e36a3248796c31c15da1f9200f0cfa941469da8555a2fa666028",
+    "cmd": "f4a906944618db807ab1c95dc24e8156be86a7fe820c48c4f6a829e7947e9258",
+    "go.mod": "740fb8ea91ef5c0b709528e923ed260fadc0ccf28433e5c6d13ff1935fc2fef4",
+    "upstream/tacpendium.lock": "7da1bc2f107a4fc4d38e5d9887c2424f1b2c30f287b0b4992698970900d43efc",
+    "scripts/wasm": "4ed68029b1a31954960d131bdeefec0543ecaabfcf87bfa6f445333f66bfbf82"
+  },
+  "kinds": {
+    "oracle": {
+      "version": 1,
+      "chars": {}
+    },
+    "wasm": {
+      "version": 1,
+      "chars": {}
+    }
+  },
+  "log": [
+    {
+      "at": "2026-10-11T00:00:00Z",
+      "decision": "all",
+      "kinds": [
+        "oracle",
+        "sweep",
+        "wasm"
+      ],
+      "chars": [],
+      "changed": [
+        "internal",
+        "engine",
+        "cmd",
+        "go.mod",
+        "upstream/tacpendium.lock",
+        "scripts/wasm"
+      ],
+      "reason": "初期化(S4 の目視レビュー後、案 A に切り替え。鍵の形が変わったので全部を 1 回回す)"
+    },
+    {
+      "at": "2026-10-11T11:04:38Z",
+      "decision": "none",
+      "kinds": [],
+      "chars": [],
+      "changed": [
+        "engine"
+      ],
+      "reason": "S4 目視レビュー後: 版の引き継ぎを calcFingerprint 基準に(計算結果は不変)・突き合わせに安全網の環境変数を追加(試験のみ)。鍵の形が変わったので最初の CI は全部回る(初期化の行)"
+    },
+    {
+      "at": "2026-10-11T18:32:49Z",
+      "decision": "none",
+      "kinds": [],
+      "chars": [],
+      "changed": [
+        "cmd"
+      ],
+      "reason": "S5: cmd/precompute に -tables=false(表を作らない)を足しただけ。既定(true)の出力・表・結合・エンジンは変えていない(sweep/oracle/wasm の結果に影響なし)"
+    },
+    {
+      "at": "2026-10-12T10:29:14Z",
+      "decision": "none",
+      "kinds": [],
+      "chars": [],
+      "changed": [
+        "internal",
+        "engine",
+        "cmd",
+        "scripts/wasm"
+      ],
+      "reason": "S6: 繋ぎ表の仕組みを削除(S5 後の開発者決定 2。service.go は本家と同じ runEngine の呼び出しに戻した)・票(Votes)を追加(票が空なら並びも中身も不変。応答に recipeKey が増えたが本家突き合わせの正準形には入らない)。oracle/wasm の結果に影響なし"
+    },
+    {
+      "at": "2026-10-12T10:58:14Z",
+      "decision": "none",
+      "kinds": [],
+      "chars": [],
+      "changed": [
+        "cmd"
+      ],
+      "reason": "S6 レビュー低-3: cmd/precompute の試験の KA 標本とクエリを戻しただけ(試験のみ。計算は不変)"
+    },
+    {
+      "at": "2026-10-18T02:13:47Z",
+      "decision": "none",
+      "kinds": [],
+      "chars": [],
+      "changed": [
+        "go.mod"
+      ],
+      "reason": "S7: toolchain go1.26.8→go1.26.9(標準ライブラリの脆弱性修正)。手元の go1.26.9 で go test -count=1 ./... EXIT=0・PASS 348・本家との突き合わせ 5208 条件・不一致 0 を確認したため CI で全キャラを回し直さない"
+    }
+  ]
+}
