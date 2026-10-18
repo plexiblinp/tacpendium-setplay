@@ -4,7 +4,7 @@
 import { z } from "zod";
 
 import { SAFE_JUMP_KINDS, TARGET_TYPE_ORDER } from "../lib/conditions";
-import { GAP_G_MAX, GAP_G_MIN, KA_MAX, KA_MIN, N_MIN_LOWER } from "../lib/constants";
+import { GAP_G_MAX, GAP_G_MIN, KA_MAX_SITE, KA_MIN, N_MIN_LOWER } from "../lib/constants";
 import { NOTATION_KINDS } from "../lib/data";
 import { LANGS } from "../lib/langs";
 
@@ -46,14 +46,14 @@ const count = z.number().int().nonnegative().max(BEACON_COUNT_MAX);
 export const beaconSchema = z.strictObject({
   v: z.literal(BEACON_SCHEMA_VERSION),
   char: code,
-  ka: z.number().int().min(KA_MIN).max(KA_MAX),
+  ka: z.number().int().min(KA_MIN).max(KA_MAX_SITE),
   mode: z.enum(["meaty", "gap", "filler"]),
   nMin: z.number().int().min(N_MIN_LOWER).max(N_MAX_LIMIT).nullable(),
   /** 0 は「上限なし」(本家と同じ)。 */
   nMax: z.number().int().min(0).max(N_MAX_LIMIT).nullable(),
   gMin: z.number().int().min(GAP_G_MIN).max(GAP_G_MAX).nullable(),
   gMax: z.number().int().min(GAP_G_MIN).max(GAP_G_MAX).nullable(),
-  remain: z.number().int().min(0).max(KA_MAX).nullable(),
+  remain: z.number().int().min(0).max(KA_MAX_SITE).nullable(),
   safeJump: z.enum(SAFE_JUMP_KINDS).nullable(),
   targetTypes: z.array(z.enum(TARGET_TYPE_ORDER)).max(TARGET_TYPE_ORDER.length),
   targetMove: code.nullable(),
@@ -100,7 +100,7 @@ export type VoteValue = (typeof VOTE_VALUES)[number];
 
 export const voteRequestSchema = z.strictObject({
   char: code,
-  ka: z.number().int().min(KA_MIN).max(KA_MAX),
+  ka: z.number().int().min(KA_MIN).max(KA_MAX_SITE),
   recipe: recipeKeySchema,
   value: z.union([z.literal(1), z.literal(-1), z.literal(0)]),
 });

@@ -1,6 +1,7 @@
 {
   "app": {
     "title": "Setplay Suggestions (unofficial)",
+    "localBadge": "Local",
     "loadingData": "Loading data...",
     "loadError": "Failed to load data. Please reload the page",
     "urlRejected": "Some conditions in the shared URL could not be read and were reset to defaults: {{keys}}"
@@ -56,7 +57,10 @@
     "ka": "Knockdown advantage",
     "kaUnit": "F",
     "kaHelp": "Frame advantage after the knockdown at the end of your combo ({{min}} to {{max}}).",
+    "kaOverLimit": "Over {{max}}? Use the local version (a download that runs on your PC)",
+    "kaHelpLocal": "Frame advantage after the knockdown at the end of your combo ({{min}} or more; no upper limit in the local version. Larger values take longer).",
     "kaInvalid": "Enter a whole number from {{min}} to {{max}}",
+    "kaInvalidLocal": "Enter a whole number of {{min}} or more",
     "characterRequired": "Select a character"
   },
   "setplay": {
@@ -176,7 +180,8 @@
     "source": "Source code (AGPL-3.0)",
     "dataCredit": "Move and frame data © plexiblinp and the Tacpendium contributors (CC BY-SA 4.0; converted, notations added, and computed)",
     "unofficial": "An unofficial, non-commercial tool developed by an individual. Contains no game logos or images. Frame data is measured by hand.",
-    "privacy": "Privacy policy"
+    "privacy": "Privacy policy",
+    "localNotice": "Local version: suggestions are calculated in this browser on your PC. No usage data or votes are sent."
   },
   "privacy": {
     "title": "Privacy policy",

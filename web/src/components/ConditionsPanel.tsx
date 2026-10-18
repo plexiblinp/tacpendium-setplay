@@ -12,11 +12,13 @@ import {
   FILLER_REMAIN_MIN,
   GAP_G_MAX,
   GAP_G_MIN,
-  KA_MAX,
   KA_MIN,
+  kaMaxFor,
   N_MIN_LOWER,
+  RELEASES_URL,
   SLOW_KA_THRESHOLD,
 } from "../lib/constants";
+import type { Flavor } from "../lib/flavor";
 import type { ManifestCharacter, Move, NotationKind } from "../lib/data";
 import type { Mode } from "../lib/engineTypes";
 import { parseIntInRange } from "../lib/conditions";
@@ -36,6 +38,8 @@ interface Props {
   onRun: (c: Conditions) => void;
   /** 条件・結果・URL を最初の状態に戻す(言語と表記は戻さない＝利用者の設定)。 */
   onReset: () => void;
+  /** ビルドの種類(KA の上限と説明が変わる。HANDOVER D10)。 */
+  flavor: Flavor;
 }
 
 const MODES: readonly Mode[] = ["meaty", "gap", "filler"];
@@ -44,7 +48,7 @@ const MODE_LABEL = { meaty: "setplay.modeMeaty", gap: "setplay.modeGap", filler:
 /** 欄の誤り → 文言のキー。 */
 const ERROR_KEY: Record<FormError, string> = {
   characterRequired: "form.characterRequired",
-  kaInvalid: "form.kaInvalid",
+  kaInvalid: "form.kaInvalid", // ローカル版は form.kaInvalidLocal(上限なし)
   nMinInvalid: "setplay.nMinInvalid",
   nMaxInvalid: "setplay.nMaxInvalid",
   nMaxBelowMin: "setplay.nMaxBelowMinHint",
@@ -59,15 +63,17 @@ function selectAllOnFocus(e: FocusEvent<HTMLInputElement>) {
   e.currentTarget.select();
 }
 
-export function ConditionsPanel({ form, onChange, characters, lang, moves, notation, running, onRun, onReset }: Props) {
+export function ConditionsPanel({ form, onChange, characters, lang, moves, notation, running, onRun, onReset, flavor }: Props) {
   const { t } = useTranslation();
   // 「重ねる技」の選び方(種類で選ぶ／1 つの技を指定)。表示の状態で、条件に効くのは targetMove だけ。
   const [byMove, setByMove] = useState(form.targetMove != null);
   const set = <K extends keyof FormState>(k: K, v: FormState[K]) => onChange({ ...form, [k]: v });
 
-  const validated = validateForm(form);
+  const kaMax = kaMaxFor(flavor);
+  const local = flavor === "local";
+  const validated = validateForm(form, kaMax);
   const character = characters.find((c) => c.code === form.character) ?? null;
-  const ka = parseIntInRange(form.kaText, KA_MIN, KA_MAX);
+  const ka = parseIntInRange(form.kaText, KA_MIN, kaMax);
   const remain = parseIntInRange(form.remainText, FILLER_REMAIN_MIN);
   const isFiller = form.mode === "filler";
   // URL から読んだ条件に技があれば、技の指定として出す(欄は表示の後に URL から埋まるため、初期値だけでは足りない)。
@@ -123,7 +129,7 @@ export function ConditionsPanel({ form, onChange, characters, lang, moves, notat
               type="number"
               inputMode="numeric"
               min={KA_MIN}
-              max={KA_MAX}
+              max={kaMax}
               value={form.kaText}
               onChange={(e) => set("kaText", e.target.value)}
               onFocus={selectAllOnFocus}
@@ -134,7 +140,18 @@ export function ConditionsPanel({ form, onChange, characters, lang, moves, notat
           </span>
         </label>
       </div>
-      <p className="help">{t("form.kaHelp", { min: KA_MIN, max: KA_MAX })}</p>
+      {local ? (
+        <p className="help" data-testid="ka-help">
+          {t("form.kaHelpLocal", { min: KA_MIN })}
+        </p>
+      ) : (
+        <p className="help" data-testid="ka-help">
+          {t("form.kaHelp", { min: KA_MIN, max: kaMax })}{" "}
+          <a href={RELEASES_URL} target="_blank" rel="noopener noreferrer" data-testid="local-version-link">
+            {t("form.kaOverLimit", { max: kaMax })}
+          </a>
+        </p>
+      )}
 
       <div className="row" role="group" aria-label={t("setplay.modeLabel")} data-testid="mode">
         <span className="label">{t("setplay.modeLabel")}</span>
@@ -231,7 +248,7 @@ export function ConditionsPanel({ form, onChange, characters, lang, moves, notat
             {SAFE_JUMP_KINDS.map((kind) => {
               const v = character?.safeJump?.[kind];
               const label = t(`setplay.safeJumpKind.${kind}`);
-              const sj = v == null ? null : safeJumpConditions(form, kind, v);
+              const sj = v == null ? null : safeJumpConditions(form, kind, v, kaMax);
               return (
                 <button
                   key={kind}
@@ -384,7 +401,7 @@ export function ConditionsPanel({ form, onChange, characters, lang, moves, notat
         <ul className="warn" data-testid="form-errors">
           {shownErrors.map((e) => (
             <li key={e} data-testid={`form-error-${e}`}>
-              {t(ERROR_KEY[e], { min: KA_MIN, max: KA_MAX })}
+              {t(e === "kaInvalid" && local ? "form.kaInvalidLocal" : ERROR_KEY[e], { min: KA_MIN, max: kaMax })}
             </li>
           ))}
         </ul>

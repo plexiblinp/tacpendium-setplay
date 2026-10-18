@@ -4,10 +4,10 @@ import {
   FILLER_REMAIN_MIN,
   GAP_G_MAX,
   GAP_G_MIN,
-  KA_MAX,
   KA_MIN,
   N_MIN_LOWER,
 } from "./constants";
+import { KA_MAX } from "./flavor";
 import {
   defaultConditions,
   parseIntInRange,
@@ -84,11 +84,12 @@ export interface Validated {
  * 使わない欄の値は既定値で埋める(エンジンには送らない＝toEngineQuery)。
  * safeJump はここでは null(安全飛びのボタンは validateForm の後で remain と種類を差し替える)。
  */
-export function validateForm(f: FormState): Validated {
+/** kaMax は KA の上限(サイト 100・ローカル版は外す。既定はこのビルドの上限)。 */
+export function validateForm(f: FormState, kaMax: number = KA_MAX): Validated {
   const errors: FormError[] = [];
   const d = defaultConditions(f.character, KA_MIN);
   if (f.character === "") errors.push("characterRequired");
-  const ka = parseIntInRange(f.kaText, KA_MIN, KA_MAX);
+  const ka = parseIntInRange(f.kaText, KA_MIN, kaMax);
   if (ka == null) errors.push("kaInvalid");
 
   const nMin = parseIntInRange(f.nMinText, N_MIN_LOWER);
@@ -140,8 +141,8 @@ export function validateForm(f: FormState): Validated {
 }
 
 /** 安全飛びのボタン: 有利調整を remain = そのキャラの値で出す(本家と同じ計算)。KA・キャラの誤りは validateForm と同じ。 */
-export function safeJumpConditions(f: FormState, kind: SafeJumpKind, value: number): Validated {
-  const v = validateForm({ ...f, mode: "filler", remainText: String(value) });
+export function safeJumpConditions(f: FormState, kind: SafeJumpKind, value: number, kaMax: number = KA_MAX): Validated {
+  const v = validateForm({ ...f, mode: "filler", remainText: String(value) }, kaMax);
   if (v.conditions == null) return v;
   return { conditions: { ...v.conditions, safeJump: kind, targetMove: null }, errors: [] };
 }

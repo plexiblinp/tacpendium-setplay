@@ -1,8 +1,21 @@
 // 画面とエンジンの境目の定数。値の出どころはコメントのとおり(マジックナンバーを散らさない。AGENTS §4)。
+// ★edge/(Worker)も読むので、ビルドで変わる値(import.meta.env)はここに置かない(flavor.ts)。
+import type { Flavor } from "./flavor";
 
-/** KA(ダウン後の有利フレーム)の下限・上限。サイトは 0〜100(HANDOVER D10。engine.SiteMaxKnockdownAdvantage と同じ)。 */
+/** KA(ダウン後の有利フレーム)の下限。 */
 export const KA_MIN = 0;
-export const KA_MAX = 100;
+/** サイトの KA の上限(HANDOVER D10。engine.SiteMaxKnockdownAdvantage と同じ)。計測・票の受け口(edge/)も常にこの値で検査する。 */
+export const KA_MAX_SITE = 100;
+/**
+ * ローカル版の KA の上限。アプリでは数で切らない(D10「KA 無制限」)ので、エンジンが受ける最大(engine.KnockdownFromFloat の
+ * int32 の上限)にする。重い条件は「時間がかかる」の注意と中断で扱う(S8)。
+ */
+export const KA_MAX_LOCAL = 2_147_483_647;
+
+/** ビルドの種類ごとの KA の上限。 */
+export function kaMaxFor(flavor: Flavor): number {
+  return flavor === "local" ? KA_MAX_LOCAL : KA_MAX_SITE;
+}
 
 /** エンジンに渡す limit。本家の maxLimit(3000)。limit は「並べ替えの後で先頭を切る」だけなので、
  * 上限で 1 回数えて画面で PAGE_SIZE 件ずつ出す(「さらに表示」で計算し直さない。docs/frontend.md)。 */
@@ -38,6 +51,8 @@ export const APP_NAME = "Tacpendium-Setplay";
 /** ソースと Issue の置き場(AGPL のソースへのリンク・翻訳の改善提案。HANDOVER §6・§8)。 */
 export const SOURCE_URL = "https://github.com/plexiblinp/tacpendium-setplay";
 export const ISSUES_URL = `${SOURCE_URL}/issues`;
+/** ローカル版の配布ページ(KA が 100 を超えるときの案内。HANDOVER D10)。 */
+export const RELEASES_URL = `${SOURCE_URL}/releases`;
 /**
  * 意見・不具合・翻訳の改善を送る Google フォーム(ログイン不要・日英併記・URL は書けない。S7 の開発者決定)。
  * 本家用の Google アカウントで作ったもの。空にするとフォームへのリンクを出さず、Issues だけを案内する。

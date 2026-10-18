@@ -17,8 +17,10 @@ const CAUTIONS = [
 ] as const;
 const RULES = ["ruleFastest", "ruleChain", "ruleExcluded", "ruleStance", "ruleNewCharacters"] as const;
 
-export function Guide() {
+/** voting: 票(グッド/バッド)の案内を出すか(ローカル版は票を使わない)。 */
+export function Guide({ voting }: { voting: boolean }) {
   const { t } = useTranslation();
+  const tips = voting ? TIPS : TIPS.filter((k) => k !== "tipVote");
   return (
     <div className="guide" data-testid="guide">
       <p className="lead">
@@ -44,7 +46,7 @@ export function Guide() {
           ))}
         </ol>
         <ul>
-          {TIPS.map((k) => (
+          {tips.map((k) => (
             <li key={k}>{t(`guide.${k}`)}</li>
           ))}
         </ul>
