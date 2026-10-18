@@ -226,3 +226,7 @@ GitHub Actions（push 時点）: CI run 39117763196（`9f22180`）success、Loca
  web/src/styles.css                       |   1 +
  44 files changed, 2166 insertions(+), 105 deletions(-)
 ```
+
+### 追記: 取り込み後の GitHub Actions
+- コードの最終版 `b247ddb`: CI run 39119276396 success、Local release run 39119276394 success（ubuntu・macos・windows の起動確認を含む）。以後のコミットは docs だけ。
+- 報告を書いた後の再確認（§8-11。HEAD `b67d45b`）: `go test ./cmd/local/ ./internal/localserver/` EXIT=0、tsc EXIT=0、vitest EXIT=0（174 passed）、verify-plan・check-private-refs・check-licenses いずれも 違反: 0 件。最終確認の値と一致。
