@@ -4,7 +4,7 @@ import { KA_MAX_LOCAL, KA_MAX_SITE, kaMaxFor } from "./constants";
 import { FLAVOR, flavorFromMode, KA_MAX, LOCAL_BUILD_MODE } from "./flavor";
 
 describe("ビルドの種類(S8)", () => {
-  it("mode が local のときだけローカル版。mode が無い(import.meta.env の無い束ね)ときはサイト", () => {
+  it("mode が standalone のときだけローカル版。mode が無い(import.meta.env の無い束ね)ときはサイト", () => {
     expect(flavorFromMode(LOCAL_BUILD_MODE)).toBe("local");
     expect(flavorFromMode("production")).toBe("site");
     expect(flavorFromMode("test")).toBe("site");

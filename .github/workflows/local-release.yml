@@ -1,0 +1,196 @@
+# ローカル版(HANDOVER D10・§5・S8)のビルド → 3 OS での起動確認 → Releases。
+# - build: ubuntu で 1 回だけビルドする(データ・WASM・ローカル版のフロントを埋め込み、5 種へ cross compile)。
+# - smoke: ubuntu・macos・windows で実バイナリを起動し、画面・データ・WASM がヘッダ付きで配られることを確かめる
+#   (scripts/local/smoke.sh。画面の操作は CI の Web job の E2E(project local)が Linux で見る)。
+# - release: タグ v* の push のときだけ。**draft** の Release を作り、成果物と SHA256SUMS を付ける。
+#   公開(draft を外す)は開発者が GitHub の画面で行う(AGENTS §3-3。公開物は CI からだけ出す＝§8-12)。
+# 起動: タグ v*・手動・main 向けの PR と main / claude/** への push(ローカル版に関わるパスが変わったときだけ)。
+#   必須 check ではないので paths フィルタを使ってよい(AGENTS §9 の注意は必須 check の話)。
+name: Local release
+
+on:
+  push:
+    branches: [main, 'claude/**']
+    tags: ['v*']
+    paths:
+      - cmd/local/**
+      - internal/localserver/**
+      - scripts/local/**
+      - web/**
+      - data/**
+      - engine/**
+      - internal/service/**
+      - internal/repository/**
+      - cmd/wasm/**
+      - cmd/precompute/**
+      - go.mod
+      - go.sum
+      - .github/workflows/local-release.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - cmd/local/**
+      - internal/localserver/**
+      - scripts/local/**
+      - web/**
+      - data/**
+      - engine/**
+      - internal/service/**
+      - internal/repository/**
+      - cmd/wasm/**
+      - cmd/precompute/**
+      - go.mod
+      - go.sum
+      - .github/workflows/local-release.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: local-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: ローカル版のビルド
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          package_json_file: web/package.json
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: pnpm install
+        working-directory: web
+        run: pnpm install --frozen-lockfile
+      # 版: タグならタグ名、それ以外はコミットの短い SHA。
+      - name: ビルド(5 種)
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -o pipefail
+          if [ "$REF_TYPE" = "tag" ]; then export VERSION="$REF_NAME"; else export VERSION="${SHA:0:12}"; fi
+          bash scripts/local/build.sh "$RUNNER_TEMP/bin" linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64 2>&1 | tee /tmp/local-build.txt
+      # 配る形: OS ごとの圧縮(バイナリ・ライセンス・NOTICE・使い方)。windows は zip、ほかは tar.gz。
+      - name: 圧縮と SHA256SUMS
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/release"
+          mkdir -p "$out"
+          for bin in "$RUNNER_TEMP"/bin/*; do
+            name="$(basename "$bin")"; base="${name%.exe}"
+            dir="$RUNNER_TEMP/pkg/$base"
+            mkdir -p "$dir"
+            cp "$bin" LICENSE NOTICE DATA-LICENSE.md "$dir/"
+            cp docs/local.md "$dir/README.md"
+            case "$name" in
+              *.exe) (cd "$RUNNER_TEMP/pkg" && zip -qr "$out/$base.zip" "$base") ;;
+              *) chmod +x "$dir/$name"; tar -C "$RUNNER_TEMP/pkg" -czf "$out/$base.tar.gz" "$base" ;;
+            esac
+          done
+          (cd "$out" && sha256sum * > SHA256SUMS && cat SHA256SUMS)
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: local-release
+          path: ${{ runner.temp }}/release/
+          retention-days: 7
+          if-no-files-found: error
+      - name: Summary
+        if: always()
+        run: |
+          {
+            printf '### ローカル版のビルド\n\n```\n'
+            grep -E '^tacpendium-setplay-local_|^版:' /tmp/local-build.txt 2>/dev/null || echo '要約を読めなかった'
+            printf '```\n'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  smoke:
+    name: 起動確認(${{ matrix.os }})
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            archive: tacpendium-setplay-local_linux_amd64.tar.gz
+          - os: macos-latest
+            archive: tacpendium-setplay-local_darwin_arm64.tar.gz
+          - os: windows-latest
+            archive: tacpendium-setplay-local_windows_amd64.zip
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: local-release
+          path: release
+      # 配る圧縮そのものを展開し、中のバイナリを起動する(利用者と同じ手順)。
+      - name: 展開
+        shell: bash
+        env:
+          ARCHIVE: ${{ matrix.archive }}
+        run: |
+          set -euo pipefail
+          (cd release && grep " $ARCHIVE\$" SHA256SUMS | (sha256sum -c - 2>/dev/null || shasum -a 256 -c -))
+          mkdir -p x
+          case "$ARCHIVE" in
+            *.zip) unzip -q "release/$ARCHIVE" -d x ;;
+            *) tar -C x -xzf "release/$ARCHIVE" ;;
+          esac
+          ls -lR x
+      - name: 起動確認
+        shell: bash
+        env:
+          ARCHIVE: ${{ matrix.archive }}
+        run: |
+          set -o pipefail
+          base="${ARCHIVE%.zip}"; base="${base%.tar.gz}"
+          bin="x/$base/$base"
+          case "$ARCHIVE" in *.zip) bin="$bin.exe" ;; esac
+          bash scripts/local/smoke.sh "$bin" 2>&1 | tee /tmp/smoke.txt
+      - name: Summary
+        if: always()
+        shell: bash
+        run: |
+          printf '### 起動確認(%s)\n\n- %s\n' "${{ matrix.os }}" "$(grep -E '^失敗:' /tmp/smoke.txt 2>/dev/null || echo '件数を読めなかった')" >> "$GITHUB_STEP_SUMMARY"
+
+  release:
+    name: Release(draft)
+    needs: smoke
+    if: github.event_name == 'push' && github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Release を作るのにだけ書き込みが要る(この job だけ)。
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: local-release
+          path: release
+      - name: draft の Release を作る
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          gh release create "$TAG" release/* --draft --verify-tag --title "Tacpendium-Setplay local $TAG" \
+            --notes "ローカル版(KA の上限なし)。使い方は同梱の README.md(docs/local.md)。SHA256SUMS で中身を確かめられます。/ Local version (no knockdown-advantage limit). See README.md in the archive."

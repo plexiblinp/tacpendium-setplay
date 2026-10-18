@@ -1,0 +1,40 @@
+# govulncheck だけを回す(S8。開発者指示 2026-10-18)。CI の Go job でも毎回回すが、コードが変わらなくても
+# 脆弱性 DB は増えるので、週 1 回の定期実行で新しく見つかったものを知らせる(失敗の通知を知らせとして使う)。
+# 中身は scripts/govulncheck.sh(手元でも同じものを回せる)。リポジトリへは何も書き込まない。
+name: govulncheck
+
+on:
+  workflow_dispatch:
+  # 週 1 回(月曜 09:41 JST)。
+  schedule:
+    - cron: "41 0 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  govulncheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: govulncheck
+        run: |
+          set -o pipefail
+          bash scripts/govulncheck.sh 2>&1 | tee /tmp/govulncheck.txt
+      - name: Summary
+        if: always()
+        run: |
+          printf '### govulncheck\n\n- %s / %s\n' \
+            "$(grep -E '^対象:' /tmp/govulncheck.txt 2>/dev/null || echo '対象を読めなかった')" \
+            "$(grep -E '^違反:' /tmp/govulncheck.txt 2>/dev/null || echo '件数を読めなかった')" >> "$GITHUB_STEP_SUMMARY"

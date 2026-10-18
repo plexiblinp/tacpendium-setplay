@@ -114,6 +114,13 @@ jobs:
       - name: go vet
         if: ${{ !cancelled() }}
         run: go vet ./...
+      # 既知の脆弱性(S8)。対象は ./...・WASM・ローカル版(windows/darwin/linux)。版は scripts/govulncheck.sh で固定。
+      # 呼ばれている脆弱な関数があれば赤。コードが変わらなくても DB は増えるので、週 1 回の govulncheck.yml でも回す。
+      - name: govulncheck
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          bash scripts/govulncheck.sh 2>&1 | tee /tmp/govulncheck.txt
       # 検査済みの組(scripts/ci/verify-plan.py の鍵)を復元し、回すキャラを決める(S4 後の開発者決定 3・4)。
       - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: ${{ !cancelled() }}
@@ -263,6 +270,7 @@ jobs:
             echo "- Action の固定: $(grep -E '^違反:' /tmp/pinned.txt || echo '件数を読めなかった')"
             echo "- 公開してはいけない語: $(grep -E '^違反:' /tmp/private-refs.txt 2>/dev/null || echo '件数を読めなかった')"
             echo "- 計算に効くコードの変更の記録: $(grep -E '^違反:' /tmp/logic-check.txt 2>/dev/null || echo '件数を読めなかった')"
+            echo "- govulncheck: $(grep -E '^違反:' /tmp/govulncheck.txt 2>/dev/null || echo '件数を読めなかった')"
           } >> "$GITHUB_STEP_SUMMARY"
       - name: Summary(Go)
         if: always()
@@ -325,8 +333,9 @@ jobs:
             echo "- 重い検査: $(head -n 1 /tmp/plan-wasm.txt 2>/dev/null || echo '判定を読めなかった')"
           } >> "$GITHUB_STEP_SUMMARY"
 
-  # フロント(S5)。tsc ・vitest(単体)→ サイトデータと WASM の用意 → ビルド(配信の上限の検査を含む)→ E2E(Playwright)。
+  # フロント(S5)。tsc ・vitest(単体)→ サイトデータと WASM の用意 → ビルド(配信の上限の検査を含む)→ ローカル版のビルド → E2E(Playwright)。
   # E2E はビルドした dist を web/public/_headers どおりのヘッダで配って回す(CSP 等の下で WASM ・Worker ・コピーが動くこと)。
+  # ローカル版(S8)は実バイナリを起動して project local で回す(3 OS の起動確認は local-release.yml)。
   # ★生成物(dist)は成果物として残さない。公開物は CI からだけ出す(AGENTS §8-12)。
   web:
     name: Web
@@ -375,6 +384,12 @@ jobs:
         run: |
           set -o pipefail
           pnpm build 2>&1 | tee /tmp/build.txt
+      # ローカル版の単一バイナリ(この OS 向け 1 つ。build/local/)。データと WASM は前の段のものを使う。
+      - name: ローカル版のビルド
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          SKIP_ASSETS=1 bash scripts/local/build.sh 2>&1 | tee /tmp/local-build.txt
       - name: Playwright の Chromium
         if: ${{ !cancelled() }}
         working-directory: web
@@ -392,10 +407,12 @@ jobs:
           vitest="$(strip /tmp/vitest.txt | grep -E '^[[:space:]]*Tests[[:space:]]' | tail -n 1)"
           limits="$(strip /tmp/build.txt | grep -E '^違反:' | tail -n 1)"
           files="$(strip /tmp/build.txt | grep -E '^ファイル:' | tail -n 1)"
+          local_bin="$(strip /tmp/local-build.txt | grep -E '^tacpendium-setplay-local_' | tail -n 1)"
           e2e="$(strip /tmp/e2e.txt | grep -E '^[[:space:]]*[0-9]+ (passed|failed|flaky|skipped)' | tr -s ' ' | paste -sd ',' -)"
           {
             printf '### Web\n\n'
             printf -- '- vitest: %s\n' "${vitest:-件数を読めなかった}"
             printf -- '- 配信の上限: %s / %s\n' "${files:-ファイル数を読めなかった}" "${limits:-件数を読めなかった}"
+            printf -- '- ローカル版: %s\n' "${local_bin:-読めなかった}"
             printf -- '- E2E: %s\n' "${e2e:-件数を読めなかった}"
           } >> "$GITHUB_STEP_SUMMARY"

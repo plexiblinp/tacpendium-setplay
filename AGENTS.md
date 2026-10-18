@@ -154,6 +154,7 @@ GitHub Actions を書くときは次を守る。どれも本家で「失敗し�
 - `permissions: contents: read` を既定に、`concurrency` で同じ ref の古い実行を打ち切る（private の間は Actions の分数が有限）。Action はコミット SHA 固定。
 - `paths` フィルタは、必須 check を登録するまで入れない（skip された必須 check は pending のままになり、マージできなくなる）。
 - 既存の `upstream-watch.yml` は日 1 回の定期実行と手動起動（公開後に定期実行を再開。開発者決定 2026-10-18）。
+- `govulncheck.yml` は週 1 回と手動起動で govulncheck だけを回す（S8。CI の Go job でも毎回回す）。`local-release.yml` はローカル版のビルド・3 OS の起動確認・タグ `v*` で draft の Release（S8。必須 check ではないので `paths` フィルタあり）。
 - **CI は main 向けの PR・main と `claude/**` への push・手動起動で走る**（public 化で Actions が無料になったので、`claude/` への push での起動を戻した。開発者決定 2026-10-18）。それでも完了報告の「緑」は手元で回した `EXIT=` と件数で示す（§8-1）。
 - 課金は job ごとに 1 分単位で切り上げなので、**job を増やさない**（いまは Go 側・Web 側の 2 つ）。同じ job の中で互いに独立な検査は `if: ${{ !cancelled() }}` で回し、1 つの失敗で他の結果が消えないようにする。
 
