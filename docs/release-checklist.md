@@ -72,6 +72,7 @@ GitHub 設定の項目は、本家（非公開）の公開手順書を S7 で読
 | `.github/workflows/ci.yml` | **済**（2026-10-18）: **`claude/**` への push での起動を戻す**（`push: branches: [main, 'claude/**']`。PR・手動は残す。job は 2 つのまま。開発者決定 2026-10-18）。AGENTS §9 の「push では走らない」の行も直す |
 | `web/src/lib/constants.ts` | **済**（2026-10-18）: `FEEDBACK_FORM_URL` に Google フォームの URL を入れた（空にすると Issues だけを案内する）。フォームは本家用の Google アカウントで、日英併記の 1 つ。「内容」は回答の検証で URL を含めない（正規表現 `https?://|www\.` を含まない）。メールアドレスは収集しない |
 | `web/wrangler.toml` | D1 の `database_id`（デプロイ時。秘密情報ではない） |
+| `.github/workflows/deploy.yml` | S9 で追加。CI が main で緑 → 承認 → Cloudflare へ。`analytics.yml` は S9 で削除（集計は手元） |
 
 ## 5. GitHub のリポジトリ設定（公開する新しいリポジトリで。開発者）
 
@@ -87,7 +88,7 @@ GitHub 設定の項目は、本家（非公開）の公開手順書を S7 で読
 | G-6 | main の ruleset: 削除と force push を禁止、PR 必須、必須 check に `Go・WASM・リポジトリ検査` と `Web` | 必須 check を登録したら `paths` フィルタを入れない（AGENTS §9）。public にした直後に有効か確かめ直す |
 | G-7 | Actions: Workflow permissions を「Read repository contents」、「Allow GitHub Actions to create and approve pull requests」を off、外部からの PR の workflow は承認を必須（初回の協力者） | 全 workflow が `contents: read` を明示しているが、既定も絞る。例外は `local-release.yml` の `release` job だけ（タグ v* の push のとき draft の Release を作るので job に `contents: write`。S8） |
 | G-8 | アカウントの 2FA | HANDOVER §7.4 |
-| G-9 | 集計用の Secrets（`CLOUDFLARE_ACCOUNT_ID`・`CLOUDFLARE_ANALYTICS_TOKEN`）を使うなら Environment に置き、必須レビュアーを付ける | `docs/telemetry.md`「集計用の API トークンの扱い」 |
+| G-9 | Environment `production` を作る: Required reviewers に開発者、Prevent self-review は**付けない**、Deployment branches は main だけ、管理者の迂回は許さない。secrets `CLOUDFLARE_API_TOKEN`・`CLOUDFLARE_ACCOUNT_ID` は**ここにだけ**置く（Repository secret・Variables に置かない） | S9 で変更（2026-10-20）。集計は手元に移したので集計用の Secrets は置かない。`docs/telemetry.md`「デプロイ用の API トークン」 |
 | G-10 | Issues を有効にする（意見・不具合・翻訳の改善とプライバシーの問い合わせの窓口。`CONTRIBUTING.md`）。Pull requests の機能は Dependabot が使うので有効のまま、外からの PR は `CONTRIBUTING.md` のとおり閉じる。Discussions・Wiki・Projects は無効 | 開発者決定 2026-10-18（Google フォーム＋Issues） |
 | G-11 | **About の Website** に、Cloudflare にデプロイしたサイトの URL を入れる（リポジトリの画面の右上 About の歯車 → Website） | **S9 の手番。デプロイが済んでから**（開発者指示 2026-10-18。S8 で記載） |
 

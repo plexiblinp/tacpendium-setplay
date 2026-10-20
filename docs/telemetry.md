@@ -17,7 +17,7 @@ Cloudflare Worker(web/edge/index.ts。/api/* だけが来る。ほかは静的�
   /api/vote   → 検証 → D1(votes・ballots)
   /api/votes  → D1(votes) の (char, ka) の行
         ▼
-集計: web/scripts/analytics/report.mjs（SQL API → Markdown の表）。手元か .github/workflows/analytics.yml（手動起動）
+集計: web/scripts/analytics/report.mjs（SQL API → Markdown の表）。手元でだけ回す（S9。public の Actions のログ・summary は誰でも読めるため）
 ```
 
 | ファイル | 中身 |
@@ -68,40 +68,51 @@ cd web
 CLOUDFLARE_ACCOUNT_ID=… CLOUDFLARE_API_TOKEN=… node scripts/analytics/report.mjs 7   # 直近 7 日
 ```
 
-または GitHub の Actions →「計測の集計」→ Run workflow（日数を入れる）。job summary に表が出る。
+**手元でだけ回す**（S9 の開発者決定 2026-10-20）。以前の `.github/workflows/analytics.yml` は削除した。public のリポジトリでは Actions のログと job summary を誰でも読めるので、集計を出すとプライバシーポリシーの「第三者に渡さない」と利用者の期待からずれるため。集計用のトークンも GitHub に置かずに済む。
+
+トークンをコマンドの文字列に書くと shell の履歴に残る。打ち込んで見えない形で読む（例 bash `read -rs CLOUDFLARE_API_TOKEN && export CLOUDFLARE_API_TOKEN`、PowerShell 7 `$env:CLOUDFLARE_API_TOKEN = Read-Host -MaskInput`）。依存は Node の組み込みだけなので、`pnpm install` は要らない。
 
 出す表: 日ごとの実行数と推定利用者数／**KA 80 以上の実行の割合**（S5 後の開発者決定 1: D を作るかの判断材料）／KA の帯ごとの実行数と待ち時間（中央値・95%・最大）／キャラ別／モード別／言語・表記別／結果と誤りの code／0 件の割合／票の読み込み。
 
-## デプロイの手順（開発者が行う。S7 以降）
+## デプロイの手順（開発者が行う。S9）
 
-AGENTS §3 の 3・4・5（公開・アカウント・秘密情報）に当たるので、ここまでの段階では行っていない。
+公開・アカウント・秘密情報（AGENTS §3 の 3〜5）なので、Cloudflare と GitHub の操作は開発者が行う。デプロイは **GitHub Actions の `deploy.yml` からだけ**（AGENTS §8-12。S9 の開発者決定 2026-10-20: 方式 (a)＝Actions ＋ スコープを絞った API トークン ＋ 承認者付きの Environment）。
 
-1. Cloudflare のアカウント（**カードを登録しない**。無料プラン）。
-2. `cd web && npx wrangler d1 create tacpendium-setplay` → 出た `database_id` を `wrangler.toml` に入れる（秘密情報ではない）。
-3. `npx wrangler d1 execute tacpendium-setplay --remote --file=edge/schema.sql`
-4. `pnpm assets && pnpm build && npx wrangler deploy`（または Cloudflare の GitHub 連携。公開物は CI からだけ出す＝AGENTS §8-12 に合わせるなら連携か Actions）
-5. 集計用のトークン（下）を作り、GitHub の Secrets に `CLOUDFLARE_ACCOUNT_ID`・`CLOUDFLARE_ANALYTICS_TOKEN` を置く。
+1. Cloudflare のアカウント（**カードを登録しない**。無料プラン）と 2FA。
+2. D1 を作る（Cloudflare の画面の D1 か `npx wrangler d1 create tacpendium-setplay`）→ `database_id` を `web/wrangler.toml` に入れる（秘密情報ではない）。
+3. `edge/schema.sql` を D1 に流す（画面の D1 の Console か `npx wrangler d1 execute tacpendium-setplay --remote --file=edge/schema.sql`）。1 回だけ。
+4. デプロイ用のトークン（下の「デプロイ用の API トークン」）を作り、GitHub の Environment `production` の secrets に `CLOUDFLARE_API_TOKEN`・`CLOUDFLARE_ACCOUNT_ID` を置く。
+5. main に入った変更は、CI（`ci.yml`）が緑になると `deploy.yml` が起動し、承認の後に出る。出し直しは Actions →「Deploy」→ Run workflow（main）。
+
+`deploy.yml` の作り（`.github/workflows/deploy.yml` の冒頭のコメントが正本）:
+
+- 起動は「CI が main への push で成功した」とき（`workflow_run`。フォークの PR の CI では動かないよう、push・同じリポジトリ・成功を job の条件で確かめる）と手動だけ。CI が検査したコミットそのものを出す。
+- ビルドの job（トークンなし）とデプロイの job（Environment `production`・トークンあり）に分ける。トークンは `wrangler deploy` の 1 段だけに渡し、デプロイの job では install のスクリプトを動かさない。キャッシュは使わない。
+- `wrangler` は `web/package.json` の devDependency（lockfile で固定。`pnpm-workspace.yaml` の `minimumReleaseAge` で公開 7 日未満の版は入らない）。
 
 無料枠を超えたとき: Worker は 1 日 10 万リクエストを超えると Error 1027（S1 ⑥。静的アセットへの要求は Worker を通らず無料・無制限なので、止まるのは `/api` だけの見込み）。D1 は UTC 0 時まで誤り（票は読めず `unavailable`、投票は 503）。Analytics Engine の超過時の挙動は docs に記載が無い（S1 ⑥。実アカウントで確かめる）。どれも課金には移らない（カード未登録）。
 
-### 集計用の API トークンの扱い（開発者の質問への回答）
+### デプロイ用の API トークン
 
-**作り方**: Cloudflare のダッシュボード → My Profile → API Tokens → Create Token → Custom token。権限は **Account → Account Analytics → Read の 1 つだけ**、対象のアカウントを 1 つに絞る。可能なら有効期限（TTL）を付ける。
+- 作り方: Cloudflare の画面の **Account API tokens**（アカウント所有のトークン）→ Create Token → Custom。権限は **Account → Workers Scripts → Edit**、対象は自分のアカウント 1 つ、**有効期限は 3 か月**（開発者決定 2026-10-20。SF6 の大きな更新の周期に合わせ、更新のたびに作り直す）。D1 の権限が要るかは初回のデプロイで確かめる（S9 報告）。
+- 置き場所: GitHub の **Environment `production` の secrets だけ**（Repository secret・Variables には置かない。Variables は秘密ではない）。Environment には必須の承認者（開発者）と「main だけ」を付け、Prevent self-review は付けない（一人では承認できなくなる）。
+- 期限が切れたとき: デプロイが認証の誤りで止まるだけで、サイト・票・計測は残る。新しいトークンを作って secret を上書きする。
+- 漏れたとき: `docs/incident.md`。
 
-**GitHub の Secrets に置いた場合のリスク**
+### 集計用の API トークンの扱い
 
-- Secrets は暗号化して保存され、ログでは `***` に伏せられる。**フォークからの PR のワークフローには渡らない**（public 化した後も）。
-- 一方で、リポジトリに**書き込める人**（コラボレーター、乗っ取られたアカウント、書き込み権限を持つ Action・Bot）は、ワークフローを書き換えて Secrets を外へ送れる。Secrets の安全はリポジトリの書き込み権限の管理と同じ強さ。2FA・main の保護（HANDOVER §7.4）・Action の SHA 固定がここに効く。
-- 気になるなら GitHub の Environment（例 `analytics`）に Secrets を置き、「必須のレビュアー」を付けると、実行のたびに開発者の承認が要る（このリポジトリの作業ブランチの push では動かない）。
+**作り方**: Cloudflare の画面の Account API tokens → Create Token → Custom。権限は **Account → Account Analytics → Read の 1 つだけ**、対象のアカウントを 1 つに絞り、有効期限を付ける。デプロイ用とは別のトークンにする。
+
+**置き場所**: 開発者の手元だけ（S9 で集計を手元に移した。GitHub には置かない）。使うときに環境変数で渡し（上の「集計」）、ファイル・チャット・コマンドの文字列には書かない。
 
 **漏れた場合に起きること（Account Analytics: Read だけのトークン）**
 
 - できること: そのアカウントの分析データを**読む**こと（本サービスの計測＝キャラ・KA・条件・件数・時間・日替わりのハッシュ。推測: Account Analytics の権限は同じアカウントのほかの分析〔Workers のリクエスト数等〕も読める）。計測に生の IP は入れていない。ハッシュは、その日のソルトが消えた後は IP を当てにくくなる（ソルトの削除は日付が変わった後の最初の要求で行う遅延削除で、D1 の復旧用の記録に残る可能性がある＝上の「利用者のハッシュと日替わりソルト」）。
 - できないこと: サイトの書き換え・デプロイ、D1（票）の読み書き・削除、設定・課金の変更。
 - 起きうる実害: 読み取りの問い合わせを大量に投げられ、無料枠（Analytics Engine の読み取り 1 日 1 万回。S1 ⑥）を使い切られ、その日の自分の集計が失敗する。課金はされない（カード未登録）。
-- 対処: Cloudflare のダッシュボードでそのトークンを **Roll（再発行）か Delete** すれば即座に無効になる。新しいトークンを Secrets に入れ直す。
+- 対処: Cloudflare の画面でそのトークンを **Roll（再発行）か Delete** すれば即座に無効になる。
 
-**別の話: デプロイ用のトークン**（S7 以降で要るなら）は権限が強い（Workers の編集・D1 の編集）。漏れると**サイトのコードを差し替えられ（利用者に悪いスクリプトを配れる）、票を消される**。集計用とは別のトークンにし、できれば Cloudflare の GitHub 連携（トークンを GitHub に置かない）を使う。
+デプロイ用のトークン（上の「デプロイ用の API トークン」）は権限が強い（Worker を差し替えられ、差し替えた Worker から D1 の票も読み書きできる）。漏れたときの手順は `docs/incident.md`。
 
 ## 検査
 

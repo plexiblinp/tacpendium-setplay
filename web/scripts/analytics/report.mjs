@@ -1,7 +1,7 @@
 // 実行計測の集計(S6・HANDOVER §12-4 の開発者決定: 集計スクリプト)。Analytics Engine の SQL API に問い合わせ、Markdown の表を出す。
 //
 // 使い方(手元): CLOUDFLARE_ACCOUNT_ID=… CLOUDFLARE_API_TOKEN=… node scripts/analytics/report.mjs [日数(既定 7)]
-//         (Actions): .github/workflows/analytics.yml(手動起動。出力を job summary に貼る)
+//         手元でだけ回す(S9。public の Actions のログ・summary は誰でも読めるため、Actions の集計は削除した)。
 // トークンは「Account Analytics: Read」だけの読み取り専用にする(docs/telemetry.md)。トークンは表示しない。
 //
 // 列の対応(blobN・doubleN)は書く側と同じ edge/beacon-layout.json から引く。

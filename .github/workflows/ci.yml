@@ -68,6 +68,13 @@ jobs:
         run: |
           set -o pipefail
           bash scripts/check-actions-pinned.sh | tee /tmp/pinned.txt
+      # デプロイの workflow の守り(フォークの PR から起動しない条件・トークンはデプロイの 1 段だけ。S9)。
+      - name: デプロイの workflow の守り
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          python3 -I scripts/check_deploy_workflow_test.py
+          python3 -I scripts/check-deploy-workflow.py | tee /tmp/deploy-workflow.txt
       # Go / フロントの段は決まった場所(ルートの go.mod / web/package.json)だけを見る。
       # 別の場所にできると黙ってスキップして緑になるため、ここで落とす。場所を変えるなら ci.yml を直す。
       - name: go.mod / package.json の置き場所
@@ -268,6 +275,7 @@ jobs:
             echo ""
             echo "- ライセンス宣言: $(grep -E '^違反:' /tmp/licenses.txt || echo '件数を読めなかった')"
             echo "- Action の固定: $(grep -E '^違反:' /tmp/pinned.txt || echo '件数を読めなかった')"
+            echo "- デプロイの workflow の守り: $(grep -E '^違反:' /tmp/deploy-workflow.txt 2>/dev/null || echo '件数を読めなかった')"
             echo "- 公開してはいけない語: $(grep -E '^違反:' /tmp/private-refs.txt 2>/dev/null || echo '件数を読めなかった')"
             echo "- 計算に効くコードの変更の記録: $(grep -E '^違反:' /tmp/logic-check.txt 2>/dev/null || echo '件数を読めなかった')"
             echo "- govulncheck: $(grep -E '^違反:' /tmp/govulncheck.txt 2>/dev/null || echo '件数を読めなかった')"
