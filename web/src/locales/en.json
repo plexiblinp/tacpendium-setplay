@@ -163,6 +163,16 @@
     "hiddenCount": "{{count}} hidden (they come back on your next search).",
     "unhideAll": "Show all again"
   },
+  "share": {
+    "button": "Share these conditions",
+    "text": "{{character}} KA {{ka}} set plays",
+    "copyUrl": "Copy URL",
+    "copied": "URL copied",
+    "copyFailed": "Could not copy",
+    "postX": "Post on X",
+    "postXAria": "Post on X (opens in a new tab)",
+    "shareFailed": "Could not share"
+  },
   "category": {
     "normal": "Normal",
     "unique": "Unique",

@@ -96,6 +96,35 @@ test.describe("セットプレイ提案", () => {
     expect(errors).toEqual([]);
   });
 
+  test("この条件を共有: 結果を出すと共有の操作が出て、共有する URL に条件が入る(PC の形・OGP)", async ({ page, context }) => {
+    const errors = watchErrors(page);
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    // 端末の共有メニューの有無はブラウザ・OS で変わるので、無い形(PC)に固定する。
+    await page.addInitScript(() => Reflect.deleteProperty(Navigator.prototype, "share"));
+    await page.goto("/");
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", /Tacpendium-Setplay/);
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary");
+    await choose(page, "ryu", 40);
+    await page.getByTestId("mode-gap").click();
+    await expect(page.getByTestId("share")).toHaveCount(0);
+    await page.getByTestId("generate").click();
+    await expect(page.getByTestId("share-x")).toBeVisible();
+    await expect(page).toHaveURL(/\?c=ryu&ka=40&mode=gap$/);
+    const shared = await page.getByTestId("share").getAttribute("data-share-url");
+    expect(shared).toBe(page.url());
+    const x = new URL((await page.getByTestId("share-x").getAttribute("href")) ?? "");
+    expect(`${x.origin}${x.pathname}`).toBe("https://x.com/intent/post");
+    expect(x.searchParams.get("url")).toBe(page.url());
+    expect(x.searchParams.get("text")).toMatch(/^(リュウ|Ryu) KA 40 .+ \| Tacpendium-Setplay$/);
+    await page.getByTestId("share-copy").click();
+    await expect(page.getByTestId("share-copy")).toHaveText(/URL copied|URL をコピーしました/);
+    const reader = await context.newPage();
+    await reader.route("http://localhost:4199/reader", (r) => r.fulfill({ body: "<!doctype html><title>r</title>", contentType: "text/html" }));
+    await reader.goto("http://localhost:4199/reader");
+    expect(await reader.evaluate(() => navigator.clipboard.readText())).toBe(page.url());
+    expect(errors).toEqual([]);
+  });
+
   test("中断: 重い計算を止めて、すぐ次の計算ができる", async ({ page }) => {
     const errors = watchErrors(page);
     await page.goto("/");

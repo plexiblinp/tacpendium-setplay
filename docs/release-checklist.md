@@ -72,6 +72,7 @@ GitHub 設定の項目は、本家（非公開）の公開手順書を S7 で読
 | `.github/workflows/ci.yml` | **済**（2026-10-18）: **`claude/**` への push での起動を戻す**（`push: branches: [main, 'claude/**']`。PR・手動は残す。job は 2 つのまま。開発者決定 2026-10-18）。AGENTS §9 の「push では走らない」の行も直す |
 | `web/src/lib/constants.ts` | **済**（2026-10-18）: `FEEDBACK_FORM_URL` に Google フォームの URL を入れた（空にすると Issues だけを案内する）。フォームは本家用の Google アカウントで、日英併記の 1 つ。「内容」は回答の検証で URL を含めない（正規表現 `https?://|www\.` を含まない）。メールアドレスは収集しない |
 | `web/wrangler.toml` | D1 の `database_id`（デプロイ時。秘密情報ではない） |
+| `web/index.html` | **未**（共有ボタンの作業 2026-10-20 で残した）: サイトの URL が決まったら `og:url`（サイトの URL）と `og:image`（自作の 1200×630 の静的画像 1 枚。絶対 URL）を足し、`twitter:card` を `summary_large_image` にする。いまは `og:title`・`og:description`・`og:type`・`twitter:card=summary` だけ（文字だけの小さいカード）。`docs/progress/feat-share-report.md` |
 
 ## 5. GitHub のリポジトリ設定（公開する新しいリポジトリで。開発者）
 

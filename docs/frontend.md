@@ -61,6 +61,18 @@ pnpm e2e             # Playwright。dist を public/_headers どおりのヘッ�
 - キャラ・KA が無いか誤りなら自動計算しない。ほかのキーの誤りはそのキーだけ既定値に戻し、画面に「読めなかった」と出す。いまのモードで押せない組（重ねるの n、汚連携の g の最大 < 最小）・モードに合わないキー（有利調整でない `sj`、重ねるでない `block_safe`）・安全な整数を超える数も同じ扱い。数の規則は画面の欄と同じで、画面で押せる条件は共有しても同じ条件になる（往復の試験）。
 - エンジンに渡すクエリは本家の画面と同じ規則で組む（`toEngineQuery`。`n_max` は重ねるだけ、`g_*` は汚連携だけ、`block_safe_only` は重ねるだけ、安全飛びでは `approach_only` を掛けない）。
 
+### この条件を共有（開発者決定 2026-10-20）
+
+`web/src/components/Share.tsx`・`web/src/lib/share.ts`。結果が 1 件以上出ているとき、件数の行の下に出す。
+
+- 共有する URL は、ページの origin と path に結果の条件のクエリ（`conditionsToSearch`）を付けたもの（`shareUrl`。ハッシュは付けない）。画面が `replaceState` で書いた後の `location.href` と同じ文字列になる（E2E が確かめる）。App の `location` は起動時の写しで、`replaceState` の後も古いままなので、そのまま使わない。
+- 端末の共有メニュー（`navigator.share`）があればボタン 1 つでそれを開く（主にスマホ）。メニューを閉じただけ（`AbortError`）なら何も出さず、ほかの失敗は「共有できませんでした」。無ければ「URL をコピー」と「X に投稿」（`https://x.com/intent/post?text=…&url=…` を新しいタブで開くリンク。`rel="noopener noreferrer"`）。
+- 共有の文は選んでいる言語で「キャラ名 KA n のセットプレイ | Tacpendium-Setplay」（`share.text`。キャラ名は ja だけ日本語名、ほかは英語名＝キャラ選択と同じ規則）。モード・絞り込みは文に入れない（URL に入る）。
+- X 以外の SNS のリンクは置かない（スマホは端末の共有メニュー、PC は URL のコピーで足りる。開発者決定 2026-10-20）。
+- **ローカル版では出さない**（URL が 127.0.0.1 で相手が開けない。開発者決定 2026-10-20）。
+- 外部の JS・SNS のウィジェットは使わず、押した回数も計測しない。`_headers`（CSP・Permissions-Policy）とプライバシーポリシーは変えていない（`web-share` は Permissions-Policy に無く、既定の self で使える。X へは利用者が押したリンクで移るだけ）。
+- OGP: `web/index.html` に `og:title`・`og:description`・`og:type`・`twitter:card=summary`（日本語の固定文）。`og:url`・`og:image` は絶対 URL が要るので、サイトの URL が決まってから足す（`docs/release-checklist.md` §4）。条件ごとのカード（キャラ名入り）は、配信側で HTML を書き換えないと出せないので作っていない。
+
 ### 本家の画面から変えたところ
 
 - 採用・不採用・採用名・確認できた条件は無い（ユーザーデータに依存するため。HANDOVER §2.2）。代わりに行ごとの**コピー**（D16）。
@@ -109,12 +121,12 @@ pnpm e2e             # Playwright。dist を public/_headers どおりのヘッ�
 
 | 検査 | どこで |
 |---|---|
-| 条件 ⇄ URL・エンジンのクエリ・欄の検査・表記・LRU・言語の選択・ロケール | `web/src/lib/*.test.ts` |
+| 条件 ⇄ URL・エンジンのクエリ・欄の検査・表記・LRU・言語の選択・ロケール・共有の URL と文 | `web/src/lib/*.test.ts` |
 | Worker の中身（起動・読み込み・誤り）・Worker の窓口（中断・古い返事・落ちたとき・メモリ解放） | `web/src/worker/engineHost.test.ts`・`web/src/lib/engineClient.test.ts` |
 | 画面の主要な振る舞い（偽のエンジンで） | `web/src/components/App.test.tsx` |
 | zh-Hant の再生成一致・`_headers`・配信の上限 | `web/scripts/*.test.mjs` |
 | **画面の結果 = 本家の正解（sha256・順序まで）**（Go → WASM → Worker → 画面の通し） | `web/e2e/conformance.spec.ts`（9 条件） |
-| 主要フロー（提案・表記・さらに表示・モード・安全飛び・絞り込み・共有 URL・コピー・中断・5 言語・ストレージ不使用） | `web/e2e/setplay.spec.ts` |
+| 主要フロー（提案・表記・さらに表示・モード・安全飛び・絞り込み・共有 URL・この条件を共有・OGP・コピー・中断・5 言語・ストレージ不使用） | `web/e2e/setplay.spec.ts` |
 | 計測と投票の通し（S6。画面 → beacon → Worker → Analytics Engine／画面 → D1 → WASM → 画面） | `web/e2e/telemetry.spec.ts`（`docs/telemetry.md`） |
 | 実際に配ったときのセキュリティのヘッダ（S7。静的アセットと `/api` の両方） | `web/e2e/headers.spec.ts` |
 

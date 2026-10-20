@@ -1,5 +1,5 @@
-// 結果一覧(件数・さらに表示・打ち切り・理由・行ごとのコピー(D16))。
-import { useEffect, useState } from "react";
+// 結果一覧(件数・共有・さらに表示・打ち切り・理由・行ごとのコピー(D16))。
+import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 import { hasAppliedFilters, type Conditions } from "../lib/conditions";
@@ -34,12 +34,14 @@ interface Props {
   /** キャラ|KA|鍵 → 自分の票。 */
   myVotes: Record<string, MyVote>;
   onVote: (c: Conditions, recipe: string, value: VoteValue) => void;
+  /** 結果があるときに件数の下へ出す共有の操作(ローカル版では無い)。 */
+  share?: ReactNode;
 }
 
 /** コピーの表示を元に戻すまでの時間(ms)。 */
 const COPY_FEEDBACK_MS = 2000;
 
-export function Results({ run, onCancel, movesByCode, notation, myVotes, onVote }: Props) {
+export function Results({ run, onCancel, movesByCode, notation, myVotes, onVote, share }: Props) {
   const { t } = useTranslation();
   const [shown, setShown] = useState(PAGE_SIZE);
   // 隠したレシピ(鍵)。その回の結果の間だけ。もう一度検索すると元に戻る(開発者の要望 2026-10-17)。
@@ -129,6 +131,7 @@ export function Results({ run, onCancel, movesByCode, notation, myVotes, onVote 
               {fromCache ? t("setplay.cached") : t("setplay.timing", { ms: Math.round(outcome.wallMs) })}
             </span>
           </p>
+          {share}
           {/* 票を使わない版(ローカル版。votes が null)では票の案内もボタンも出さない。 */}
           {votes != null && (
             <p className="muted small" data-testid="votes-note" data-votes-status={votes.status}>

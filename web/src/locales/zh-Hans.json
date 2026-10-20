@@ -163,6 +163,16 @@
     "hiddenCount": "已隐藏 {{count}} 条(下次搜索时恢复)。",
     "unhideAll": "全部重新显示"
   },
+  "share": {
+    "button": "分享此条件",
+    "text": "{{character}} KA {{ka}} 的定式起身压制",
+    "copyUrl": "复制 URL",
+    "copied": "已复制 URL",
+    "copyFailed": "无法复制",
+    "postX": "发布到 X",
+    "postXAria": "发布到 X(在新标签页中打开)",
+    "shareFailed": "无法分享"
+  },
   "category": {
     "normal": "通常技",
     "unique": "特殊技",

@@ -163,6 +163,16 @@
     "hiddenCount": "{{count}} 件を隠しています(次の検索で元に戻ります)。",
     "unhideAll": "すべて表示に戻す"
   },
+  "share": {
+    "button": "この条件を共有",
+    "text": "{{character}} KA {{ka}} のセットプレイ",
+    "copyUrl": "URL をコピー",
+    "copied": "URL をコピーしました",
+    "copyFailed": "コピーできませんでした",
+    "postX": "X に投稿",
+    "postXAria": "X に投稿(新しいタブで開きます)",
+    "shareFailed": "共有できませんでした"
+  },
   "category": {
     "normal": "通常技",
     "unique": "特殊技",
