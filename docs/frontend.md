@@ -66,9 +66,10 @@ pnpm e2e             # Playwright。dist を public/_headers どおりのヘッ�
 `web/src/components/Share.tsx`・`web/src/lib/share.ts`。結果が 1 件以上出ているとき、件数の行の下に出す。
 
 - 共有する URL は、ページの origin と path に結果の条件のクエリ（`conditionsToSearch`）を付けたもの（`shareUrl`。ハッシュは付けない）。画面が `replaceState` で書いた後の `location.href` と同じ文字列になる（E2E が確かめる）。App の `location` は起動時の写しで、`replaceState` の後も古いままなので、そのまま使わない。
-- 端末の共有メニュー（`navigator.share`）があればボタン 1 つでそれを開く（主にスマホ）。メニューを閉じただけ（`AbortError`）なら何も出さず、ほかの失敗は「共有できませんでした」。無ければ「URL をコピー」と「X に投稿」（`https://x.com/intent/post?text=…&url=…` を新しいタブで開くリンク。`rel="noopener noreferrer"`）。
+- 端末の共有メニュー（`navigator.share`）があればボタン 1 つでそれを開く（主にスマホ。macOS の Safari、Windows の Chrome・Edge など PC でもあるものはこちらになり、OS の共有メニューにコピー・X 等が並ぶ）。渡すのは title = アプリ名・text = 共有の文・url。メニューを閉じただけ（`AbortError`）なら何も出さず、ほかの失敗は「共有できませんでした」。無ければ「URL をコピー」と「X に投稿」（`https://x.com/intent/post?text=…&url=…` を新しいタブで開くリンク。`rel="noopener noreferrer"`）。
 - 共有の文は選んでいる言語で「キャラ名 KA n のセットプレイ | Tacpendium-Setplay」（`share.text`。キャラ名は ja だけ日本語名、ほかは英語名＝キャラ選択と同じ規則）。モード・絞り込みは文に入れない（URL に入る）。
-- X 以外の SNS のリンクは置かない（スマホは端末の共有メニュー、PC は URL のコピーで足りる。開発者決定 2026-10-20）。
+- X 以外の SNS のリンクは置かない（共有メニューがある端末はそこから、無い端末は URL のコピーで足りる。開発者決定 2026-10-20）。
+- 操作のまとまりは `role="group"` で「この条件を共有」の名前を付ける。条件が変わると作り直す（前の条件の「コピーしました」を残さない）。
 - **ローカル版では出さない**（URL が 127.0.0.1 で相手が開けない。開発者決定 2026-10-20）。
 - 外部の JS・SNS のウィジェットは使わず、押した回数も計測しない。`_headers`（CSP・Permissions-Policy）とプライバシーポリシーは変えていない（`web-share` は Permissions-Policy に無く、既定の self で使える。X へは利用者が押したリンクで移るだけ）。
 - OGP: `web/index.html` に `og:title`・`og:description`・`og:type`・`twitter:card=summary`（日本語の固定文）。`og:url`・`og:image` は絶対 URL が要るので、サイトの URL が決まってから足す（`docs/release-checklist.md` §4）。条件ごとのカード（キャラ名入り）は、配信側で HTML を書き換えないと出せないので作っていない。

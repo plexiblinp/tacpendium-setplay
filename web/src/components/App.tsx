@@ -306,10 +306,13 @@ export function App({
 
   // 共有の操作(結果があるときだけ)。ローカル版は URL(127.0.0.1)を相手が開けないので出さない(開発者決定 2026-10-20)。
   const sharedCharacter = run.status === "done" ? characters.find((x) => x.code === run.conditions.character) : undefined;
+  const sharedUrl = run.status === "done" ? shareUrl(location.href, run.conditions) : "";
   const share =
     online && run.status === "done" && sharedCharacter != null ? (
       <Share
-        url={shareUrl(location.href, run.conditions)}
+        // 条件が変わったら作り直す(前の条件の「コピーしました」を残さない。レビュー低-2)。
+        key={sharedUrl}
+        url={sharedUrl}
         text={shareText(t("share.text", { character: characterDisplayName(sharedCharacter.name, lang), ka: run.conditions.ka }))}
       />
     ) : undefined;

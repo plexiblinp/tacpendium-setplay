@@ -169,8 +169,8 @@
     "copyUrl": "复制 URL",
     "copied": "已复制 URL",
     "copyFailed": "无法复制",
-    "postX": "发布到 X",
-    "postXAria": "发布到 X(在新标签页中打开)",
+    "postX": "分享到 X",
+    "postXAria": "分享到 X(在新窗口中打开)",
     "shareFailed": "无法分享"
   },
   "category": {

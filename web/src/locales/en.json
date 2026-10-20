@@ -165,7 +165,7 @@
   },
   "share": {
     "button": "Share these conditions",
-    "text": "{{character}} KA {{ka}} set plays",
+    "text": "{{character}} KA {{ka}} setplays",
     "copyUrl": "Copy URL",
     "copied": "URL copied",
     "copyFailed": "Could not copy",

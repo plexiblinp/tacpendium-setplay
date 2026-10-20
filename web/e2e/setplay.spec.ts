@@ -103,6 +103,8 @@ test.describe("セットプレイ提案", () => {
     await page.addInitScript(() => Reflect.deleteProperty(Navigator.prototype, "share"));
     await page.goto("/");
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", /Tacpendium-Setplay/);
+    await expect(page.locator('meta[property="og:description"]')).toHaveAttribute("content", /SF6/);
+    await expect(page.locator('meta[property="og:type"]')).toHaveAttribute("content", "website");
     await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary");
     await choose(page, "ryu", 40);
     await page.getByTestId("mode-gap").click();

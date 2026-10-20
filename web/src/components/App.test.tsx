@@ -772,6 +772,32 @@ describe("この条件を共有(開発者決定 2026-10-20)", () => {
     await user.click(screen.getByTestId("share-copy"));
     expect(writeText).toHaveBeenCalledWith("https://example.test/?c=ryu&ka=40");
     expect(await screen.findByText("URL をコピーしました")).toBeInTheDocument();
+    // 操作のまとまりに「この条件を共有」の名前が付いている。
+    expect(screen.getByRole("group", { name: "この条件を共有:" })).toBe(screen.getByTestId("share"));
+    // 条件を変えたら(キャッシュからすぐ出ても)前の条件の「コピーしました」を残さない。
+    await search(user, "ryu", "41");
+    await engine.finish();
+    await waitFor(() => expect(screen.getByTestId("share")).toHaveAttribute("data-share-url", "https://example.test/?c=ryu&ka=41"));
+    await user.clear(screen.getByTestId("ka-input"));
+    await user.type(screen.getByTestId("ka-input"), "40");
+    await user.click(screen.getByTestId("generate"));
+    expect(screen.getByTestId("timing")).toHaveTextContent("計算済みの結果");
+    await user.click(screen.getByTestId("share-copy"));
+    expect(await screen.findByText("URL をコピーしました")).toBeInTheDocument();
+    await user.clear(screen.getByTestId("ka-input"));
+    await user.type(screen.getByTestId("ka-input"), "41");
+    await user.click(screen.getByTestId("generate"));
+    expect(screen.getByTestId("share")).toHaveAttribute("data-share-url", "https://example.test/?c=ryu&ka=41");
+    expect(screen.getByTestId("share-copy")).toHaveTextContent(/^URL をコピー$/);
+  });
+
+  it("結果が 0 件のときは出さない", async () => {
+    const user = userEvent.setup();
+    const { engine } = renderApp();
+    await search(user);
+    await engine.finish({ kind: "result", result: { items: [], truncated: false, totalFound: 0 }, timings: { boot: 0, load: 0, compute: 1, wasmMemoryBytes: 0 }, wallMs: 1 });
+    expect(await screen.findByTestId("empty")).toBeInTheDocument();
+    expect(screen.queryByTestId("share")).toBeNull();
   });
 
   it("共有の仕組みがある(スマホ)ときは端末の共有メニューを開く。閉じただけなら何も出さず、失敗は出す", async () => {
@@ -785,8 +811,11 @@ describe("この条件を共有(開発者決定 2026-10-20)", () => {
     expect(screen.queryByTestId("share-x")).toBeNull();
     expect(screen.queryByTestId("share-copy")).toBeNull();
     await user.click(screen.getByTestId("share-native"));
-    const text = "Ryu KA 55 set plays | Tacpendium-Setplay";
-    expect(share).toHaveBeenCalledWith({ title: text, text, url: "https://example.test/?c=ryu&ka=55" });
+    expect(share).toHaveBeenCalledWith({
+      title: "Tacpendium-Setplay",
+      text: "Ryu KA 55 setplays | Tacpendium-Setplay",
+      url: "https://example.test/?c=ryu&ka=55",
+    });
     await act(async () => undefined);
     expect(screen.queryByTestId("share-failed")).toBeNull();
     share.mockImplementation(async () => Promise.reject(new Error("NotAllowedError")));
