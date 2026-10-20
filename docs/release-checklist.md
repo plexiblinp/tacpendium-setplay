@@ -96,6 +96,6 @@ GitHub 設定の項目は、本家（非公開）の公開手順書を S7 で読
 | # | 手番 | 備考 |
 |---|---|---|
 | S9-1 | Cloudflare へのデプロイ後、GitHub の About の **Website** にサイトの URL を入れる（§5 G-11） | 開発者指示 2026-10-18 |
-| S9-2 | ローカル版の最初の Release: main で `v<版>`（例 `v1.0.0`）のタグを push → `local-release.yml` が 3 OS の起動確認の後に **draft** の Release を作る → 中身（5 種の圧縮・`SHA256SUMS`）を確かめて公開する | 手順は `docs/local.md`「配布」。サイトの KA の説明は Releases（`RELEASES_URL`）へ案内するので、**サイトを公開する前か同時に**出す（無いと空の Releases を指す） |
+| S9-2 | **済**（2026-10-20）: main の 9880c88 に `v1.0.0` のタグ → Local release の run 39142810181 が全 job 成功（ビルド・ubuntu / macos / windows の起動確認 12 項目 ok・失敗 0・draft の作成）→ 開発者が中身を確かめて公開（https://github.com/plexiblinp/tacpendium-setplay/releases/tag/v1.0.0 、2026-10-20T15:12:39Z）。以下は手順の記録。ローカル版の最初の Release: main で `v<版>`（例 `v1.0.0`）のタグを push → `local-release.yml` が 3 OS の起動確認の後に **draft** の Release を作る → 中身（5 種の圧縮・`SHA256SUMS`）を確かめて公開する | 手順は `docs/local.md`「配布」。サイトの KA の説明は Releases（`RELEASES_URL`）へ案内するので、**サイトを公開する前か同時に**出す（無いと空の Releases を指す） |
 | S9-3 | `govulncheck.yml` の週 1 回の定期実行は default branch（main）に入ってから動く。マージ後に Actions の画面で 1 度手動起動し、緑を確かめる | S8 |
 | S9-4 | ヘッダ診断（§3）・§5 の「済」付け・S9 の報告 | 開発者指示 2026-10-18（S8 ではやらない） |
