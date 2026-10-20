@@ -80,26 +80,31 @@ python3 scripts/check-private-refs.py            走査: 295 ファイル / 違�
 
 `local.spec.ts` に足した 1 行は、壊して赤になるのを確かめていない（ローカル版のバイナリを壊した形で作り直す必要があるため）。同じ性質は App.test の「ローカル版では出さない」で赤になるのを確かめてある。
 
-### git diff --stat 9880c88（報告と review を除く）
+### git diff --stat 9880c88（報告と review を除く。`-- . ':!docs/progress'`）
 
 ```
- docs/frontend.md                       | 17 ++++++-
- docs/release-checklist.md              |  1 +
- web/e2e/local.spec.ts                  |  2 +
- web/e2e/setplay.spec.ts                | 31 ++++++++++++
- web/index.html                         |  5 ++
- web/src/components/App.test.tsx        | 113 +++++++++++++++
- web/src/components/App.tsx             | 15 +++++
- web/src/components/CharacterSelect.tsx |  3 +-
- web/src/components/Results.tsx         |  9 ++-
- web/src/components/Share.tsx           | 88 ++++++++++++
- web/src/lib/share.test.ts              | 40 ++++++
- web/src/lib/share.ts                   | 32 ++++++
- web/src/locales/*.json (5 言語)         | 各 10 行の追加
- web/src/styles.css                     |  2 +
+ docs/frontend.md                       |  17 ++++-
+ docs/release-checklist.md              |   1 +
+ web/e2e/local.spec.ts                  |   2 +
+ web/e2e/setplay.spec.ts                |  31 ++++++++++
+ web/index.html                         |   5 ++
+ web/src/components/App.test.tsx        | 110 +++++++++++++++++++++++++++++++++
+ web/src/components/App.tsx             |  16 +++++
+ web/src/components/CharacterSelect.tsx |   3 +-
+ web/src/components/Results.tsx         |   9 ++-
+ web/src/components/Share.tsx           |  89 ++++++++++++++++++++++++++
+ web/src/lib/share.test.ts              |  40 ++++++++++++
+ web/src/lib/share.ts                   |  32 ++++++++++
+ web/src/locales/en.json                |  10 +++
+ web/src/locales/ja.json                |  10 +++
+ web/src/locales/ko.json                |  10 +++
+ web/src/locales/zh-Hans.json           |  10 +++
+ web/src/locales/zh-Hant.json           |  10 +++
+ web/src/styles.css                     |   2 +
+ 18 files changed, 401 insertions(+), 6 deletions(-)
 ```
 
-（正確な数はコミット後に `git diff --stat 9880c88` で取れる。上は要約。）試験の行の削除は 0（`git diff 9880c88 -- web/src web/e2e` に `-  it(`・`-  test(` は無い）。
+試験の行の削除は 0（`git diff 9880c88 -- web/src web/e2e` に `-  it(`・`-  test(` は無い）。
 
 ## 残課題・既知の問題
 
