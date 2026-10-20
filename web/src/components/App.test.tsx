@@ -772,9 +772,24 @@ describe("この条件を共有(開発者決定 2026-10-20)", () => {
     await user.click(screen.getByTestId("share-copy"));
     expect(writeText).toHaveBeenCalledWith("https://example.test/?c=ryu&ka=40");
     expect(await screen.findByText("URL をコピーしました")).toBeInTheDocument();
-    // 操作のまとまりに「この条件を共有」の名前が付いている。
-    expect(screen.getByRole("group", { name: "この条件を共有:" })).toBe(screen.getByTestId("share"));
-    // 条件を変えたら(キャッシュからすぐ出ても)前の条件の「コピーしました」を残さない。
+  });
+
+  it("操作のまとまりに「この条件を共有」の名前が付いている(コロンは読ませない)", async () => {
+    const user = userEvent.setup();
+    const { engine } = renderApp();
+    await search(user);
+    await engine.finish();
+    await screen.findAllByTestId("result-row");
+    expect(screen.getByRole("group", { name: "この条件を共有" })).toBe(screen.getByTestId("share"));
+  });
+
+  it("条件を変えたら(キャッシュからすぐ出ても)前の条件の「コピーしました」を残さない", async () => {
+    const user = userEvent.setup();
+    Object.defineProperty(navigator, "clipboard", { value: { writeText: vi.fn(async () => undefined) }, configurable: true });
+    const { engine } = renderApp();
+    await search(user);
+    await engine.finish();
+    await screen.findAllByTestId("result-row");
     await search(user, "ryu", "41");
     await engine.finish();
     await waitFor(() => expect(screen.getByTestId("share")).toHaveAttribute("data-share-url", "https://example.test/?c=ryu&ka=41"));

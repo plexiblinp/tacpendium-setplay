@@ -59,8 +59,10 @@ export function Share({ url, text }: Props) {
         </button>
       ) : (
         <>
-          <span className="muted small" id={labelId}>
-            {t("share.button")}:
+          {/* 読み上げの名前にコロンを入れない(再レビュー低-8)。 */}
+          <span className="muted small">
+            <span id={labelId}>{t("share.button")}</span>
+            <span aria-hidden="true">:</span>
           </span>
           <button type="button" className="secondary" onClick={onCopy} data-testid="share-copy">
             {feedback === "copied" ? t("share.copied") : feedback === "copyFailed" ? t("share.copyFailed") : t("share.copyUrl")}

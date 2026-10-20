@@ -127,3 +127,61 @@ pnpm build → 違反: 0 件 / EXIT=0。生成した dist/index.html は手元�
 | `shareUrl` のパスを `/` に固定する | 1 failed（origin と path…）/ EXIT=1 |
 
 E2E での「起動時の `location.href`」の赤は再現していない（実装者の申告のみ）。リポジトリの作業ツリーは最後まで変更なし（`git status --short` は本ファイルを書く前に空）。
+
+---
+
+## 再レビュー（b1a1dda。`git diff 7e4d6f5..b1a1dda` を中心に）
+
+### 要約
+
+前回の指摘はすべて取り込まれていた（中 2 件・低 7 件）。新しい問題で高・中にあたるものは無く、低が 2 件。取り込みのために足した試験も、守る対象を消すと赤になることを写しで確かめた。
+
+### 取り込みの確認
+
+| 前回 | 判定 | 根拠 |
+|---|---|---|
+| 中-1 zh-Hant の文言 | 済 | zh-Hans「分享到 X」「(在新窗口中打开)」から作り直し、zh-Hant は「分享到 X」「(在新視窗中開啟)」。再生成一致テストは緑 |
+| 中-2 en の綴り | 済 | `"{{character}} KA {{ka}} setplays"` |
+| 低-1 share の title | 済 | `title: APP_NAME`（`Share.tsx:36`）。試験の期待値と docs（`frontend.md:69`）も合わせてある |
+| 低-2 「コピーしました」が残る | 済 | `App.tsx` で `key={sharedUrl}`。キャッシュから即座に出る経路の試験あり。key を消すと赤（下表） |
+| 低-3 0 件の試験 | 済 | 「結果が 0 件のときは出さない」。負の KA の試験は足していないが、`Results.tsx` で 0 件と同じく items の分岐の外なので妥当 |
+| 低-4 group のラベル | 済 | `role="group"` と `aria-labelledby`（`useId`）。外すと赤 |
+| 低-5 docs | 済 | `frontend.md:69`・`71`・`72` |
+| 低-6 CSS | 済 | `styles.css` に `.share`・`.share-x` |
+| 低-7 OGP の E2E | 済 | og:description・og:type を追加 |
+| 成果物の鮮度 | 済 | `web/dist/index.html` とローカル版バイナリはどちらも 15:52 作成で、コミット（15:53）の直前 |
+
+古い記述が残っていないかを grep で確かめた（`docs`・`web/src`・`web/e2e`。`docs/progress/` は除く）。検索語は「PC は URL のコピー」「set plays」「发布到」「釋出」「標籤頁」「title: text」で、いずれも 0 件。
+
+### 新しい指摘
+
+**低-8 共有の操作を出す PC の形では、group の名前が「この条件を共有:」と末尾にコロン付きになる**
+- 場所: `web/src/components/Share.tsx:62-64`、`App.test.tsx` の `getByRole("group", { name: "この条件を共有:" })`
+- 内容: 見出しの span を名前に使っているため、読み上げでは名前の末尾にコロンが入る。害は小さい。
+- 直し方の案: コロンを CSS（`::after`）か `aria-hidden` の span に分ける。直さなくてもよい。
+
+**低-9 試験の件数は +1 だけで、追加した確認の多くは既存の 1 件にまとめて足している**
+- 場所: `App.test.tsx`（PC の形の試験に group・key・キャッシュの確認を追記）
+- 内容: 件数は 183 → 184。1 件が赤になったとき、どの性質が壊れたかが分かりにくい。害は無い。
+- 直し方の案: 余裕があれば「条件が変わると作り直す」を別の `it` に分ける。
+
+### 自分で回したコマンドと結果（再レビュー）
+
+`web/` で（作業ツリーのまま）:
+
+```
+pnpm typecheck   → EXIT=0
+pnpm test        → Test Files  19 passed (19) / Tests  184 passed (184) / EXIT=0
+PW_CHROMIUM_PATH=/opt/pw-browsers/chromium-1194/chrome-linux/chrome pnpm e2e → 29 passed (1.0m) / EXIT=0
+```
+
+壊して赤になるかの確認（`web/` の写しで 1 つずつ壊し、毎回元に戻す。`vitest --run` を App.test と share.test に限って回した）:
+
+| 壊し方 | 結果 |
+|---|---|
+| 壊さない（基準） | Tests 47 passed (47) / EXIT=0 |
+| `key={sharedUrl}` を消す | 1 failed（PC の形）/ EXIT=1 |
+| `role="group" aria-labelledby` を消す | 1 failed（PC の形）/ EXIT=1 |
+| 0 件の分岐にも `{share}` を出す（tsc は EXIT=0。App.test だけを回した） | 1 failed（結果が 0 件のときは出さない）/ EXIT=1（Tests 1 failed \| 41 passed (42)） |
+
+リポジトリの作業ツリーは変えていない（`git status --short` は本ファイルだけ）。
