@@ -80,16 +80,16 @@ GitHub 設定の項目は、本家（非公開）の公開手順書を S7 で読
 
 | # | 設定 | 備考 |
 |---|---|---|
-| G-1 | Private vulnerability reporting を有効 | public でも既定は off |
-| G-2 | Dependency graph・Dependabot alerts を有効 | 同上 |
-| G-3 | Dependabot security updates を有効 | version updates は `.github/dependabot.yml`（actions・npm・gomod、週 1・まとめて 1 本） |
-| G-4 | Secret scanning と Push protection を有効 | public なら無料 |
-| G-5 | Code scanning（CodeQL default setup。Go・JavaScript/TypeScript） | public なら無料。Actions を使うが public は無料 |
-| G-6 | main の ruleset: 削除と force push を禁止、PR 必須、必須 check に `Go・WASM・リポジトリ検査` と `Web` | 必須 check を登録したら `paths` フィルタを入れない（AGENTS §9）。public にした直後に有効か確かめ直す |
-| G-7 | Actions: Workflow permissions を「Read repository contents」、「Allow GitHub Actions to create and approve pull requests」を off、外部からの PR の workflow は承認を必須（初回の協力者） | 全 workflow が `contents: read` を明示しているが、既定も絞る。例外は `local-release.yml` の `release` job だけ（タグ v* の push のとき draft の Release を作るので job に `contents: write`。S8） |
-| G-8 | アカウントの 2FA | HANDOVER §7.4 |
-| G-9 | Environment `production` を作る: Required reviewers に開発者、Prevent self-review は**付けない**、Deployment branches は main だけ、管理者の迂回は許さない。secrets `CLOUDFLARE_API_TOKEN`・`CLOUDFLARE_ACCOUNT_ID` は**ここにだけ**置く（Repository secret・Variables に置かない） | S9 で変更（2026-10-20）。集計は手元に移したので集計用の Secrets は置かない。`docs/telemetry.md`「デプロイ用の API トークン」 |
-| G-10 | Issues を有効にする（意見・不具合・翻訳の改善とプライバシーの問い合わせの窓口。`CONTRIBUTING.md`）。Pull requests の機能は Dependabot が使うので有効のまま、外からの PR は `CONTRIBUTING.md` のとおり閉じる。Discussions・Wiki・Projects は無効 | 開発者決定 2026-10-18（Google フォーム＋Issues） |
+| G-1 | Private vulnerability reporting を有効 | public でも既定は off。**済**（2026-10-21 点検: 有効） |
+| G-2 | Dependency graph・Dependabot alerts を有効 | 同上。**済**（2026-10-21 点検: 両方有効） |
+| G-3 | Dependabot security updates を有効 | version updates は `.github/dependabot.yml`（actions・npm・gomod、週 1・まとめて 1 本）。**済**（2026-10-21 点検: 有効。凍結中〔AGENTS §5〕は来た PR をマージしない） |
+| G-4 | Secret scanning と Push protection を有効 | public なら無料。**済**（2026-10-21 点検: Secret scanning は有効、**Push protection は無効だったので開発者が有効にした**） |
+| G-5 | Code scanning（CodeQL default setup。Go・JavaScript/TypeScript） | public なら無料。Actions を使うが public は無料。**済**（2026-10-21 点検: default setup。対象は GitHub Actions・Go・JavaScript/TypeScript・Python） |
+| G-6 | main の ruleset: 削除と force push を禁止、PR 必須、必須 check に `Go・WASM・リポジトリ検査` と `Web` | 必須 check を登録したら `paths` フィルタを入れない（AGENTS §9）。public にした直後に有効か確かめ直す。**済**（2026-10-21 点検: ruleset は既存・Active・bypass なし。必須 check は 2 つに加え CodeQL の `Analyze (go)`。**Require branches to be up to date は無効だったので開発者が有効にした**） |
+| G-7 | Actions: Workflow permissions を「Read repository contents」、「Allow GitHub Actions to create and approve pull requests」を off、外部からの PR の workflow は承認を必須（初回の協力者） | 全 workflow が `contents: read` を明示しているが、既定も絞る。例外は `local-release.yml` の `release` job だけ（タグ v* の push のとき draft の Release を作るので job に `contents: write`。S8）。**済**（2026-10-21 点検: 想定どおり。「Require actions to be pinned to a full-length commit SHA」は最初から有効。使える Action の絞り込みはしない〔開発者判断〕） |
+| G-8 | アカウントの 2FA | HANDOVER §7.4。**済**（GitHub Mobile の 2FA。パスキーの追加は開発者が検討） |
+| G-9 | Environment `production` を作る: Required reviewers に開発者、Prevent self-review は**付けない**、Deployment branches は main だけ、管理者の迂回は許さない。secrets `CLOUDFLARE_API_TOKEN`・`CLOUDFLARE_ACCOUNT_ID` は**ここにだけ**置く（Repository secret・Variables に置かない） | S9 で変更（2026-10-20）。集計は手元に移したので集計用の Secrets は置かない。`docs/telemetry.md`「デプロイ用の API トークン」。**済**（2026-10-21: Required reviewers＝開発者、Prevent self-review なし、管理者の迂回なし、Deployment branches は main だけ。secrets は最初のデプロイの直前に入れる） |
+| G-10 | Issues を有効にする（意見・不具合・翻訳の改善とプライバシーの問い合わせの窓口。`CONTRIBUTING.md`）。Pull requests の機能は Dependabot が使うので有効のまま、外からの PR は `CONTRIBUTING.md` のとおり閉じる。Discussions・Wiki・Projects は無効 | 開発者決定 2026-10-18（Google フォーム＋Issues）。**済**（2026-10-21 点検: Issues 有効、Wikis・Discussions・Projects・Sponsorships 無効、Allow merge commits 有効。Preserve this repository〔GitHub Archive Program〕は既定の有効のまま） |
 | G-11 | **About の Website** に、Cloudflare にデプロイしたサイトの URL を入れる（リポジトリの画面の右上 About の歯車 → Website） | **S9 の手番。デプロイが済んでから**（開発者指示 2026-10-18。S8 で記載） |
 
 ## 6. S9 の手番（S8 で追加）
