@@ -12,7 +12,7 @@
     "internal": "a32ea84722a6cc0f79cba84199e69fbba178d04930c3a4653f5bbdb8c5d9df30",
     "engine": "20a06385b573e36a3248796c31c15da1f9200f0cfa941469da8555a2fa666028",
     "cmd": "610740a69aae39b89a544e73593478fa28f8da2078c0485d339f99bea434eb88",
-    "go.mod": "9f2af202cdd34ff0080c116638a6ddfaa3f1961a9f077fdf017dd55a72e302b3",
+    "go.mod": "2b5bc18aa04c8afe2887fb20c7ec67fdf94ec275ba884c65626bb498a318f63e",
     "upstream/tacpendium.lock": "7da1bc2f107a4fc4d38e5d9887c2424f1b2c30f287b0b4992698970900d43efc",
     "scripts/wasm": "4ed68029b1a31954960d131bdeefec0543ecaabfcf87bfa6f445333f66bfbf82"
   },
@@ -160,6 +160,16 @@
         "go.mod"
       ],
       "reason": "eMudhra 中間 CA 鍵の漏えい(GO-2026-6809)対応: toolchain go1.26.9→go1.26.10(crypto/x509 の拒否リストだけ。計算のコードは変えていない)。手元の go1.26.10 で go test -count=1 ./... EXIT=0・PASS 359・FAIL 0・本家との突き合わせ 5208 条件・不一致 0、WASM のビルドと node --test pass 6・fail 0、E2E 28 passed を確認したため CI で全キャラを回し直さない"
+    },
+    {
+      "at": "2026-10-21T13:17:07Z",
+      "decision": "none",
+      "kinds": [],
+      "chars": [],
+      "changed": [
+        "go.mod"
+      ],
+      "reason": "go の行を 1.26.4→1.26.10 に上げた(GO-2026-6809 の修正版より古い Go でビルドできないように。toolchain の行は go の行と同じになり go mod tidy で消えた)。計算のコードは変えていない。手元の go1.26.10 で go test -count=1 ./... EXIT=0・PASS 359・FAIL 0・本家との突き合わせ 5208 条件・不一致 0、govulncheck 違反 0 件を確認したため CI で全キャラを回し直さない"
     }
   ]
 }
