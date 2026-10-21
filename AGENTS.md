@@ -105,6 +105,11 @@
 - lockfile はコミットする。GitHub Actions の Action は**コミット SHA 固定**、`permissions` は最小（HANDOVER §7.4）。
 - Dependabot の PR は **CI が緑なら受け入れる**（開発者がマージ）。メジャー版の更新だけは、リリースノートで入力・挙動の変更を確かめる。非推奨の警告など、版上げだけで片付かないものは段階のセッションで直す。
 - 版を固定したら（`pnpm.overrides`・`go.mod` の `replace` 等）、理由と解除条件を完了報告に書く。
+- **【一時凍結 2026-10-21〜】依存の追加・更新をしない**（eMudhra の中間 CA 鍵の漏えい。Node.js の修正版が出ていないため、npm / pnpm のレジストリとの通信が偽の証明書を受け入れうる）。
+  - 禁止: `pnpm add`・`pnpm update`・`npm install <pkg>` など依存を足す・上げる操作、Go モジュール・Python パッケージの新規追加、Dependabot の依存更新 PR の取り込み。
+  - 許可: `pnpm install --frozen-lockfile`（lockfile のハッシュで検証される）と、既に `go.sum` にあるモジュールの取得。
+  - 依存の追加が要る作業に当たったら、その場で止めて開発者に報告する（既存の依存で書ける等の代替案を添える）。
+  - 解除: 開発者が別途連絡する（Node.js の修正版が出たら）。解除されたらこの項を消す。
 
 ## 6. Git
 

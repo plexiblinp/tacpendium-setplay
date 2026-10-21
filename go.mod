@@ -1,8 +1,6 @@
 module github.com/plexiblinp/tacpendium-setplay
 
-go 1.26.4
-
-toolchain go1.26.9
+go 1.26.10
 
 require modernc.org/sqlite v1.60.1
 
