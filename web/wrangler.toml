@@ -21,8 +21,8 @@ binding = "ASSETS"
 binding = "TELEMETRY"
 dataset = "setplay_runs"
 
-# 票と日替わりソルト(edge/schema.sql)。database_id は `wrangler d1 create tacpendium-setplay` の出力を入れる(秘密情報ではない)。
+# 票と日替わりソルト(edge/schema.sql)。database_id は開発者が Cloudflare の画面で作った D1 のもの(S9。秘密情報ではない)。
 [[d1_databases]]
 binding = "DB"
 database_name = "tacpendium-setplay"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "a0ec73f7-c24f-490a-a8be-c0fcedf81f77"

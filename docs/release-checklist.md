@@ -15,7 +15,7 @@ GitHub 設定の項目は、本家（非公開）の公開手順書を S7 で読
 | 4 | LICENSE・DATA-LICENSE・NOTICE・クレジット・非公式表記 | 済 | `python3 scripts/check-licenses.py` 違反 0。画面のフッターにソース（AGPL）・データ（CC BY-SA 4.0）・非公式の表記。NOTICE §4 の公開 URL と README 冒頭の帯は公開時に直した（§4） |
 | 5 | プライバシーポリシー・計測の説明 | 済（照合は開発者） | 画面のプライバシーポリシー（5 言語）と `docs/telemetry.md`。法令との照合の材料は `docs/progress/S7-privacy-research.md`。`PRIVACY_LAST_UPDATED`（`web/src/components/PrivacyPolicy.tsx`）は公開日の 2026-10-18 |
 | 6 | セキュリティヘッダと CSP（外部診断） | 済（手元）／デプロイ後 | 手元の本物の配信（`_headers`＋Worker）で E2E `web/e2e/headers.spec.ts` が静的アセットと `/api` の両方を検査。外部診断は §3 |
-| 7 | Cloudflare にカード未登録・Worker の回数制限 | 開発者 | カードを登録しない（無料プランは超過で止まるだけ＝HANDOVER §7.5）。回数制限は Worker のコードの中（isolate ごと。`web/edge/rate.ts`）で、Cloudflare 側の設定は要らない。D1 の `database_id` を `web/wrangler.toml` に入れる（`docs/telemetry.md`「デプロイの手順」） |
+| 7 | Cloudflare にカード未登録・Worker の回数制限 | 開発者 | カードを登録しない（無料プランは超過で止まるだけ＝HANDOVER §7.5）。回数制限は Worker のコードの中（isolate ごと。`web/edge/rate.ts`）で、Cloudflare 側の設定は要らない。D1 の `database_id` を `web/wrangler.toml` に入れた（S9・2026-10-21）。カード未登録は開発者が Billing で確認（2026-10-21） |
 | 8 | Actions がコミット SHA 固定・権限は最小 | 済 | `bash scripts/check-actions-pinned.sh` 違反 0（workflow 3 本・uses 14 件）。全 workflow が `permissions: contents: read`、checkout は `persist-credentials: false` |
 | 9 | GitHub のリポジトリ設定 | 開発者 | §5 |
 | 10 | KA 0〜100 で全キャラの生成物が存在し、ゴールデンテストが緑 | 済 | 計算方式 C（サイトはエンジンを WASM で回す。S5 後の開発者決定）なので、KA ごとの生成物は無い。代わりに「31 キャラの moves DB と manifest（KA 上限 100）が生成される」（`go run ./cmd/precompute` キャラ 31・違反 0）と「本家の正解との突き合わせ 5,208 条件・不一致 0、golden 緑」（`go test -count=1 ./...`）で見る。数値は `docs/progress/S7-report.md` |
@@ -71,7 +71,7 @@ GitHub 設定の項目は、本家（非公開）の公開手順書を S7 で読
 | `.github/workflows/upstream-watch.yml` | **済**（2026-10-18）: **定期実行（日 1 回）を戻す**（`schedule` のコメントを外す。公開後は Actions が無料。開発者決定 2026-10-18）。AGENTS §9 の「手動起動のみ」の行も直す |
 | `.github/workflows/ci.yml` | **済**（2026-10-18）: **`claude/**` への push での起動を戻す**（`push: branches: [main, 'claude/**']`。PR・手動は残す。job は 2 つのまま。開発者決定 2026-10-18）。AGENTS §9 の「push では走らない」の行も直す |
 | `web/src/lib/constants.ts` | **済**（2026-10-18）: `FEEDBACK_FORM_URL` に Google フォームの URL を入れた（空にすると Issues だけを案内する）。フォームは本家用の Google アカウントで、日英併記の 1 つ。「内容」は回答の検証で URL を含めない（正規表現 `https?://|www\.` を含まない）。メールアドレスは収集しない |
-| `web/wrangler.toml` | D1 の `database_id`（デプロイ時。秘密情報ではない） |
+| `web/wrangler.toml` | **済**（2026-10-21）: D1 の `database_id`（開発者が Cloudflare の画面で作成。秘密情報ではない） |
 | `.github/workflows/deploy.yml` | S9 で追加。CI が main で緑 → 承認 → Cloudflare へ。`analytics.yml` は S9 で削除（集計は手元） |
 
 ## 5. GitHub のリポジトリ設定（公開する新しいリポジトリで。開発者）

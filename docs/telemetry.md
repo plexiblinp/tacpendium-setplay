@@ -28,7 +28,7 @@ Cloudflare Worker(web/edge/index.ts。/api/* だけが来る。ほかは静的�
 | `web/edge/votes.ts`・`schema.sql` | 票の保存・配信・D1 のスキーマ |
 | `web/edge/visitor.ts` | 日替わりソルトと利用者のハッシュ |
 | `web/edge/testing/` | 試験・E2E 用の偽物（D1 = `node:sqlite`、Analytics Engine = メモリ）と、Worker を Node で動かす `local.ts` |
-| `web/wrangler.toml` | Worker の設定の雛形（`database_id` は開発者が入れる） |
+| `web/wrangler.toml` | Worker の設定（`database_id` は開発者が作った D1 のもの。S9） |
 | `web/src/lib/telemetry.ts`・`votes.ts` | 画面の beacon・票 |
 | `web/src/components/PrivacyPolicy.tsx` | プライバシーポリシー（5 言語。フッターと `#privacy`） |
 
