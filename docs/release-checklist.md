@@ -72,7 +72,7 @@ GitHub 設定の項目は、本家（非公開）の公開手順書を S7 で読
 | `.github/workflows/ci.yml` | **済**（2026-10-18）: **`claude/**` への push での起動を戻す**（`push: branches: [main, 'claude/**']`。PR・手動は残す。job は 2 つのまま。開発者決定 2026-10-18）。AGENTS §9 の「push では走らない」の行も直す |
 | `web/src/lib/constants.ts` | **済**（2026-10-18）: `FEEDBACK_FORM_URL` に Google フォームの URL を入れた（空にすると Issues だけを案内する）。フォームは本家用の Google アカウントで、日英併記の 1 つ。「内容」は回答の検証で URL を含めない（正規表現 `https?://|www\.` を含まない）。メールアドレスは収集しない |
 | `web/wrangler.toml` | **済**（2026-10-21）: D1 の `database_id`（開発者が Cloudflare の画面で作成。秘密情報ではない） |
-| `.github/workflows/deploy.yml` | S9 で追加。CI が main で緑 → 承認 → Cloudflare へ。`analytics.yml` は S9 で削除（集計は手元） |
+| `.github/workflows/ci.yml` の `deploy` job | S9 で追加。main への push で Go・Web が緑 → 承認 → Cloudflare へ。`analytics.yml` は S9 で削除（集計は手元） |
 
 ## 5. GitHub のリポジトリ設定（公開する新しいリポジトリで。開発者）
 

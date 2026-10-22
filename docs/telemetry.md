@@ -76,18 +76,19 @@ CLOUDFLARE_ACCOUNT_ID=… CLOUDFLARE_API_TOKEN=… node scripts/analytics/report
 
 ## デプロイの手順（開発者が行う。S9）
 
-公開・アカウント・秘密情報（AGENTS §3 の 3〜5）なので、Cloudflare と GitHub の操作は開発者が行う。デプロイは **GitHub Actions の `deploy.yml` からだけ**（AGENTS §8-12。S9 の開発者決定 2026-10-20: 方式 (a)＝Actions ＋ スコープを絞った API トークン ＋ 承認者付きの Environment）。
+公開・アカウント・秘密情報（AGENTS §3 の 3〜5）なので、Cloudflare と GitHub の操作は開発者が行う。デプロイは **GitHub Actions の `ci.yml` の `deploy` job からだけ**（AGENTS §8-12。S9 の開発者決定 2026-10-20: 方式 (a)＝Actions ＋ スコープを絞った API トークン ＋ 承認者付きの Environment）。
 
 1. Cloudflare のアカウント（**カードを登録しない**。無料プラン）と 2FA。
 2. D1 を作る（Cloudflare の画面の D1 か `npx wrangler d1 create tacpendium-setplay`）→ `database_id` を `web/wrangler.toml` に入れる（秘密情報ではない）。
 3. `edge/schema.sql` を D1 に流す（画面の D1 の Console か `npx wrangler d1 execute tacpendium-setplay --remote --file=edge/schema.sql`）。1 回だけ。
 4. デプロイ用のトークン（下の「デプロイ用の API トークン」）を作り、GitHub の Environment `production` の secrets に `CLOUDFLARE_API_TOKEN`・`CLOUDFLARE_ACCOUNT_ID` を置く。
-5. main に入った変更は、CI（`ci.yml`）が緑になると `deploy.yml` が起動し、承認の後に出る。出し直しは Actions →「Deploy」→ Run workflow（main）。
+5. main に入った変更は、CI（`ci.yml`）の Go・Web の job が緑になると `deploy` job が承認待ちになり、承認の後に出る。出し直しは Actions →「CI」→ Run workflow（main。検査をすべて回し直してから出す）。
 
-`deploy.yml` の作り（`.github/workflows/deploy.yml` の冒頭のコメントが正本）:
+`deploy` job の作り（`.github/workflows/ci.yml` の冒頭と job のコメントが正本）:
 
-- 起動は「CI が main への push で成功した」とき（`workflow_run`。フォークの PR の CI では動かないよう、push・同じリポジトリ・成功を job の条件で確かめる）と手動だけ。CI が検査したコミットそのものを出す。
-- ビルドの job（トークンなし）とデプロイの job（Environment `production`・トークンあり）に分ける。トークンは `wrangler deploy` の 1 段だけに渡し、デプロイの job では install のスクリプトを動かさない。キャッシュは使わない。
+- 起動は main への push と手動起動（main）だけ。Go・Web の job の成功を待ち（`needs`）、Web の job で作り E2E を通した `dist`（成果物 `site-dist`。同じ条件のときだけ作り 1 日で消える）を出す。ビルドはしない。
+- Environment `production`（承認・main だけ）を通る。トークンは `wrangler deploy` の 1 段だけに渡し、install のスクリプトは動かさない。
+- 別の workflow（`workflow_run`）にしなかった理由: フォークの PR の CI の完了でも起動し main の扱いで動く。CodeQL がキャッシュ汚染（actions/cache-poisoning）として指摘した（S9。PR #6）。守りが消えたら `scripts/check-deploy-workflow.py`（CI のリポジトリ検査）が赤になる。
 - `wrangler` は `web/package.json` の devDependency（lockfile で固定。`pnpm-workspace.yaml` の `minimumReleaseAge` で公開 7 日未満の版は入らない）。
 
 無料枠を超えたとき: Worker は 1 日 10 万リクエストを超えると Error 1027（S1 ⑥。静的アセットへの要求は Worker を通らず無料・無制限なので、止まるのは `/api` だけの見込み）。D1 は UTC 0 時まで誤り（票は読めず `unavailable`、投票は 503）。Analytics Engine の超過時の挙動は docs に記載が無い（S1 ⑥。実アカウントで確かめる）。どれも課金には移らない（カード未登録）。

@@ -158,9 +158,9 @@ GitHub Actions を書くときは次を守る。どれも本家で「失敗し�
 - `paths` フィルタは、必須 check を登録するまで入れない（skip された必須 check は pending のままになり、マージできなくなる）。
 - 既存の `upstream-watch.yml` は日 1 回の定期実行と手動起動（公開後に定期実行を再開。開発者決定 2026-10-18）。
 - `govulncheck.yml` は週 1 回と手動起動で govulncheck だけを回す（S8。CI の Go job でも毎回回す）。`local-release.yml` はローカル版のビルド・3 OS の起動確認・タグ `v*` で draft の Release（S8。必須 check ではないので `paths` フィルタあり。3 OS の起動確認は job を分けないとできないので、上の「job を増やさない」の例外とした。public で分数は無料、ローカル版に関わるパスが変わったときだけ走る）。
-- `deploy.yml` はサイトのデプロイ（S9）。CI が main への push で成功したとき（`workflow_run`）と手動起動だけで、Environment `production`（開発者の承認）を通る。ビルドとデプロイの 2 job に分け、トークンはデプロイの 1 段だけに渡す。集計の `analytics.yml` は S9 で削除した（public の Actions のログは誰でも読めるため。集計は手元）。
+- サイトのデプロイ（S9）は `ci.yml` の `deploy` job。main への push と手動起動（main）のときだけ、Go・Web の job の成功を待って、Web の job で作り E2E を通した `dist` を出す。Environment `production`（開発者の承認）を通り、トークンは `wrangler deploy` の 1 段だけに渡す。`workflow_run` の別 workflow にはしない（フォークの PR の完了でも起動し main の扱いで動く。CodeQL のキャッシュ汚染の指摘。守りは `scripts/check-deploy-workflow.py` が見る）。集計の `analytics.yml` は S9 で削除した（public の Actions のログは誰でも読めるため。集計は手元）。
 - **CI は main 向けの PR・main と `claude/**` への push・手動起動で走る**（public 化で Actions が無料になったので、`claude/` への push での起動を戻した。開発者決定 2026-10-18）。それでも完了報告の「緑」は手元で回した `EXIT=` と件数で示す（§8-1）。
-- 課金は job ごとに 1 分単位で切り上げなので、**job を増やさない**（いまは Go 側・Web 側の 2 つ）。同じ job の中で互いに独立な検査は `if: ${{ !cancelled() }}` で回し、1 つの失敗で他の結果が消えないようにする。
+- 課金は job ごとに 1 分単位で切り上げなので、**job を増やさない**（いまは Go 側・Web 側の 2 つと、main でだけ走る `deploy`）。同じ job の中で互いに独立な検査は `if: ${{ !cancelled() }}` で回し、1 つの失敗で他の結果が消えないようにする。
 
 ---
 

@@ -7,14 +7,14 @@
 
 - サイトの見た目・動きが変わった、見覚えの無いスクリプト・外部への通信がある（CSP は外部への通信を断るので、ブラウザの開発者ツールに CSP の違反が出ることがある）。
 - Cloudflare から見覚えの無いデプロイ・トークンの作成の通知、監査ログ（Audit Log）に見覚えの無い操作。
-- GitHub の Actions に、承認していない「Deploy」の実行・見覚えの無い workflow の変更。
+- GitHub の Actions に、承認していないデプロイ（CI の「Cloudflare へ出す」の job）・見覚えの無い workflow の変更。
 - GitHub から見覚えの無いログイン・2FA の変更の通知。
 
 ## 1. 止める
 
 1. **デプロイ用のトークンを消す**: Cloudflare → Account API tokens → 該当のトークン → Delete（Roll でもよい）。その時点で無効になる。
 2. **サイトを止める**（中身を差し替えられたとき）: Workers & Pages → `tacpendium-setplay` → Settings → Domains & Routes → `workers.dev` を無効にする（要確認）。止めている間は誰も開けない。
-3. **GitHub からのデプロイを止める**: Actions →「Deploy」→「…」→ Disable workflow。
+3. **GitHub からのデプロイを止める**: Settings → Environments → `production` → secrets の `CLOUDFLARE_API_TOKEN` を消す（承認待ちのデプロイは Reject する）。CI の検査は止めずに済む。
 
 ## 2. 確かめる
 
@@ -25,7 +25,7 @@
 ## 3. 戻す
 
 1. 新しいトークンを作る（`docs/telemetry.md`「デプロイ用の API トークン」）→ Environment `production` の secret を上書き。
-2. 正しい版に戻す: Worker の Deployments から前の版へ rollback（要確認）、または main の正しいコミットから Actions →「Deploy」→ Run workflow。Disable した workflow は Enable に戻す。
+2. 正しい版に戻す: Worker の Deployments から前の版へ rollback（要確認）、または main の正しいコミットで Actions →「CI」→ Run workflow（検査の後に承認して出す）。
 3. `workers.dev` を有効に戻す。
 4. 票（D1）を消された・書き換えられたとき: D1 の Time Travel で前の時点へ戻す（無料プランは 7 日。`npx wrangler d1 time-travel restore tacpendium-setplay --timestamp=<時刻>`。要確認）。
 
