@@ -33,6 +33,12 @@ export const VISITOR_UNAVAILABLE = "unavailable";
  * 1 人が素早く続けても 1 分に 20 回ほど。共有 IP の数人分を見込んで 60。
  */
 export const VOTE_PER_NET_PER_MINUTE = 60;
+/**
+ * 票の配信(GET /api/votes)の回数制限(1 回線・1 分。S9 のセキュリティ修正 F-02)。画面は「提案を出す」ごとに 1 回読み、
+ * 同じ条件の再表示はメモリのキャッシュが受ける。条件を変えて検索し直しても 1 人 1 分に十数回なので、共有 IP の数人分を見込んで 120。
+ * 連打で D1 の読み取りの無料枠(全員の票)を使い切らせないため。
+ */
+export const VOTES_LIST_PER_NET_PER_MINUTE = 120;
 const MINUTE_MS = 60_000;
 
 const CODE_RE = /^[a-z0-9_]{1,64}$/;
@@ -46,6 +52,8 @@ export interface Deps {
   anonBeaconLimiter: WindowLimiter;
   /** 投票の回数制限(鍵は回線のハッシュ)。 */
   voteLimiter: WindowLimiter;
+  /** 票の配信の回数制限(鍵は回線のハッシュ)。 */
+  votesLimiter: WindowLimiter;
 }
 
 /**
@@ -141,7 +149,7 @@ async function handleVote(req: Request, env: Env, deps: Deps): Promise<Response>
   return json(200, r.reply);
 }
 
-async function handleVotes(req: Request, env: Env): Promise<Response> {
+async function handleVotes(req: Request, env: Env, deps: Deps): Promise<Response> {
   if (req.method !== "GET") return fail(405, "method_not_allowed");
   if (env.DB == null) return fail(503, "votes_unavailable");
   const q = new URL(req.url).searchParams;
@@ -149,6 +157,9 @@ async function handleVotes(req: Request, env: Env): Promise<Response> {
   const kaText = q.get("ka") ?? "";
   const ka = Number(kaText);
   if (!CODE_RE.test(char) || !/^\d{1,3}$/.test(kaText) || ka < KA_MIN || ka > KA_MAX_SITE) return fail(400, "invalid_query");
+  const id = await identityOf(req, env, deps);
+  if (id == null) return fail(503, "votes_unavailable");
+  if (!deps.votesLimiter.take(id.net, deps.now().getTime())) return fail(429, "rate_limited");
   // ★キャッシュさせない(no-store): 投票した直後の検索で、ブラウザに残った古い票で並べないため(S6 の E2E で見つけた)。
   //   読む行はそのキャラ・KA の票の付いたレシピだけで、同じ条件の再表示は画面のメモリのキャッシュが受けるので、D1 の読みは少ない。
   return json(200, await listVotes(env.DB, char, ka));
@@ -161,7 +172,7 @@ export function createHandler(deps: Deps) {
     try {
       if (pathname === API_BEACON_PATH) return await handleBeacon(req, env, deps);
       if (pathname === API_VOTE_PATH) return await handleVote(req, env, deps);
-      if (pathname === API_VOTES_PATH) return await handleVotes(req, env);
+      if (pathname === API_VOTES_PATH) return await handleVotes(req, env, deps);
     } catch {
       // D1 の無料枠を超えた(UTC 0 時まで誤り。S1 ⑦)等。中身は返さない(画面は票なし・計測なしで動く)。
       return fail(503, "unavailable");
@@ -177,6 +188,7 @@ const handler = createHandler({
   beaconLimiter: new WindowLimiter(BEACON_PER_NET_PER_MINUTE, MINUTE_MS),
   anonBeaconLimiter: new WindowLimiter(ANON_BEACON_PER_MINUTE, MINUTE_MS),
   voteLimiter: new WindowLimiter(VOTE_PER_NET_PER_MINUTE, MINUTE_MS),
+  votesLimiter: new WindowLimiter(VOTES_LIST_PER_NET_PER_MINUTE, MINUTE_MS),
 });
 
 export default {

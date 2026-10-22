@@ -6,7 +6,14 @@ import { API_BODY_MAX_BYTES, BEACON_SCHEMA_VERSION, type BeaconEvent } from "../
 import layout from "./beacon-layout.json";
 import { AE_MAX_BLOBS, AE_MAX_DOUBLES, toDataPoint } from "./beacon";
 import type { Env } from "./env";
-import { API_SECURITY_HEADERS, BEACON_PER_NET_PER_MINUTE, createHandler, VOTE_PER_NET_PER_MINUTE, type Deps } from "./index";
+import {
+  API_SECURITY_HEADERS,
+  BEACON_PER_NET_PER_MINUTE,
+  createHandler,
+  VOTE_PER_NET_PER_MINUTE,
+  VOTES_LIST_PER_NET_PER_MINUTE,
+  type Deps,
+} from "./index";
 import { WindowLimiter } from "./rate";
 import { MemoryAnalytics, SqliteD1 } from "./testing/sqliteD1";
 import { VOTES_PER_NET_PER_DAY, VOTES_PER_VOTER_PER_DAY } from "./votes";
@@ -73,6 +80,7 @@ function world(over: Partial<Deps> = {}): World {
     beaconLimiter: new WindowLimiter(BEACON_PER_NET_PER_MINUTE, 60_000),
     anonBeaconLimiter: new WindowLimiter(1000, 60_000),
     voteLimiter: new WindowLimiter(100_000, 60_000),
+    votesLimiter: new WindowLimiter(100_000, 60_000),
     ...over,
   };
   const h = createHandler(deps);
@@ -262,6 +270,16 @@ describe("票", () => {
     expect(await over.json()).toEqual({ error: "daily_limit" });
     expect((await cast(VOTES_PER_NET_PER_DAY, "2001:db8:aa:bc::1")).status).toBe(200); // 別の /64
     expect((await cast(VOTES_PER_NET_PER_DAY + 1, "198.51.100.30")).status).toBe(200); // 別の IPv4
+  });
+
+  it("票の配信の連打は 1 回線 1 分の上限で 429(UA を変えても。別の回線は独立。F-02)", async () => {
+    const v = world({ votesLimiter: new WindowLimiter(VOTES_LIST_PER_NET_PER_MINUTE, 60_000) });
+    const get = (i: number, ip?: string) => v.call(`/api/votes?char=ryu&ka=${i % 101}`, { ip, ua: `agent-${i}` });
+    for (let i = 0; i < VOTES_LIST_PER_NET_PER_MINUTE; i++) expect((await get(i)).status).toBe(200);
+    expect((await get(VOTES_LIST_PER_NET_PER_MINUTE)).status).toBe(429);
+    expect((await get(0, "192.0.2.1")).status).toBe(200);
+    v.clock.t = new Date(v.clock.t.getTime() + 60_000);
+    expect((await get(0)).status).toBe(200);
   });
 
   it("回線ごとの数は日替わりで消え、生の IP も回線も残らない(F-01)", async () => {

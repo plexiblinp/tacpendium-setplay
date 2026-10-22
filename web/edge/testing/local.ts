@@ -21,6 +21,7 @@ export function createLocalApi() {
     beaconLimiter: new WindowLimiter(E2E_PER_MINUTE, MINUTE_MS),
     anonBeaconLimiter: new WindowLimiter(E2E_PER_MINUTE, MINUTE_MS),
     voteLimiter: new WindowLimiter(E2E_PER_MINUTE, MINUTE_MS),
+    votesLimiter: new WindowLimiter(E2E_PER_MINUTE, MINUTE_MS),
   });
   return {
     handle: (req: Request) => handler(req, env),
