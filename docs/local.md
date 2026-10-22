@@ -36,6 +36,9 @@ the program only serves the page on `127.0.0.1` and **sends nothing anywhere** (
 - **Windows**: 「Windows によって PC が保護されました」→「詳細情報」→「実行」。
 - **macOS**: 開けないときは、ターミナルで `xattr -d com.apple.quarantine ./tacpendium-setplay-local_darwin_arm64` を実行してから起動する（または Finder で右クリック →「開く」）。
 - **Linux**: `chmod +x` が要ることがある（圧縮の中では実行権が付いている）。
+- **ウイルス対策ソフト**: 署名の無い単一のプログラムは、ウイルス対策ソフトに誤って検出されることがあります（開発者の PC でも 1 件あり、再判定で問題なしになった）。
+  落としたファイルが Releases の `SHA256SUMS` と一致するかを確かめ（上の 1.）、一致していれば各社の誤検知の報告窓口へ送ってください。一致しなければ使わないでください。
+  / Antivirus software may flag unsigned binaries as a false positive. Check the file against `SHA256SUMS`; if it matches, report the false positive to your vendor. If it does not match, do not run it.
 
 ### 重い条件について / Heavy conditions
 

@@ -9,7 +9,7 @@ import type { Lang } from "../lib/langs";
 export const PRIVACY_HASH = "#privacy";
 
 /** 最終更新日(UTC の日付)。文面を変えたら更新する。★公開時(S7〜S9)に公開日へ揃える。 */
-export const PRIVACY_LAST_UPDATED = "2026-10-18";
+export const PRIVACY_LAST_UPDATED = "2026-10-22";
 
 const SECTIONS = ["hash", "retention", "thirdParty", "contact"] as const;
 

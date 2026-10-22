@@ -1,2 +1,8 @@
 # 公開から 7 日経っていない版は入れない(乗っ取られた版を掴まないため。Dependabot の cooldown と同じ考え方)。
 minimumReleaseAge: 10080
+
+# sharp(wrangler → miniflare の依存。手元の `wrangler dev` の画像処理でしか使わない)の native の部品を入れない(S9)。
+# @img/sharp-libvips-* は LGPL-3.0-or-later で、強いコピーレフトは入れない(AGENTS §5)。デプロイ(wrangler deploy)は sharp を使わない。
+# 解除条件: wrangler が sharp に依存しなくなったら消す(`pnpm why sharp` が空)。
+ignoredOptionalDependencies:
+  - "@img/*"

@@ -1,5 +1,7 @@
 // 票(HANDOVER D17・開発者決定 2026-10-12): D1 に保存し、キャラ・KA ごとに配る。
 // 重複防止は「利用者のハッシュ × レシピ × 日」で 1 票(同じ日は付け替え・取り消しができる)。1 人 1 日の票数に上限。
+// 回線(IPv4 のアドレス・IPv6 の /64)ごとにも 1 日の新しい票の数に上限を置く(S9 のセキュリティ修正 F-01。UA を変えて
+// 利用者のハッシュを変えれば 1 人の上限は逃れられるため)。数は quotas に UPSERT で数え、日替わりで消す(visitor.ts)。
 // ★同じ人の同時の投票が重なると数がずれうる(読んでから書く 2 段のため)。利用者が少なく正確さは要らない
 //   (開発者注)ので排他はしない。docs/telemetry.md の限界。
 import { VOTES_MAX_ENTRIES, type VoteReply, type VoteRequest, type VoteValue, type VotesReply } from "../src/shared/api";
@@ -7,26 +9,41 @@ import type { D1Database } from "./env";
 
 /** 1 人(利用者のハッシュ)が 1 日に票を付けられるレシピの数。 */
 export const VOTES_PER_VOTER_PER_DAY = 200;
+/**
+ * 1 回線(回線のハッシュ)が 1 日に付けられる新しい票の数。1 人の上限の 5 倍: 家庭・学校・携帯の共有 IP(CGNAT)で
+ * 数人が同じ日に使っても当たらず、UA を変えた水増しは 1 回線 1 日この数で止まる。取り消しても戻らない(数え直さない)。
+ */
+export const VOTES_PER_NET_PER_DAY = 1000;
 
 export type CastResult = { kind: "ok"; reply: VoteReply } | { kind: "limited" };
 
-/** 票を付ける・付け替える・取り消す(value 0)。 */
-export async function castVote(db: D1Database, day: string, voter: string, req: VoteRequest): Promise<CastResult> {
+/** 票を付ける・付け替える・取り消す(value 0)。voter は利用者のハッシュ、net は回線のハッシュ(visitor.ts)。 */
+export async function castVote(db: D1Database, day: string, voter: string, net: string, req: VoteRequest): Promise<CastResult> {
   const prev = await db
     .prepare("SELECT value FROM ballots WHERE day = ? AND voter = ? AND char = ? AND ka = ? AND recipe = ?")
     .bind(day, voter, req.char, req.ka, req.recipe)
     .first<{ value: number }>();
   const before: VoteValue = prev == null ? 0 : prev.value === 1 ? 1 : -1;
-  if (prev == null && req.value !== 0) {
+  const isNew = prev == null && req.value !== 0;
+  if (isNew) {
     const used = await db
       .prepare("SELECT COUNT(*) AS n FROM ballots WHERE day = ? AND voter = ?")
       .bind(day, voter)
       .first<{ n: number }>();
     if ((used?.n ?? 0) >= VOTES_PER_VOTER_PER_DAY) return { kind: "limited" };
+    const netUsed = await db.prepare("SELECT n FROM quotas WHERE day = ? AND net = ?").bind(day, net).first<{ n: number }>();
+    if ((netUsed?.n ?? 0) >= VOTES_PER_NET_PER_DAY) return { kind: "limited" };
   }
   const dGood = (req.value === 1 ? 1 : 0) - (before === 1 ? 1 : 0);
   const dBad = (req.value === -1 ? 1 : 0) - (before === -1 ? 1 : 0);
   const stmts = [];
+  if (isNew) {
+    stmts.push(
+      db
+        .prepare("INSERT INTO quotas (day, net, n) VALUES (?, ?, 1) ON CONFLICT (day, net) DO UPDATE SET n = n + 1")
+        .bind(day, net),
+    );
+  }
   if (req.value === 0) {
     stmts.push(
       db
