@@ -4,6 +4,11 @@ name = "tacpendium-setplay"
 main = "edge/index.ts"
 compatibility_date = "2026-09-01"
 workers_dev = true
+# 版ごとの公開 URL(Version URLs。旧名 preview URLs)と Previews の workers.dev の URL を出さない(S9 のセキュリティ修正 F-06)。
+# Version URL は「その版の設定と資源をそのまま使う」ので、古い版のコードが本番の D1(票)・Analytics Engine に書ける URL が
+# 版ごとに公開で残る(https://developers.cloudflare.com/workers/versions-and-deployments/version-urls/)。省くと既存の設定を変えず、
+# 無ければ workers_dev に合わせて有効になりうる(https://developers.cloudflare.com/workers/wrangler/configuration/ の preview_urls)。
+preview_urls = false
 
 # Workers Logs(要求の記録)を止める。既定で有効になることがあり、記録には IP が含まれうる(S7。docs/progress/S7-privacy-research.md §2.3)。
 # 障害の調査で一時的に使うときは、使い終えたら戻す。

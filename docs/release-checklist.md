@@ -58,7 +58,7 @@ GitHub 設定の項目は、本家（非公開）の公開手順書を S7 で読
 - https://securityheaders.com/ — 期待: **A 以上**。`Permissions-Policy` は `clipboard-write=(self)` だけ許可（コピー D16 のため。減点されても外さない）。
 - https://developer.mozilla.org/observatory — 期待: CSP に `unsafe-inline`・`unsafe-eval` が無いこと（`wasm-unsafe-eval` は WASM のため）、HSTS・nosniff・Referrer-Policy・X-Frame-Options（または frame-ancestors）が通ること。
 - `workers.dev` は HTTPS 固定。HSTS に `preload` は付けていない（自分のドメインでないため）。
-- 存在しないパス（例 `/no-such-page`）も 1 つ見る。アセットに無い要求は Worker の最後の `env.ASSETS.fetch` が返すので、`_headers` が掛かるかは手元で確かめていない（S7 レビュー低-9）。
+- 存在しないパス（例 `/no-such-page`）も 1 つ見る。アセットに無い要求は Worker の最後の `env.ASSETS.fetch` が返す。`_headers` がこの 404 に掛かるかは Cloudflare の docs に書かれていない（docs は「Worker のコードが作る応答には掛からない」まで。https://developers.cloudflare.com/workers/static-assets/headers/ ）。そこで Worker が誤りの応答（400 以上）に `/api` と同じヘッダを付ける（無いものだけ。S9 のセキュリティ修正 F-07。`web/edge/index.ts` の `withErrorSecurityHeaders`）。診断では 404 に CSP 等が付くことを確かめる。
 - 結果（評価と指摘）を S9 の報告に貼る。直すものがあれば `web/public/_headers` と `web/edge/index.ts` の `API_SECURITY_HEADERS` を同時に直す（E2E `headers.spec.ts` が両方を見る）。
 
 ## 4. 公開時に書き換える箇所
@@ -100,3 +100,15 @@ GitHub 設定の項目は、本家（非公開）の公開手順書を S7 で読
 | S9-2 | **済**（2026-10-20）: main の 9880c88 に `v1.0.0` のタグ → Local release の run 39142810181 が全 job 成功（ビルド・ubuntu / macos / windows の起動確認 12 項目 ok・失敗 0・draft の作成）→ 開発者が中身を確かめて公開（https://github.com/plexiblinp/tacpendium-setplay/releases/tag/v1.0.0 、2026-10-20T15:12:39Z）。**v1.0.1**（2026-10-21）: Go 1.26.10 で作り直し（GO-2026-6809 / CVE-2026-111943。eMudhra の中間 CA 鍵の危殆化）。main の 999925d に `v1.0.1` → run 39627631145 が全 5 job 成功 → 開発者が照合して公開（2026-10-21T15:45:32Z。添付 6）。v1.0.0 は残し、本文で v1.0.1 へ案内。以下は手順の記録。ローカル版の最初の Release: main で `v<版>`（例 `v1.0.0`）のタグを push → `local-release.yml` が 3 OS の起動確認の後に **draft** の Release を作る → 中身（5 種の圧縮・`SHA256SUMS`）を確かめて公開する | 手順は `docs/local.md`「配布」。サイトの KA の説明は Releases（`RELEASES_URL`）へ案内するので、**サイトを公開する前か同時に**出す（無いと空の Releases を指す） |
 | S9-3 | **済**（2026-10-21）: main の 999925d で手動起動 → run 39626692726 成功。`govulncheck.yml` の週 1 回の定期実行は default branch（main）に入ってから動く。マージ後に Actions の画面で 1 度手動起動し、緑を確かめる | S8 |
 | S9-4 | ヘッダ診断（§3）・§5 の「済」付け・S9 の報告 | 開発者指示 2026-10-18（S8 ではやらない） |
+
+## 7. セキュリティ監査（S9）の設定の確認と残りの案
+
+監査の指摘（HEAD 999925d）のうち、設定・文書で扱うもの。コードで直したもの（F-01〜F-04・F-07）は `docs/progress/S9-security-report.md`。
+
+| ID | 中身 | 扱い |
+|---|---|---|
+| F-05 | npm の依存の脆弱性検査が CI に無い（Go は `scripts/govulncheck.sh`） | **案だけ**（依存の凍結中に頼まれた修正のため工程は足さなかった）: CI の Web の job の `pnpm install` の後に `pnpm audit --prod --audit-level=high` を `if: ${{ !cancelled() }}` で足す（job は増やさない）。`--prod` は配る画面の依存だけを見る（開発用の道具の指摘で止まらないように）。足すときは、1 件ある状態で赤になることを先に確かめる（AGENTS §8-3） |
+| F-06 | 版ごとの公開 URL が本番の束縛（D1 等）を使いうる | **`web/wrangler.toml` に `preview_urls = false`**。Version URLs は「その版の設定と資源をそのまま使う」（https://developers.cloudflare.com/workers/versions-and-deployments/version-urls/ ）ので、古い版が本番の D1 に書ける URL が公開で残る。Previews（`wrangler preview`）は本番の設定を受け継がず `previews` 枠の束縛を使う（https://developers.cloudflare.com/workers/previews/ ）が、使っていない。`preview_urls` は省くと既存の設定を変えず、無ければ `workers_dev` に合わせて決まる（https://developers.cloudflare.com/workers/wrangler/configuration/ ）。Git 連携（Workers Builds）は使わない（デプロイは CI の `deploy` job だけ。非本番のブランチのビルドが無い）。開発者は画面でも確かめる（S9 の報告の「開発者がやること」） |
+| F-07 | 404 応答に `_headers` が掛かるか未確認 | 上の §3。docs では決着しないので Worker 側で付ける |
+| F-08 | 消したソルトの Time Travel での保持期間 | **無料プラン 7 日**（有料 30 日）を docs で確かめた（https://developers.cloudflare.com/d1/reference/time-travel/ 、https://developers.cloudflare.com/d1/platform/limits/ 。2026-10-22 に cloudflare-docs のソースで確認）。`docs/telemetry.md` とプライバシーポリシーの「7 日」と一致 |
+
