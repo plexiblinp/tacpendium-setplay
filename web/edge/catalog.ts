@@ -4,7 +4,7 @@
 //
 // ★鍵の検証は「技 code がそのキャラの moves DB にある」までで、組み合わせが実際の提案に出るかは見ない。
 //   取りうる鍵の集合は 1 キャラ・KA 0〜100 で数百万件・数百 MB の見込みで、配信の上限に収まらないため
-//   (docs/progress の S9 のセキュリティ修正の報告)。実在する技の組み合わせの水増しは、回線ごとの上限(F-01)で抑える。
+//   (docs/progress/fix-security-report.md)。実在する技の組み合わせの水増しは、回線ごとの上限(F-01)で抑える。
 import { z } from "zod";
 
 import { manifestSchema } from "../src/lib/data";
