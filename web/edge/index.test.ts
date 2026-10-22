@@ -6,11 +6,11 @@ import { API_BODY_MAX_BYTES, BEACON_SCHEMA_VERSION, type BeaconEvent } from "../
 import layout from "./beacon-layout.json";
 import { AE_MAX_BLOBS, AE_MAX_DOUBLES, toDataPoint } from "./beacon";
 import type { Env } from "./env";
-import { API_SECURITY_HEADERS, BEACON_PER_MINUTE, createHandler, type Deps } from "./index";
+import { API_SECURITY_HEADERS, BEACON_PER_NET_PER_MINUTE, createHandler, VOTE_PER_NET_PER_MINUTE, type Deps } from "./index";
 import { WindowLimiter } from "./rate";
 import { MemoryAnalytics, SqliteD1 } from "./testing/sqliteD1";
-import { VOTES_PER_VOTER_PER_DAY } from "./votes";
-import { SaltStore } from "./visitor";
+import { VOTES_PER_NET_PER_DAY, VOTES_PER_VOTER_PER_DAY } from "./votes";
+import { netOf, SaltStore } from "./visitor";
 
 const ORIGIN = "https://setplay.example";
 
@@ -51,14 +51,16 @@ export function sampleBeacon(over: Partial<BeaconEvent> = {}): BeaconEvent {
   };
 }
 
+type CallInit = RequestInit & { ip?: string; ua?: string };
+
 interface World {
   env: Env & { DB: SqliteD1; TELEMETRY: MemoryAnalytics };
   deps: Deps;
-  call: (path: string, init?: RequestInit & { ip?: string }) => Promise<Response>;
+  call: (path: string, init?: CallInit) => Promise<Response>;
   clock: { t: Date };
 }
 
-function world(): World {
+function world(over: Partial<Deps> = {}): World {
   const clock = { t: new Date("2026-10-12T10:00:00Z") };
   const env = {
     DB: new SqliteD1(),
@@ -68,15 +70,16 @@ function world(): World {
   const deps: Deps = {
     now: () => clock.t,
     salts: new SaltStore(),
-    beaconLimiter: new WindowLimiter(BEACON_PER_MINUTE, 60_000),
+    beaconLimiter: new WindowLimiter(BEACON_PER_NET_PER_MINUTE, 60_000),
     anonBeaconLimiter: new WindowLimiter(1000, 60_000),
-    voteLimiter: new WindowLimiter(1000, 60_000),
+    voteLimiter: new WindowLimiter(100_000, 60_000),
+    ...over,
   };
   const h = createHandler(deps);
-  const call = (path: string, init: RequestInit & { ip?: string } = {}) => {
+  const call = (path: string, init: CallInit = {}) => {
     const headers = new Headers(init.headers);
     headers.set("cf-connecting-ip", init.ip ?? "203.0.113.7");
-    headers.set("user-agent", "test-agent");
+    headers.set("user-agent", init.ua ?? "test-agent");
     if (init.method === "POST" && !headers.has("origin")) headers.set("origin", ORIGIN);
     return h(new Request(ORIGIN + path, { ...init, headers }), env);
   };
@@ -141,12 +144,29 @@ describe("beacon", () => {
     expect(w.env.TELEMETRY.points).toHaveLength(0);
   });
 
-  it("1 人 1 分の上限を超えたら 429(別の人は通る)", async () => {
-    for (let i = 0; i < BEACON_PER_MINUTE; i++) expect((await w.call("/api/beacon", post(sampleBeacon()))).status).toBe(204);
+  it("1 回線 1 分の上限を超えたら 429(別の回線は通る)", async () => {
+    for (let i = 0; i < BEACON_PER_NET_PER_MINUTE; i++) expect((await w.call("/api/beacon", post(sampleBeacon()))).status).toBe(204);
     expect((await w.call("/api/beacon", post(sampleBeacon()))).status).toBe(429);
     expect((await w.call("/api/beacon", post(sampleBeacon(), { ip: "192.0.2.1" } as RequestInit))).status).toBe(204);
     w.clock.t = new Date(w.clock.t.getTime() + 60_000);
     expect((await w.call("/api/beacon", post(sampleBeacon()))).status).toBe(204);
+  });
+
+  it("UA を変えても同じ回線は 1 分の上限で 429(F-01)", async () => {
+    for (let i = 0; i < BEACON_PER_NET_PER_MINUTE; i++) {
+      expect((await w.call("/api/beacon", { ...post(sampleBeacon()), ua: `agent-${i}` })).status).toBe(204);
+    }
+    expect((await w.call("/api/beacon", { ...post(sampleBeacon()), ua: "agent-new" })).status).toBe(429);
+    expect((await w.call("/api/beacon", { ...post(sampleBeacon()), ip: "192.0.2.1", ua: "agent-new" })).status).toBe(204);
+  });
+
+  it("IPv6 は同じ /64 を 1 つの回線として数える(F-01)", async () => {
+    const same = ["2001:db8:1:2::1", "2001:0db8:0001:0002:ffff::9"];
+    for (let i = 0; i < BEACON_PER_NET_PER_MINUTE; i++) {
+      expect((await w.call("/api/beacon", { ...post(sampleBeacon()), ip: same[i % 2], ua: `a${i}` })).status).toBe(204);
+    }
+    expect((await w.call("/api/beacon", { ...post(sampleBeacon()), ip: same[0] })).status).toBe(429);
+    expect((await w.call("/api/beacon", { ...post(sampleBeacon()), ip: "2001:db8:1:3::1" })).status).toBe(204); // 別の /64
   });
 
   it("D1 が誤りを返しても beacon は 204 で 1 点書く(visitor は unavailable。票の障害で計測を止めない)", async () => {
@@ -223,6 +243,37 @@ describe("票", () => {
     for (let i = 0; i < VOTES_PER_VOTER_PER_DAY; i++) expect((await vote(`m${i}|`, 1)).status).toBe(200);
     expect((await vote("over|", 1)).status).toBe(429);
     expect((await vote("m0|", -1)).status).toBe(200);
+  });
+
+  it("UA を変えても同じ回線は 1 分の上限で 429(F-01)", async () => {
+    const v = world({ voteLimiter: new WindowLimiter(VOTE_PER_NET_PER_MINUTE, 60_000) });
+    const cast = (i: number, ip?: string) => v.call("/api/vote", { ...post({ char: "ryu", ka: 43, recipe: `r${i}|`, value: 1 }), ip, ua: `agent-${i}` });
+    for (let i = 0; i < VOTE_PER_NET_PER_MINUTE; i++) expect((await cast(i)).status).toBe(200);
+    expect((await cast(VOTE_PER_NET_PER_MINUTE)).status).toBe(429);
+    expect((await cast(VOTE_PER_NET_PER_MINUTE, "192.0.2.1")).status).toBe(200); // 別の回線は独立
+  });
+
+  it("UA を変えても 1 回線 1 日の上限で 429(IPv6 は /64 で数え、別の回線は独立。F-01)", async () => {
+    const cast = (i: number, ip: string) => w.call("/api/vote", { ...post({ char: "ryu", ka: 43, recipe: `q${i}|`, value: 1 }), ip, ua: `agent-${i}` });
+    const net = ["2001:db8:aa:bb::1", "2001:db8:aa:bb:1:2:3:4"];
+    for (let i = 0; i < VOTES_PER_NET_PER_DAY; i++) expect((await cast(i, net[i % 2]!)).status).toBe(200);
+    const over = await cast(VOTES_PER_NET_PER_DAY, net[0]!);
+    expect(over.status).toBe(429);
+    expect(await over.json()).toEqual({ error: "daily_limit" });
+    expect((await cast(VOTES_PER_NET_PER_DAY, "2001:db8:aa:bc::1")).status).toBe(200); // 別の /64
+    expect((await cast(VOTES_PER_NET_PER_DAY + 1, "198.51.100.30")).status).toBe(200); // 別の IPv4
+  });
+
+  it("回線ごとの数は日替わりで消え、生の IP も回線も残らない(F-01)", async () => {
+    const ip = "198.51.100.23";
+    await vote("a|t", 1, ip);
+    const dump = JSON.stringify(w.env.DB.db.prepare("SELECT * FROM quotas").all());
+    expect(dump).toMatch(/[0-9a-f]{32}/);
+    expect(dump).not.toContain(ip);
+    expect(dump).not.toContain(netOf(ip));
+    w.clock.t = new Date("2026-10-13T00:00:01Z");
+    await vote("b|t", 1, ip);
+    expect(w.env.DB.db.prepare("SELECT day, n FROM quotas").all()).toEqual([{ day: "2026-10-13", n: 1 }]);
   });
 
   it.each([
@@ -304,5 +355,21 @@ describe("セキュリティのヘッダ(S7)", () => {
     for (const r of responses) {
       for (const [k, v] of Object.entries(expected)) expect(r.headers.get(k), `${r.status} ${k}`).toBe(v);
     }
+  });
+});
+
+describe("回線の鍵(F-01)", () => {
+  it.each([
+    ["203.0.113.7", "4:203.0.113.7"],
+    ["::ffff:203.0.113.7", "4:203.0.113.7"],
+    ["2001:db8::1", "6:2001:db8:0:0::/64"],
+    ["2001:0DB8:0000:0000:ffff:1:2:3", "6:2001:db8:0:0::/64"],
+    ["2001:db8:1:2:3:4:5:6", "6:2001:db8:1:2::/64"],
+    ["::1", "6:0:0:0:0::/64"],
+    ["fe80::1%eth0", "6:fe80:0:0:0::/64"],
+    ["", "?:"],
+    ["not-an-ip", "?:not-an-ip"],
+  ])("%s → %s", (ip, net) => {
+    expect(netOf(ip)).toBe(net);
   });
 });

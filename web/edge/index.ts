@@ -17,16 +17,22 @@ import { parseBeacon, toDataPoint } from "./beacon";
 import type { Env } from "./env";
 import { WindowLimiter } from "./rate";
 import { castVote, listVotes } from "./votes";
-import { SaltStore, utcDay, visitorHash } from "./visitor";
+import { netHash, SaltStore, utcDay, visitorHash } from "./visitor";
 
-/** beacon の回数制限(1 人・1 分)。画面は「提案を出す」ごとに 1 回しか送らない。 */
-export const BEACON_PER_MINUTE = 30;
+/**
+ * beacon の回数制限(1 回線・1 分。鍵は回線のハッシュ＝UA を変えても同じ。S9 のセキュリティ修正 F-01)。
+ * 画面は「提案を出す」ごとに 1 回しか送らず、1 人が 1 分に押せるのは多くて十数回。共有 IP(CGNAT)の数人分を見込んで 120。
+ */
+export const BEACON_PER_NET_PER_MINUTE = 120;
 /** 利用者のハッシュを作れないとき(D1 が無い・誤り)の beacon の回数制限(isolate の全員で共有するので緩くする)。 */
 export const ANON_BEACON_PER_MINUTE = 600;
 /** 利用者のハッシュを作れなかったときの visitor の値(空文字 = D1 の束縛が無い と区別する。AGENTS §8-7)。 */
 export const VISITOR_UNAVAILABLE = "unavailable";
-/** 投票の回数制限(1 人・1 分)。1 日の上限(votes.ts)とは別に、連打を抑える。 */
-export const VOTE_PER_MINUTE = 30;
+/**
+ * 投票の回数制限(1 回線・1 分。F-01)。1 日の上限(votes.ts)とは別に、連打を抑える。👍 / 👎 の付け替えを
+ * 1 人が素早く続けても 1 分に 20 回ほど。共有 IP の数人分を見込んで 60。
+ */
+export const VOTE_PER_NET_PER_MINUTE = 60;
 const MINUTE_MS = 60_000;
 
 const CODE_RE = /^[a-z0-9_]{1,64}$/;
@@ -34,9 +40,11 @@ const CODE_RE = /^[a-z0-9_]{1,64}$/;
 export interface Deps {
   now: () => Date;
   salts: SaltStore;
+  /** beacon の回数制限(鍵は回線のハッシュ)。 */
   beaconLimiter: WindowLimiter;
-  /** 利用者のハッシュが無い beacon の回数制限。 */
+  /** ハッシュを作れない(D1 が無い・誤り)beacon の回数制限(isolate の全員で 1 つの鍵)。 */
   anonBeaconLimiter: WindowLimiter;
+  /** 投票の回数制限(鍵は回線のハッシュ)。 */
   voteLimiter: WindowLimiter;
 }
 
@@ -80,10 +88,12 @@ function sameOrigin(req: Request): boolean {
   return origin == null || origin === new URL(req.url).origin;
 }
 
-async function visitorOf(req: Request, env: Env, deps: Deps): Promise<string> {
-  if (env.DB == null) return "";
+/** 利用者のハッシュ(票の重複防止・計測の推定利用者数)と回線のハッシュ(回数制限・回線ごとの上限)。D1 が無ければ null。 */
+async function identityOf(req: Request, env: Env, deps: Deps): Promise<{ visitor: string; net: string } | null> {
+  if (env.DB == null) return null;
   const salt = await deps.salts.today(env.DB, deps.now());
-  return visitorHash(req.headers.get("cf-connecting-ip") ?? "", req.headers.get("user-agent") ?? "", salt);
+  const ip = req.headers.get("cf-connecting-ip") ?? "";
+  return { visitor: await visitorHash(ip, req.headers.get("user-agent") ?? "", salt), net: await netHash(ip, salt) };
 }
 
 async function handleBeacon(req: Request, env: Env, deps: Deps): Promise<Response> {
@@ -94,15 +104,17 @@ async function handleBeacon(req: Request, env: Env, deps: Deps): Promise<Respons
   const ev = parseBeacon(text);
   if (ev == null) return fail(400, "invalid_beacon");
   // ★D1(票・ソルト)が誤りを返しても計測は止めない(無料枠は別。票の障害で計測まで落とさない)。ハッシュなしで書く。
+  let id: { visitor: string; net: string } | null;
   let visitor: string;
   try {
-    visitor = await visitorOf(req, env, deps);
+    id = await identityOf(req, env, deps);
+    visitor = id?.visitor ?? "";
   } catch {
+    id = null;
     visitor = VISITOR_UNAVAILABLE;
   }
-  const hashed = visitor !== "" && visitor !== VISITOR_UNAVAILABLE;
-  const limiter = hashed ? deps.beaconLimiter : deps.anonBeaconLimiter;
-  if (!limiter.take(hashed ? visitor : "anonymous", deps.now().getTime())) return fail(429, "rate_limited");
+  const limiter = id != null ? deps.beaconLimiter : deps.anonBeaconLimiter;
+  if (!limiter.take(id != null ? id.net : "anonymous", deps.now().getTime())) return fail(429, "rate_limited");
   env.TELEMETRY?.writeDataPoint(toDataPoint({ ...ev, visitor }));
   return new Response(null, { status: 204, headers: { ...API_SECURITY_HEADERS, "cache-control": "no-store" } });
 }
@@ -121,9 +133,10 @@ async function handleVote(req: Request, env: Env, deps: Deps): Promise<Response>
   }
   const parsed = voteRequestSchema.safeParse(raw);
   if (!parsed.success) return fail(400, "invalid_vote");
-  const visitor = await visitorOf(req, env, deps);
-  if (!deps.voteLimiter.take(visitor, deps.now().getTime())) return fail(429, "rate_limited");
-  const r = await castVote(env.DB, utcDay(deps.now()), visitor, parsed.data);
+  const id = await identityOf(req, env, deps);
+  if (id == null) return fail(503, "votes_unavailable");
+  if (!deps.voteLimiter.take(id.net, deps.now().getTime())) return fail(429, "rate_limited");
+  const r = await castVote(env.DB, utcDay(deps.now()), id.visitor, id.net, parsed.data);
   if (r.kind === "limited") return fail(429, "daily_limit");
   return json(200, r.reply);
 }
@@ -161,9 +174,9 @@ export function createHandler(deps: Deps) {
 const handler = createHandler({
   now: () => new Date(),
   salts: new SaltStore(),
-  beaconLimiter: new WindowLimiter(BEACON_PER_MINUTE, MINUTE_MS),
+  beaconLimiter: new WindowLimiter(BEACON_PER_NET_PER_MINUTE, MINUTE_MS),
   anonBeaconLimiter: new WindowLimiter(ANON_BEACON_PER_MINUTE, MINUTE_MS),
-  voteLimiter: new WindowLimiter(VOTE_PER_MINUTE, MINUTE_MS),
+  voteLimiter: new WindowLimiter(VOTE_PER_NET_PER_MINUTE, MINUTE_MS),
 });
 
 export default {

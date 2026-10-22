@@ -6,7 +6,7 @@ import { SaltStore } from "../visitor";
 import { MemoryAnalytics, SqliteD1 } from "./sqliteD1";
 
 const MINUTE_MS = 60_000;
-/** E2E は全部の試験が同じ利用者(同じ IP・UA)なので、回数制限を緩める(本番の値は edge/index.ts。レビュー低-4)。 */
+/** E2E は全部の試験が同じ利用者・同じ回線(同じ IP・UA)なので、回数制限を緩める(本番の値は edge/index.ts・votes.ts。レビュー低-4)。 */
 const E2E_PER_MINUTE = 10_000;
 
 export function createLocalApi() {
