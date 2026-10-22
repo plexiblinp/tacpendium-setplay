@@ -14,7 +14,7 @@ HANDOVER §7.1〜§7.3・D3・D14・D17。開発者決定（2026-10-12）: ダ�
         ▼
 Cloudflare Worker(web/edge/index.ts。/api/* だけが来る。ほかは静的アセット web/dist)
   /api/beacon → 検証(zod・1KB 以下) → Analytics Engine に 1 点（dataset setplay_runs）
-  /api/vote   → 検証 → D1(votes・ballots)
+  /api/vote   → 検証(形・配信しているキャラと技)→ D1(votes・ballots・quotas)
   /api/votes  → D1(votes) の (char, ka) の行
         ▼
 集計: web/scripts/analytics/report.mjs（SQL API → Markdown の表）。手元でだけ回す（S9。public の Actions のログ・summary は誰でも読めるため）
@@ -23,10 +23,11 @@ Cloudflare Worker(web/edge/index.ts。/api/* だけが来る。ほかは静的�
 | ファイル | 中身 |
 |---|---|
 | `web/src/shared/api.ts` | 受け口の形（zod）。画面は送る前、Worker は受けた後に同じ形で検証する |
-| `web/edge/index.ts` | Worker の入口・経路・回数制限・Origin の検査 |
+| `web/edge/index.ts` | Worker の入口・経路・回数制限・Origin の検査・本文を上限つきで読む |
+| `web/edge/catalog.ts` | 配信しているキャラ・技の目録（静的アセットの manifest・moves DB。票の受け口の検証。S9 のセキュリティ修正 F-03） |
 | `web/edge/beacon.ts`・`beacon-layout.json` | beacon → Analytics Engine の 1 点。列の順の正本は `beacon-layout.json`（集計も同じファイルを読む） |
 | `web/edge/votes.ts`・`schema.sql` | 票の保存・配信・D1 のスキーマ |
-| `web/edge/visitor.ts` | 日替わりソルトと利用者のハッシュ |
+| `web/edge/visitor.ts` | 日替わりソルト・利用者のハッシュ・回線のハッシュ |
 | `web/edge/testing/` | 試験・E2E 用の偽物（D1 = `node:sqlite`、Analytics Engine = メモリ）と、Worker を Node で動かす `local.ts` |
 | `web/wrangler.toml` | Worker の設定（`database_id` は開発者が作った D1 のもの。S9） |
 | `web/src/lib/telemetry.ts`・`votes.ts` | 画面の beacon・票 |
@@ -39,7 +40,7 @@ Cloudflare Worker(web/edge/index.ts。/api/* だけが来る。ほかは静的�
 - **null と 0 を区別する**（AGENTS §8-7）: Analytics Engine の double では null を **-1**、blob では **空文字**にする。`nMax` の 0 は「上限なし」（本家と同じ）で -1 とは別。当てる技の種別の空（blob が空文字）は「当てはまらない（有利調整・特定の技）」（画面は 0 個では押せない）。
 - プライバシーポリシーの「実行の計測」は**要約**（開発者の目視の要望 2026-10-17: 長いと読まれない）で、全項目の一覧は本書を指す。項目を足したら下の対応も直し、要約に収まらない種類の項目（例: 新しい識別子）なら 5 言語の `privacy.usageItem` も直し、`PRIVACY_LAST_UPDATED`（`web/src/components/PrivacyPolicy.tsx`）を更新する。文面は開発者が依頼したレビューの修正案（2026-10-17。法的には問題なし・信頼のための説明という位置づけ）。対応: キャラ=`char`／有利フレーム=`ka`／モードと絞り込みの条件=`mode`〜`sort`／表記と言語=`notation`・`lang`／実行の結果=`outcome`・`errorCode`／件数と打ち切り=`resultCount`・`items`・`truncated`／計算済みの結果=`cacheHit`／時間=`ms`・`computeMs`／グッド/バッドの読み込み=`votesStatus`・`votesApplied`／データ版=`dataVersion`／送る割合=`sampleRate`／利用者の区別のハッシュ=`visitor`（Worker が付ける）。
 - 抽出率: `web/public/config.json` の `beaconSampleRate`（0〜1）。混雑時に下げる（静的ファイルの書き換え＝再デプロイ）。読めなければ 1（全部送る）。集計は `_sample_interval / sampleRate` で割り戻す。
-- Worker: 本文 1KB 以下・JSON・`beaconSchema` に合う（知らない項目は落とす）・別のオリジンの POST は 403・1 人 1 分 30 回（isolate の中だけの簡易な制限。ハッシュを作れないときは isolate の全員で 1 分 600 回）。Analytics Engine の束縛が無ければ書かずに 204。
+- Worker: 本文 1KB 以下・JSON・`beaconSchema` に合う（知らない項目は落とす）・別のオリジンの POST は 403・**1 回線 1 分 120 回**（鍵は回線のハッシュ。isolate の中だけの簡易な制限。ハッシュを作れないときは isolate の全員で 1 分 600 回）。本文は読みながら数え、1KB を超えた時点で読むのをやめて 413（Content-Length が無くても全部は読まない。S9 のセキュリティ修正 F-04）。Analytics Engine の束縛が無ければ書かずに 204。
 - 列の対応（`beacon-layout.json`。blob と double の番号は配列の位置 + 1。index は `char`）: 列を足すときは末尾に足し、順を変えない（過去の点の読み方が変わる）。形を変えたら `BEACON_SCHEMA_VERSION` を上げる（集計は `double1 = 1` で絞っている）。
 
 ## 票（グッド/バッド。D17）
@@ -49,13 +50,18 @@ Cloudflare Worker(web/edge/index.ts。/api/* だけが来る。ほかは静的�
 - スコア: good − bad（`voteScore`）。票なし＝0。
 - 並べ替え: エンジンが本家の並べ替えの**後**にスコアの降順で**安定に**並べ直し、その後で `limit` を切る（AGENTS §4「並べ替えの後で切る」）。票の無い行・同点の行は本家の順のまま。票が無ければ並びも中身も本家と同じ（本家との突き合わせ・golden が見る経路）。
 - 画面: 計算の前に `GET /api/votes` を読む（1.5 秒で打ち切り。誤り・時間切れは票なし＝`votesStatus: unavailable` で計算し、その旨を出す）。スコア 0 の鍵はエンジンに渡さない。押した票はその場では行を動かさず、次の検索から効く（覚えた結果は投票で捨てる）。
-- 重複防止: `hash(IP + UA + 日替わりソルト)` × レシピ × 日で 1 票（同じ日は付け替え・取り消し可）。1 人 1 日 200 レシピまで、1 分 30 回まで。日をまたぐと同じ人がもう 1 票付けられる（§7.2 の案のとおり）。
+- 重複防止: `hash(IP + UA + 日替わりソルト)` × レシピ × 日で 1 票（同じ日は付け替え・取り消し可）。1 人 1 日 200 レシピまで。日をまたぐと同じ人がもう 1 票付けられる（§7.2 の案のとおり）。
+- 回線ごとの上限（S9 のセキュリティ修正 F-01・F-02）: UA は送る側が自由に変えられるので、上の「1 人」だけでは UA を変えるたびに別の人になる。回線のハッシュ（下）で、**投票は 1 回線 1 分 60 回・1 日 1,000 票**（新しい票の数。`quotas` に数え、取り消しても戻らない）、**票の配信は 1 回線 1 分 120 回**に抑える。値は共有 IP（家庭・学校・携帯の CGNAT）で数人が同時に使っても当たらない大きさにした。
+- 受ける票は、配信しているキャラ・そのキャラの moves DB にある技 code の鍵だけ（`web/edge/catalog.ts`。無いキャラ・技は 400、目録を読めないときは 503。F-03）。
 - 配信: `GET /api/votes?char=&ka=` → `{"votes": {"<鍵>": [good, bad]}}`。主キー `(char, ka, recipe)` の前方一致で、そのキャラ・KA の行だけ読む（D1 の「読んだ行」を抑える。S1 ⑦）。0・0 の行は出さない。上限 10,000 件（`|good − bad|` の大きい順）。**キャッシュさせない（`no-store`）**: 投票の直後の検索がブラウザに残った古い票で並ぶ不具合を E2E で見つけたため。
 
 ## 利用者のハッシュと日替わりソルト（D14）
 
 - `visitor = sha256(IP + "\n" + UA + "\n" + ソルト)` の先頭 32 桁。IP は `CF-Connecting-IP`。**生の IP は保存しない**（試験で、点・投票の記録に IP の文字列が入らないことを見る）。
-- ソルトは D1 の `salts` に UTC の日付ごとに 1 つ（32 バイトの乱数）。**日が変わった後の最初の要求で**（遅延削除）、前日以前のソルトと投票の記録（`ballots`）を消す。要求が来なければ残る。秘密情報（環境変数）は要らない。
+  - UA を混ぜる理由: 同じ回線（家庭の Wi-Fi・CGNAT）の別の人を、推定利用者数と票の重複防止で別の人として数えるため（IP だけでは 1 回線を 1 人にまとめてしまう）。
+- 回線のハッシュ `net = sha256("net" + "\n" + 回線 + "\n" + ソルト)` の先頭 32 桁（S9 のセキュリティ修正 F-01）。回線は IPv4 ならアドレス、IPv6 なら先頭 /64（1 つの契約に配られる単位）、IPv4 を写した IPv6 は IPv4。回数制限と回線ごとの 1 日の票の数（`quotas`）の鍵で、Analytics Engine には書かない。生の IP も回線の値も保存しない（試験で見る）。
+  - IP 単位の上限を置く理由: UA を変えるだけで `visitor` が変わり、利用者単位の上限を逃れられたため（監査の指摘 F-01）。IP だけにしなかった理由は上の「UA を混ぜる理由」。
+- ソルトは D1 の `salts` に UTC の日付ごとに 1 つ（32 バイトの乱数）。**日が変わった後の最初の要求で**（遅延削除）、前日以前のソルト・投票の記録（`ballots`）・回線ごとの票の数（`quotas`）を消す。要求が来なければ残る。秘密情報（環境変数）は要らない。
 - **D1 の Time Travel は常に有効で、無料プランでは過去 7 日の任意の時点にデータベースを戻せる**（S7 で Cloudflare の docs で確認。`docs/progress/S7-privacy-research.md` §2.1）。つまり消したソルトは 7 日の間、アカウントの持ち主が戻せ、戻せば Analytics Engine に 3 か月残る `visitor` から総当たりで IP を当てうる。画面のプライバシーポリシーは「通常は日をまたいで結び付けられない。ただし消したデータは Cloudflare の復旧機能で 7 日間は戻せる状態で残る」と書く（S7。開発者とレビュー担当の判断で、仕組みは変えず文を直した）。
 - Workers Logs（要求の記録。IP を含みうる）は `web/wrangler.toml` の `[observability] enabled = false` で止めている（S7）。デプロイ後に、ダッシュボードで記録が残っていないことを確かめる。
 - D1 が誤りを返すとき（無料枠の超過等）も beacon は書く（`visitor` は `unavailable`。D1 の束縛が無いときは空文字）。票の障害で計測を止めない（レビュー中-1）。
@@ -130,7 +136,8 @@ CLOUDFLARE_ACCOUNT_ID=… CLOUDFLARE_API_TOKEN=… node scripts/analytics/report
 ## 限界
 
 - **本物の Cloudflare では動かしていない**（アカウントが無い）。D1 は `node:sqlite`、Analytics Engine はメモリの偽物で、D1 の制限・遅延・無料枠、Analytics Engine の SQL の方言は再現しない。集計の SQL は docs（cloudflare-docs の SQL reference）の関数だけを使ったが、実アカウントで流していない。
-- 回数制限は isolate の中だけ（拠点・時間で別の isolate になる）。厳密な上限ではない。
+- 回数制限（1 分）は isolate の中だけ（拠点・時間で別の isolate になる）。厳密な上限ではない。1 日の上限（利用者 200・回線 1,000）は D1 で数えるので isolate をまたいで効く。
+- 回線ごとの上限は、多くの人が 1 つの IP を共有する回線（大きな CGNAT・会社の出口）では、正当な利用者どうしで上限を分け合う。逆に、多数の IP を持つ相手（ボットネット・IPv6 の /64 を多数持つ相手）は回線の数だけ上限を得る。どちらも「水増しを 1 回線分に抑える」以上の保証ではない。
 - 同じ人の同時の投票が重なると数がずれうる（読んでから書く 2 段。排他はしない。開発者注: 正確さは要らない）。
 - 票の受け口が確かめるのは「配信しているキャラか」と「鍵の技 code がそのキャラの moves DB にあるか」まで（`web/edge/catalog.ts`。静的アセットの manifest・moves DB を Worker が読み、isolate の中で 5 分覚える。読めないときは 503）。**技の組み合わせが実際の提案に出るか**は確かめない（取りうる鍵は 1 キャラ・KA 0〜100 で数百万件・数百 MB の見込みで、配信の上限に収まらない。S9 のセキュリティ修正の報告）。
   - 実在しない組み合わせの票は、どの行にも当たらないので、それ自体で並びは変わらない。ただし配信は 1 キャラ・KA あたり |good − bad| の大きい順に 10,000 件までなので、**その数を超える偽の鍵に本物より大きいスコアを付けると、本物の票が配信から落ちうる**（＝並びに間接的に効く）。これは回線ごとの上限（1 回線 1 日 1,000 票）で抑える: 本物のスコア 1 の票を落とすには、偽の鍵 10,001 件に 2 票ずつ（約 2 万票）＝約 20 回線・1 日が要る。

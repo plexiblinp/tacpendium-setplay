@@ -13,7 +13,7 @@ GitHub 設定の項目は、本家（非公開）の公開手順書を S7 で読
 | 2 | 本家の履歴を含めていない | 済（2026-10-18） | このリポジトリ自身の履歴に `_reference/`（本家の非公開資料）が残る。**公開は最終ツリーを 1 コミットにまとめた新しいリポジトリで行う**（開発者決定 2026-10-17）。手順は §2 |
 | 3 | 非公開の言及が無い | 済 | 本家の名前・文書 ID は公開版 tacpendium で既に公開されているため対象外（開発者決定 2026-10-18）。公開されていない本家の SHA とメモ名は伏せ、`python3 scripts/check-private-refs.py`（CI でも回す）で 0 件。語はハッシュで持つ。§13 の語ごとの扱いは下の表 |
 | 4 | LICENSE・DATA-LICENSE・NOTICE・クレジット・非公式表記 | 済 | `python3 scripts/check-licenses.py` 違反 0。画面のフッターにソース（AGPL）・データ（CC BY-SA 4.0）・非公式の表記。NOTICE §4 の公開 URL と README 冒頭の帯は公開時に直した（§4） |
-| 5 | プライバシーポリシー・計測の説明 | 済（照合は開発者） | 画面のプライバシーポリシー（5 言語）と `docs/telemetry.md`。法令との照合の材料は `docs/progress/S7-privacy-research.md`。`PRIVACY_LAST_UPDATED`（`web/src/components/PrivacyPolicy.tsx`）は公開日の 2026-10-18 |
+| 5 | プライバシーポリシー・計測の説明 | 済（照合は開発者） | 画面のプライバシーポリシー（5 言語）と `docs/telemetry.md`。法令との照合の材料は `docs/progress/S7-privacy-research.md`。`PRIVACY_LAST_UPDATED`（`web/src/components/PrivacyPolicy.tsx`）は 2026-10-22（S9 のセキュリティ修正で、回線のハッシュの説明を 5 言語に足した） |
 | 6 | セキュリティヘッダと CSP（外部診断） | 済（手元）／デプロイ後 | 手元の本物の配信（`_headers`＋Worker）で E2E `web/e2e/headers.spec.ts` が静的アセットと `/api` の両方を検査。外部診断は §3 |
 | 7 | Cloudflare にカード未登録・Worker の回数制限 | 開発者 | カードを登録しない（無料プランは超過で止まるだけ＝HANDOVER §7.5）。回数制限は Worker のコードの中（isolate ごと。`web/edge/rate.ts`）で、Cloudflare 側の設定は要らない。D1 の `database_id` を `web/wrangler.toml` に入れた（S9・2026-10-21）。カード未登録は開発者が Billing で確認（2026-10-21） |
 | 8 | Actions がコミット SHA 固定・権限は最小 | 済 | `bash scripts/check-actions-pinned.sh` 違反 0（workflow 3 本・uses 14 件）。全 workflow が `permissions: contents: read`、checkout は `persist-credentials: false` |
@@ -67,7 +67,7 @@ GitHub 設定の項目は、本家（非公開）の公開手順書を S7 で読
 |---|---|
 | `NOTICE` §4 | **済**（2026-10-18）: 公開リポジトリの URL |
 | `README.md` 冒頭 | **済**（2026-10-18）: 「まだ公開していない・サイト名は未定」の帯を外し、名前 **Tacpendium-Setplay**（2026-10-18 に開発者が決定）を書く |
-| `web/src/components/PrivacyPolicy.tsx` | **済**: `PRIVACY_LAST_UPDATED` は公開日の 2026-10-18（S7 で入れた値のまま） |
+| `web/src/components/PrivacyPolicy.tsx` | **済**: `PRIVACY_LAST_UPDATED` は 2026-10-22（S7 の公開日 2026-10-18 から、S9 のセキュリティ修正で文を足して更新） |
 | `.github/workflows/upstream-watch.yml` | **済**（2026-10-18）: **定期実行（日 1 回）を戻す**（`schedule` のコメントを外す。公開後は Actions が無料。開発者決定 2026-10-18）。AGENTS §9 の「手動起動のみ」の行も直す |
 | `.github/workflows/ci.yml` | **済**（2026-10-18）: **`claude/**` への push での起動を戻す**（`push: branches: [main, 'claude/**']`。PR・手動は残す。job は 2 つのまま。開発者決定 2026-10-18）。AGENTS §9 の「push では走らない」の行も直す |
 | `web/src/lib/constants.ts` | **済**（2026-10-18）: `FEEDBACK_FORM_URL` に Google フォームの URL を入れた（空にすると Issues だけを案内する）。フォームは本家用の Google アカウントで、日英併記の 1 つ。「内容」は回答の検証で URL を含めない（正規表現 `https?://|www\.` を含まない）。メールアドレスは収集しない |
