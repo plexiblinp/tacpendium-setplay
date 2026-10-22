@@ -94,13 +94,30 @@ function fail(status: number, error: string): Response {
   return json(status, body);
 }
 
-/** 本文を上限つきで読む。超えたら null。 */
-async function readBody(req: Request): Promise<string | null> {
+/**
+ * 本文を上限つきで読む。超えたら null。Content-Length で先に断り、無い(chunked)ときも読みながら数えて、
+ * 上限を超えた時点で読むのを止める(全部を読んでから比べない。S9 のセキュリティ修正 F-04)。
+ * chunk の境目で割れたマルチバイト文字は、TextDecoder の stream で繋ぐ。
+ */
+export async function readBody(req: Request): Promise<string | null> {
   const declared = Number(req.headers.get("content-length") ?? "0");
   if (declared > API_BODY_MAX_BYTES) return null;
-  const buf = await req.arrayBuffer();
-  if (buf.byteLength > API_BODY_MAX_BYTES) return null;
-  return new TextDecoder().decode(buf);
+  if (req.body == null) return "";
+  const reader = req.body.getReader();
+  const decoder = new TextDecoder();
+  let total = 0;
+  let text = "";
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > API_BODY_MAX_BYTES) {
+      await reader.cancel().catch(() => undefined);
+      return null;
+    }
+    text += decoder.decode(value, { stream: true });
+  }
+  return text + decoder.decode();
 }
 
 /** 別のサイトからの POST を断る(ブラウザは同じオリジンの POST にも Origin を付ける)。Origin が無い要求は通す。 */

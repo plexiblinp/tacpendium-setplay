@@ -9,6 +9,7 @@ import { Catalog, CATALOG_TTL_MS, MANIFEST_PATH } from "./catalog";
 import type { Env } from "./env";
 import {
   API_SECURITY_HEADERS,
+  readBody,
   BEACON_PER_NET_PER_MINUTE,
   createHandler,
   VOTE_PER_NET_PER_MINUTE,
@@ -467,3 +468,56 @@ describe("回線の鍵(F-01)", () => {
     expect(netOf(ip)).toBe(net);
   });
 });
+
+describe("本文の読み方(F-04)", () => {
+  /** chunk ずつ出すストリーム。pull の回数と cancel を数える。 */
+  function counted(chunks: Uint8Array[]) {
+    const stat = { pulls: 0, cancelled: false };
+    let i = 0;
+    const stream = new ReadableStream<Uint8Array>({
+      pull(c) {
+        stat.pulls++;
+        if (i < chunks.length) c.enqueue(chunks[i++]!);
+        else c.close();
+      },
+      cancel() {
+        stat.cancelled = true;
+      },
+    });
+    return { stream, stat };
+  }
+  const split = (bytes: Uint8Array, size: number) => Array.from({ length: Math.ceil(bytes.length / size) }, (_, i) => bytes.slice(i * size, (i + 1) * size));
+  const streamed = (body: ReadableStream<Uint8Array>) =>
+    new Request(ORIGIN + "/api/beacon", {
+      method: "POST",
+      body,
+      duplex: "half",
+      headers: { origin: ORIGIN, "cf-connecting-ip": "203.0.113.7", "content-type": "text/plain;charset=UTF-8" },
+    } as RequestInit);
+
+  it("Content-Length の無い、上限 + 1 バイトより長いストリームは 413 で、上限の少し先で読むのを止める", async () => {
+    const w = world();
+    const CHUNK = 100;
+    const { stream, stat } = counted(split(new Uint8Array(CHUNK * 100).fill(0x20), CHUNK)); // 10,000 バイト
+    const r = await createHandler(w.deps)(streamed(stream), w.env);
+    expect(r.status).toBe(413);
+    expect(stat.pulls).toBeLessThanOrEqual(Math.ceil((API_BODY_MAX_BYTES + 1) / CHUNK) + 2);
+    expect(stat.cancelled).toBe(true);
+  });
+
+  it("上限ちょうどの本文はストリームでも受ける", async () => {
+    const w = world();
+    const json = JSON.stringify(sampleBeacon());
+    const body = new TextEncoder().encode(json + " ".repeat(API_BODY_MAX_BYTES - json.length));
+    expect(body.length).toBe(API_BODY_MAX_BYTES);
+    const { stream } = counted(split(body, 7));
+    expect((await createHandler(w.deps)(streamed(stream), w.env)).status).toBe(204);
+  });
+
+  it("chunk の境目でマルチバイト文字が割れても正しく読む", async () => {
+    const text = JSON.stringify({ a: "あいう・票😀" });
+    const { stream } = counted(split(new TextEncoder().encode(text), 1));
+    expect(await readBody(streamed(stream))).toBe(text);
+  });
+});
+
