@@ -89,6 +89,8 @@ function fakeAssets() {
       const p = new URL(req.url).pathname;
       reads.push(p);
       if (p === MANIFEST_PATH && state.manifestStatus !== 200) return new Response("down", { status: state.manifestStatus });
+      if (p === "/no-such-page") return new Response("", { status: 404 });
+      if (p === "/no-such-page-with-csp") return new Response("", { status: 404, headers: { "content-security-policy": "default-src 'self'" } });
       if (p in files) return new Response(JSON.stringify(files[p]), { status: 200 });
       return new Response("asset", { status: 200 });
     },
@@ -450,6 +452,19 @@ describe("セキュリティのヘッダ(S7)", () => {
     for (const r of responses) {
       for (const [k, v] of Object.entries(expected)) expect(r.headers.get(k), `${r.status} ${k}`).toBe(v);
     }
+  });
+
+  it("静的アセットに無いパスの 404 にも付く。既にあるヘッダは上書きせず、アセットの 200 は触らない(F-07)", async () => {
+    const w = world();
+    const missing = await w.call("/no-such-page");
+    expect(missing.status).toBe(404);
+    for (const [k, v] of Object.entries(API_SECURITY_HEADERS)) expect(missing.headers.get(k), k).toBe(v);
+    const withCsp = await w.call("/no-such-page-with-csp");
+    expect(withCsp.headers.get("content-security-policy")).toBe("default-src 'self'");
+    expect(withCsp.headers.get("x-content-type-options")).toBe("nosniff");
+    const asset = await w.call("/index.html");
+    expect(asset.status).toBe(200);
+    expect(asset.headers.get("content-security-policy")).toBeNull();
   });
 });
 

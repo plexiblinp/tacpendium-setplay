@@ -82,6 +82,19 @@ export const API_SECURITY_HEADERS: Readonly<Record<string, string>> = {
   "strict-transport-security": "max-age=31536000",
 };
 
+/**
+ * 静的アセットに無い要求(Worker の最後の env.ASSETS.fetch)の誤りの応答に、/api と同じセキュリティのヘッダを付ける
+ * (S9 のセキュリティ修正 F-07)。_headers が env.ASSETS.fetch の 404 に掛かるかは Cloudflare の docs に書かれておらず
+ * 確かめられないため(docs は「Worker のコードが作る応答には掛からない」まで)。中身はページではないので CSP は何も読ませない形でよい。
+ * 2xx・3xx(アセットそのもの・転送)は _headers に任せて触らない。既にあるヘッダは上書きしない。
+ */
+export function withErrorSecurityHeaders(res: Response): Response {
+  if (res.status < 400) return res;
+  const headers = new Headers(res.headers);
+  for (const [k, v] of Object.entries(API_SECURITY_HEADERS)) if (!headers.has(k)) headers.set(k, v);
+  return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
+}
+
 function json(status: number, body: unknown, cacheControl = "no-store"): Response {
   return new Response(JSON.stringify(body), {
     status,
@@ -216,7 +229,7 @@ export function createHandler(deps: Deps) {
       return fail(503, "unavailable");
     }
     if (pathname.startsWith("/api/")) return fail(404, "not_found");
-    return env.ASSETS.fetch(req);
+    return withErrorSecurityHeaders(await env.ASSETS.fetch(req));
   };
 }
 
