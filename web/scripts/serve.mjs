@@ -11,7 +11,6 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { headersFor, parseHeaders } from "./headers.mjs";
 
 const localApiPath = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "dist-edge", "local.mjs");
-const api = fs.existsSync(localApiPath) ? (await import(pathToFileURL(localApiPath).href)).createLocalApi() : null;
 
 async function toRequest(req) {
   const chunks = [];
@@ -31,6 +30,16 @@ async function sendResponse(res, r) {
 
 const root = path.resolve(process.argv[2] ?? "dist");
 const port = Number(process.argv[3] ?? 4173);
+
+/** Worker の env.ASSETS の代わり(票の受け口が manifest・moves DB を読む)。dist のファイルをそのまま返す。 */
+const assets = {
+  fetch: async (request) => {
+    const file = path.join(root, decodeURIComponent(new URL(request.url).pathname));
+    if (!file.startsWith(root + path.sep) || !fs.existsSync(file) || !fs.statSync(file).isFile()) return new Response("not found", { status: 404 });
+    return new Response(fs.readFileSync(file), { status: 200 });
+  },
+};
+const api = fs.existsSync(localApiPath) ? (await import(pathToFileURL(localApiPath).href)).createLocalApi(assets) : null;
 const rules = parseHeaders(fs.readFileSync(path.join(root, "_headers"), "utf8"));
 
 const TYPES = {

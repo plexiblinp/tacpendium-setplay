@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { API_BODY_MAX_BYTES, BEACON_SCHEMA_VERSION, type BeaconEvent } from "../src/shared/api";
 import layout from "./beacon-layout.json";
 import { AE_MAX_BLOBS, AE_MAX_DOUBLES, toDataPoint } from "./beacon";
+import { Catalog, CATALOG_TTL_MS, MANIFEST_PATH } from "./catalog";
 import type { Env } from "./env";
 import {
   API_SECURITY_HEADERS,
@@ -60,8 +61,41 @@ export function sampleBeacon(over: Partial<BeaconEvent> = {}): BeaconEvent {
 
 type CallInit = RequestInit & { ip?: string; ua?: string };
 
+/** 試験の鍵に使う技 code(偽の moves DB の ryu の技)。 */
+const range = (p: string, n: number) => Array.from({ length: n }, (_, i) => `${p}${i}`);
+const RYU_CODES = ["a", "b", "t", "x", "over", ...range("m", 300), ...range("q", 1100), ...range("r", 200)];
+
+/** 偽の静的アセット: manifest(ryu・ken)と moves DB。ほかのパスは "asset"。読んだパスを数える。 */
+function fakeAssets() {
+  const reads: string[] = [];
+  const state = { manifestStatus: 200 };
+  const manifest = {
+    schemaVersion: 1,
+    dataVersion: "v",
+    maxKnockdownAdvantage: 100,
+    characters: ["ryu", "ken"].map((code) => ({ code, name: { ja: code, en: code }, dataVersion: "v", safeJump: null, moves: `moves/${code}.h.json` })),
+  };
+  const moves = (codes: string[]) => ({ character: { code: "c" }, moves: codes.map((code) => ({ code, category: "normal" })) });
+  const files: Record<string, unknown> = {
+    [MANIFEST_PATH]: manifest,
+    "/data/moves/ryu.h.json": moves(RYU_CODES),
+    "/data/moves/ken.h.json": moves(["k1"]),
+  };
+  return {
+    reads,
+    state,
+    fetch: async (req: Request) => {
+      const p = new URL(req.url).pathname;
+      reads.push(p);
+      if (p === MANIFEST_PATH && state.manifestStatus !== 200) return new Response("down", { status: state.manifestStatus });
+      if (p in files) return new Response(JSON.stringify(files[p]), { status: 200 });
+      return new Response("asset", { status: 200 });
+    },
+  };
+}
+
 interface World {
-  env: Env & { DB: SqliteD1; TELEMETRY: MemoryAnalytics };
+  env: Env & { DB: SqliteD1; TELEMETRY: MemoryAnalytics; ASSETS: ReturnType<typeof fakeAssets> };
   deps: Deps;
   call: (path: string, init?: CallInit) => Promise<Response>;
   clock: { t: Date };
@@ -72,7 +106,7 @@ function world(over: Partial<Deps> = {}): World {
   const env = {
     DB: new SqliteD1(),
     TELEMETRY: new MemoryAnalytics(),
-    ASSETS: { fetch: async () => new Response("asset", { status: 200 }) },
+    ASSETS: fakeAssets(),
   };
   const deps: Deps = {
     now: () => clock.t,
@@ -81,6 +115,7 @@ function world(over: Partial<Deps> = {}): World {
     anonBeaconLimiter: new WindowLimiter(1000, 60_000),
     voteLimiter: new WindowLimiter(100_000, 60_000),
     votesLimiter: new WindowLimiter(100_000, 60_000),
+    catalog: new Catalog(),
     ...over,
   };
   const h = createHandler(deps);
@@ -280,6 +315,47 @@ describe("票", () => {
     expect((await get(0, "192.0.2.1")).status).toBe(200);
     v.clock.t = new Date(v.clock.t.getTime() + 60_000);
     expect((await get(0)).status).toBe(200);
+  });
+
+  it("配信していないキャラは投票・配信とも 400(F-03)", async () => {
+    const r = await w.call("/api/vote", post({ char: "nosuch", ka: 43, recipe: "a|t", value: 1 }));
+    expect(r.status).toBe(400);
+    expect(await r.json()).toEqual({ error: "unknown_character" });
+    expect((await w.call("/api/votes?char=nosuch&ka=43")).status).toBe(400);
+    expect((await w.call("/api/votes?char=ken&ka=43")).status).toBe(200);
+    expect(w.env.DB.db.prepare("SELECT COUNT(*) AS n FROM votes").get()).toEqual({ n: 0 });
+  });
+
+  it("そのキャラの moves DB に無い技 code を含む鍵は 400(F-03)", async () => {
+    for (const recipe of ["a,zzz|t", "a|zzz", "zzz|", "k1|"]) {
+      const r = await w.call("/api/vote", post({ char: "ryu", ka: 43, recipe, value: 1 }));
+      expect(r.status).toBe(400);
+      expect(await r.json()).toEqual({ error: "unknown_move" });
+    }
+    expect((await w.call("/api/vote", post({ char: "ken", ka: 43, recipe: "k1|", value: 1 }))).status).toBe(200);
+    expect(w.env.DB.db.prepare("SELECT char, recipe FROM votes").all()).toEqual([{ char: "ken", recipe: "k1|" }]);
+  });
+
+  it("manifest を読めないときは投票・配信とも 503(F-03)", async () => {
+    w.env.ASSETS.state.manifestStatus = 404;
+    const r = await w.call("/api/vote", post({ char: "ryu", ka: 43, recipe: "a|t", value: 1 }));
+    expect(r.status).toBe(503);
+    expect(await r.json()).toEqual({ error: "data_unavailable" });
+    expect((await w.call("/api/votes?char=ryu&ka=43")).status).toBe(503);
+    w.env.ASSETS.state.manifestStatus = 200; // 読めなかったことは覚えない
+    expect((await w.call("/api/votes?char=ryu&ka=43")).status).toBe(200);
+  });
+
+  it("目録は isolate の中で覚え、時間が経ったら読み直す(F-03)", async () => {
+    await vote("a|t", 1);
+    await vote("b|t", 1);
+    await votes();
+    const count = (p: string) => w.env.ASSETS.reads.filter((x) => x === p).length;
+    expect(count(MANIFEST_PATH)).toBe(1);
+    expect(count("/data/moves/ryu.h.json")).toBe(1);
+    w.clock.t = new Date(w.clock.t.getTime() + CATALOG_TTL_MS);
+    await votes();
+    expect(count(MANIFEST_PATH)).toBe(2);
   });
 
   it("回線ごとの数は日替わりで消え、生の IP も回線も残らない(F-01)", async () => {

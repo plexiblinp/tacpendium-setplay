@@ -2,8 +2,8 @@
 // 提案の計算は利用者のブラウザ(WASM)で行う。ここが止まっても提案は止まらない(HANDOVER §3・§7.5)。
 //
 //   POST /api/beacon        実行計測 → Analytics Engine(§7.1)
-//   POST /api/vote          グッド/バッド → D1(D17)
-//   GET  /api/votes?char=&ka=  キャラ・KA の票
+//   POST /api/vote          グッド/バッド → D1(D17)。配信しているキャラ・技の票だけ(catalog.ts)
+//   GET  /api/votes?char=&ka=  キャラ・KA の票。配信しているキャラだけ
 import {
   API_BEACON_PATH,
   API_BODY_MAX_BYTES,
@@ -14,6 +14,7 @@ import {
 } from "../src/shared/api";
 import { KA_MAX_SITE, KA_MIN } from "../src/lib/constants";
 import { parseBeacon, toDataPoint } from "./beacon";
+import { Catalog, CatalogUnavailable, recipeCodes } from "./catalog";
 import type { Env } from "./env";
 import { WindowLimiter } from "./rate";
 import { castVote, listVotes } from "./votes";
@@ -54,6 +55,18 @@ export interface Deps {
   voteLimiter: WindowLimiter;
   /** 票の配信の回数制限(鍵は回線のハッシュ)。 */
   votesLimiter: WindowLimiter;
+  /** 配信しているキャラ・技の目録(静的アセットの manifest・moves DB。F-03)。 */
+  catalog: Catalog;
+}
+
+/** 目録の問い合わせ。読めなければ 503 の応答(Response)を返す。 */
+async function lookup<T>(f: () => Promise<T>): Promise<T | Response> {
+  try {
+    return await f();
+  } catch (e) {
+    if (e instanceof CatalogUnavailable) return fail(503, "data_unavailable");
+    throw e;
+  }
 }
 
 /**
@@ -141,6 +154,11 @@ async function handleVote(req: Request, env: Env, deps: Deps): Promise<Response>
   }
   const parsed = voteRequestSchema.safeParse(raw);
   if (!parsed.success) return fail(400, "invalid_vote");
+  // 配信していないキャラ・技の票は受けない(F-03。存在しない鍵で配信の上限 VOTES_MAX_ENTRIES を埋めさせない)。
+  const codes = await lookup(() => deps.catalog.moveCodes(env.ASSETS, new URL(req.url).origin, parsed.data.char, deps.now().getTime()));
+  if (codes instanceof Response) return codes;
+  if (codes == null) return fail(400, "unknown_character");
+  if (!recipeCodes(parsed.data.recipe).every((c) => codes.has(c))) return fail(400, "unknown_move");
   const id = await identityOf(req, env, deps);
   if (id == null) return fail(503, "votes_unavailable");
   if (!deps.voteLimiter.take(id.net, deps.now().getTime())) return fail(429, "rate_limited");
@@ -157,6 +175,9 @@ async function handleVotes(req: Request, env: Env, deps: Deps): Promise<Response
   const kaText = q.get("ka") ?? "";
   const ka = Number(kaText);
   if (!CODE_RE.test(char) || !/^\d{1,3}$/.test(kaText) || ka < KA_MIN || ka > KA_MAX_SITE) return fail(400, "invalid_query");
+  const known = await lookup(() => deps.catalog.hasCharacter(env.ASSETS, new URL(req.url).origin, char, deps.now().getTime()));
+  if (known instanceof Response) return known;
+  if (!known) return fail(400, "unknown_character");
   const id = await identityOf(req, env, deps);
   if (id == null) return fail(503, "votes_unavailable");
   if (!deps.votesLimiter.take(id.net, deps.now().getTime())) return fail(429, "rate_limited");
@@ -189,6 +210,7 @@ const handler = createHandler({
   anonBeaconLimiter: new WindowLimiter(ANON_BEACON_PER_MINUTE, MINUTE_MS),
   voteLimiter: new WindowLimiter(VOTE_PER_NET_PER_MINUTE, MINUTE_MS),
   votesLimiter: new WindowLimiter(VOTES_LIST_PER_NET_PER_MINUTE, MINUTE_MS),
+  catalog: new Catalog(),
 });
 
 export default {
