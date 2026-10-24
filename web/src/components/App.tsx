@@ -11,7 +11,7 @@ import { formFromConditions, initialForm, type FormState } from "../lib/formStat
 import { detectLang, type Lang } from "../lib/i18n";
 import { loadManifest, loadMoves, type FetchFn, type LoadedManifest } from "../lib/loader";
 import { LruCache } from "../lib/lru";
-import { characterDisplayName, shareText, shareUrl } from "../lib/share";
+import { characterDisplayName, shareModeKey, shareText, shareUrl, siteUrl } from "../lib/share";
 import { defaultNotation, indexMoves } from "../lib/notation";
 import { DEFAULT_SAMPLE_RATE, loadConfig, sendRun, type BeaconSender, type RunRecord } from "../lib/telemetry";
 import { fetchVotes, postVote, scoresForEngine, type LoadedVotes } from "../lib/votes";
@@ -313,9 +313,21 @@ export function App({
         // 条件が変わったら作り直す(前の条件の「コピーしました」を残さない。レビュー低-2)。
         key={sharedUrl}
         url={sharedUrl}
-        text={shareText(t("share.text", { character: characterDisplayName(sharedCharacter.name, lang), ka: run.conditions.ka }))}
+        text={shareText(
+          t("share.text", {
+            character: characterDisplayName(sharedCharacter.name, lang),
+            ka: run.conditions.ka,
+            mode: t(shareModeKey(run.conditions)),
+          }),
+        )}
+        label={t("share.button")}
+        testId="share"
       />
     ) : undefined;
+  // アプリの紹介の共有(フッター。結果の共有と取り違えないよう離して置く。開発者の要望 2026-10-24)。ローカル版は同じ理由で出さない。
+  const appShare = online ? (
+    <Share url={siteUrl(location.href)} text={shareText(t("share.appText"))} label={t("share.appButton")} testId="app-share" />
+  ) : undefined;
 
   if (manifest.status === "loading") {
     return (
@@ -382,7 +394,7 @@ export function App({
         />
         {showPrivacy && <PrivacyPolicy onClose={() => setShowPrivacy(false)} lang={lang} />}
       </main>
-      <Footer dataVersion={manifest.data.manifest.dataVersion} online={online} onPrivacy={() => setShowPrivacy(true)} />
+      <Footer dataVersion={manifest.data.manifest.dataVersion} online={online} onPrivacy={() => setShowPrivacy(true)} share={appShare} />
     </>
   );
 }
