@@ -165,13 +165,20 @@
   },
   "share": {
     "button": "この条件を共有",
-    "text": "{{character}} KA {{ka}} のセットプレイ",
+    "text": "{{character}} KA {{ka}} の{{mode}}",
+    "mode": {
+      "meaty": "重ね",
+      "gap": "汚連携",
+      "filler": "有利調整"
+    },
     "copyUrl": "URL をコピー",
     "copied": "URL をコピーしました",
     "copyFailed": "コピーできませんでした",
     "postX": "X に投稿",
     "postXAria": "X に投稿(新しいタブで開きます)",
-    "shareFailed": "共有できませんでした"
+    "shareFailed": "共有できませんでした",
+    "appButton": "このサイトを共有",
+    "appText": "キャラとダウン後の有利フレームから、SF6 の起き攻めのレシピを出す非公式ツール"
   },
   "category": {
     "normal": "通常技",

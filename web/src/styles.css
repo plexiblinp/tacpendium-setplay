@@ -54,7 +54,9 @@ a { color: var(--accent); }
 .label, .field > span:first-child { font-size: 0.9rem; color: var(--muted); }
 .inline { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .share { margin: 4px 0 8px; }
-.share-x { font-size: 0.9rem; }
+/* 共有の操作は色付きで目立たせる(開発者の要望 2026-10-24)。X へのリンクはボタンの形の枠線。 */
+a.button-like { display: inline-block; border: 1px solid var(--accent); border-radius: 4px; padding: 5px 14px; color: var(--accent); font-weight: 600; text-decoration: none; }
+a.button-like:hover { background: var(--accent); color: var(--accent-fg); }
 .group { display: grid; gap: 4px; }
 fieldset { border: 1px solid var(--line); border-radius: var(--radius); margin: 0; padding: 8px 12px; }
 fieldset.segmented { border: none; padding: 0; display: inline-flex; gap: 0; align-items: center; }

@@ -1,4 +1,5 @@
-// フッター: データ版・ソースへのリンク(AGPL)・データのクレジット(CC BY-SA)・非公式の明記(HANDOVER §8)。
+// フッター: このサイトを共有・データ版・ソースへのリンク(AGPL)・データのクレジット(CC BY-SA)・非公式の明記(HANDOVER §8)。
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 import { DATA_LICENSE_URL, DATA_SOURCE_URL, SOURCE_URL } from "../lib/constants";
@@ -7,11 +8,25 @@ import { PRIVACY_HASH } from "./PrivacyPolicy";
 /** データ版の表示の長さ(取込元の SHA の先頭)。 */
 const SHORT_SHA = 7;
 
-/** online: サイト(計測・票の通信がある)か。ローカル版はプライバシーポリシーの代わりに「通信しない」を出す。 */
-export function Footer({ dataVersion, online, onPrivacy }: { dataVersion: string; online: boolean; onPrivacy: () => void }) {
+/**
+ * online: サイト(計測・票の通信がある)か。ローカル版はプライバシーポリシーの代わりに「通信しない」を出す。
+ * share: このサイトを共有(ローカル版では無い)。
+ */
+export function Footer({
+  dataVersion,
+  online,
+  onPrivacy,
+  share,
+}: {
+  dataVersion: string;
+  online: boolean;
+  onPrivacy: () => void;
+  share?: ReactNode;
+}) {
   const { t } = useTranslation();
   return (
     <footer className="site-footer">
+      {share}
       <p data-testid="data-version">{t("footer.dataVersion", { version: dataVersion.slice(0, SHORT_SHA) })}</p>
       <p>
         <a href={SOURCE_URL} target="_blank" rel="noopener noreferrer">

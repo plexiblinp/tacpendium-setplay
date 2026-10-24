@@ -767,7 +767,7 @@ describe("この条件を共有(開発者決定 2026-10-20)", () => {
     expect(x).toHaveAttribute("rel", "noopener noreferrer");
     const href = new URL(x.getAttribute("href")!);
     expect(href.origin + href.pathname).toBe("https://x.com/intent/post");
-    expect(href.searchParams.get("text")).toBe("リュウ KA 40 のセットプレイ | Tacpendium-Setplay");
+    expect(href.searchParams.get("text")).toBe("リュウ KA 40 の重ね — Tacpendium-Setplay");
     expect(href.searchParams.get("url")).toBe("https://example.test/?c=ryu&ka=40");
     await user.click(screen.getByTestId("share-copy"));
     expect(writeText).toHaveBeenCalledWith("https://example.test/?c=ryu&ka=40");
@@ -828,7 +828,7 @@ describe("この条件を共有(開発者決定 2026-10-20)", () => {
     await user.click(screen.getByTestId("share-native"));
     expect(share).toHaveBeenCalledWith({
       title: "Tacpendium-Setplay",
-      text: "Ryu KA 55 setplays | Tacpendium-Setplay",
+      text: "Ryu KA 55 meaty setplays — Tacpendium-Setplay",
       url: "https://example.test/?c=ryu&ka=55",
     });
     await act(async () => undefined);
@@ -843,6 +843,8 @@ describe("この条件を共有(開発者決定 2026-10-20)", () => {
     await engine.finish();
     await screen.findAllByTestId("result-row");
     expect(screen.getByTestId("share")).toHaveAttribute("data-share-url", "https://example.test/?c=ken&ka=30&mode=gap&chain=1");
+    // 文にはモードが入る(汚連携)。
+    expect(screen.getByTestId("share")).toHaveAttribute("data-share-text", "ケン KA 30 の汚連携 — Tacpendium-Setplay");
   });
 
   it("ローカル版では出さない(URL が 127.0.0.1 で相手が開けない)", async () => {
@@ -854,5 +856,81 @@ describe("この条件を共有(開発者決定 2026-10-20)", () => {
     await screen.findAllByTestId("result-row");
     expect(screen.queryByTestId("share")).toBeNull();
     expect(screen.queryByTestId("share-native")).toBeNull();
+  });
+});
+
+describe("共有の文のモード・このサイトを共有(開発者の要望 2026-10-24)", () => {
+  afterEach(() => {
+    Reflect.deleteProperty(navigator, "share");
+  });
+
+  it("安全飛びの検索では文に安全飛びの種類が入る。有利調整は有利調整", async () => {
+    const { engine } = renderApp("c=ryu&ka=60&mode=filler&sj=true");
+    await engine.finish();
+    await screen.findAllByTestId("result-row");
+    expect(screen.getByTestId("share")).toHaveAttribute("data-share-text", "リュウ KA 60 の真安全飛び — Tacpendium-Setplay");
+    cleanup();
+    const second = renderApp("c=ryu&ka=60&mode=filler&remain=10");
+    await second.engine.finish();
+    await screen.findAllByTestId("result-row");
+    expect(screen.getByTestId("share")).toHaveAttribute("data-share-text", "リュウ KA 60 の有利調整 — Tacpendium-Setplay");
+  });
+
+  it("共有の文は選んでいる言語(ko・zh-Hans)", async () => {
+    const ko = renderApp("c=ryu&ka=43", ["ko-KR"]);
+    await ko.engine.finish();
+    await screen.findAllByTestId("result-row");
+    expect(screen.getByTestId("share")).toHaveAttribute("data-share-text", "Ryu KA 43 겹치기 — Tacpendium-Setplay");
+    cleanup();
+    const zh = renderApp("c=ryu&ka=43", ["zh-CN"]);
+    await zh.engine.finish();
+    await screen.findAllByTestId("result-row");
+    expect(screen.getByTestId("share")).toHaveAttribute("data-share-text", "Ryu KA 43 的压起身 — Tacpendium-Setplay");
+  });
+
+  it("フッターに「このサイトを共有」。結果の前から出て、サイトのトップ(条件なし)と紹介の文を共有する", async () => {
+    const user = userEvent.setup();
+    const share = vi.fn(async (_data: ShareData) => undefined);
+    renderApp("c=ryu&ka=40");
+    const footer = (await screen.findByTestId("data-version")).closest("footer")!;
+    const app = within(footer).getByTestId("app-share");
+    expect(screen.queryByTestId("share")).toBeNull(); // 結果の共有はまだ無い
+    expect(app).toHaveAttribute("data-share-url", "https://example.test/");
+    const text = "キャラとダウン後の有利フレームから、SF6 の起き攻めのレシピを出す非公式ツール — Tacpendium-Setplay";
+    expect(app).toHaveAttribute("data-share-text", text);
+    expect(within(footer).getByRole("group", { name: "このサイトを共有" })).toBe(app);
+    const x = new URL(within(app).getByTestId("app-share-x").getAttribute("href")!);
+    expect(x.searchParams.get("url")).toBe("https://example.test/");
+    expect(x.searchParams.get("text")).toBe(text);
+    cleanup();
+    // 共有メニューがある端末では、それを開く。
+    Object.defineProperty(navigator, "share", { value: share, configurable: true });
+    renderApp("", ["en-US"]);
+    await user.click(await screen.findByTestId("app-share-native"));
+    expect(share).toHaveBeenCalledWith({
+      title: "Tacpendium-Setplay",
+      text: "Unofficial SF6 tool: okizeme recipes from a character and knockdown advantage — Tacpendium-Setplay",
+      url: "https://example.test/",
+    });
+  });
+
+  it("ローカル版ではフッターにも出さない", async () => {
+    renderApp("", ["ja"], fetchFn, "local");
+    await screen.findByTestId("local-notice");
+    expect(screen.queryByTestId("app-share")).toBeNull();
+  });
+
+  it("共有のボタンは色付き(primary)", async () => {
+    const user = userEvent.setup();
+    const { engine } = renderApp();
+    await search(user);
+    await engine.finish();
+    await screen.findAllByTestId("result-row");
+    expect(screen.getByTestId("share-copy")).toHaveClass("primary");
+    expect(screen.getByTestId("app-share-copy")).toHaveClass("primary");
+    cleanup();
+    Object.defineProperty(navigator, "share", { value: vi.fn(), configurable: true });
+    renderApp();
+    expect(await screen.findByTestId("app-share-native")).toHaveClass("primary");
   });
 });

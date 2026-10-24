@@ -165,13 +165,20 @@
   },
   "share": {
     "button": "分享此條件",
-    "text": "{{character}} KA {{ka}} 的定式起身壓制",
+    "text": "{{character}} KA {{ka}} 的{{mode}}",
+    "mode": {
+      "meaty": "壓起身",
+      "gap": "故意留空",
+      "filler": "調整有利"
+    },
     "copyUrl": "複製 URL",
     "copied": "已複製 URL",
     "copyFailed": "無法複製",
     "postX": "分享到 X",
     "postXAria": "分享到 X(在新視窗中開啟)",
-    "shareFailed": "無法分享"
+    "shareFailed": "無法分享",
+    "appButton": "分享本站",
+    "appText": "根據角色和擊倒後的有利幀給出 SF6 壓起身方案的非官方工具"
   },
   "category": {
     "normal": "通常技",
