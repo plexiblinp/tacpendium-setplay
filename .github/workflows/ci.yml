@@ -372,6 +372,17 @@ jobs:
         with:
           go-version-file: go.mod
           cache: true
+      # 実際に動く pnpm が packageManager の版か(pnpm 本体の脆弱性の修正版を使う。engines.pnpm は下限だけを見る)。
+      - name: pnpm の版
+        working-directory: web
+        run: |
+          want="$(node -p 'require("./package.json").packageManager.replace(/^pnpm@/, "")')"
+          got="$(pnpm --version)"
+          echo "pnpm: ${got}(packageManager: ${want})" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$got" != "$want" ]; then
+            echo "::error::pnpm ${got} が packageManager の ${want} と違う"
+            exit 1
+          fi
       - name: pnpm install
         working-directory: web
         run: pnpm install --frozen-lockfile
