@@ -200,7 +200,7 @@
     "usageItem": "Usage: the conditions, results, processing time and similar details when you press \"Generate suggestions\". Used to learn which conditions are common and which processing is heavy, and to improve the site.",
     "votesItem": "Good / Bad: the recipe you rated and your vote. The total of everyone's votes is used to order the results.",
     "hashTitle": "Telling visitors apart",
-    "hashBody": "To estimate the number of visitors and prevent duplicate votes, a hash of your IP address and browser type mixed with a random value that changes daily is used. The IP address itself is not stored, and the random value is deleted every day, so the same person normally cannot be linked across days. However, deleted data remains recoverable for 7 days through the hosting provider's (Cloudflare) recovery feature.",
+    "hashBody": "To estimate the number of visitors and prevent duplicate votes, a hash of your IP address and browser type mixed with a random value that changes daily is used. To prevent bursts of requests and vote stuffing, a separate hash of your IP address (for IPv6, its first 64 bits) mixed with the daily random value is used to count requests and daily votes per network. The IP address itself is not stored, and the random value and the per-network vote counts are deleted every day, so the same person normally cannot be linked across days. However, deleted data remains recoverable for 7 days through the hosting provider's (Cloudflare) recovery feature.",
     "retentionTitle": "Retention",
     "retentionBody": "Usage data is kept for up to 3 months; vote totals (which do not include who voted) are kept while the site runs.",
     "thirdPartyTitle": "Third-party services",

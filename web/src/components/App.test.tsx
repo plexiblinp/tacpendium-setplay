@@ -649,7 +649,7 @@ describe("プライバシーポリシー(HANDOVER §7.3)", () => {
       />,
     );
     expect(await screen.findByTestId("privacy")).toHaveTextContent("The IP address itself is not stored");
-    expect(screen.getByTestId("privacy-updated")).toHaveTextContent("Last updated: October 18, 2026");
+    expect(screen.getByTestId("privacy-updated")).toHaveTextContent("Last updated: October 22, 2026");
   });
 });
 

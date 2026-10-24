@@ -28,3 +28,12 @@ CREATE TABLE IF NOT EXISTS ballots (
   value  INTEGER NOT NULL, -- 1 = グッド / -1 = バッド
   PRIMARY KEY (day, voter, char, ka, recipe)
 ) WITHOUT ROWID;
+
+-- 回線ごとの今日の新しい票の数(S9 のセキュリティ修正 F-01)。UA を変えて利用者のハッシュを変えても、回線(IPv4 のアドレス・
+-- IPv6 の /64)のハッシュで 1 日の上限を数える。net は hash("net" + 回線 + 日替わりソルト)で、生の IP は保存しない。前日以前の行は消す。
+CREATE TABLE IF NOT EXISTS quotas (
+  day TEXT    NOT NULL,
+  net TEXT    NOT NULL,
+  n   INTEGER NOT NULL,
+  PRIMARY KEY (day, net)
+) WITHOUT ROWID;

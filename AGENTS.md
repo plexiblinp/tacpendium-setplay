@@ -105,6 +105,9 @@
 - lockfile はコミットする。GitHub Actions の Action は**コミット SHA 固定**、`permissions` は最小（HANDOVER §7.4）。
 - Dependabot の PR は **CI が緑なら受け入れる**（開発者がマージ）。メジャー版の更新だけは、リリースノートで入力・挙動の変更を確かめる。非推奨の警告など、版上げだけで片付かないものは段階のセッションで直す。
 - 版を固定したら（`pnpm.overrides`・`go.mod` の `replace` 等）、理由と解除条件を完了報告に書く。
+- **【凍結の解除 2026-10-22】** eMudhra の中間 CA 鍵の漏えいで止めていた依存の追加・更新は、Node.js の修正版（22.23.4。CI・`engines` に反映）が出たので **Node（pnpm）と Go は解除**した。
+  - 依存を足す・上げる操作（`pnpm add`・`pnpm update`）は **Node ≥ 22.23.4 で行う**（古い Node はレジストリとの通信で偽の証明書を受け入れうる）。
+  - **Python パッケージの追加は、pip ≥ 26.2.2（certifi ≥ 2026.10.19／uv ≥ 0.13.4）の環境でだけ**行う（いまこのリポジトリは Python の依存を持たない）。
 
 ## 6. Git
 
@@ -155,8 +158,9 @@ GitHub Actions を書くときは次を守る。どれも本家で「失敗し�
 - `paths` フィルタは、必須 check を登録するまで入れない（skip された必須 check は pending のままになり、マージできなくなる）。
 - 既存の `upstream-watch.yml` は日 1 回の定期実行と手動起動（公開後に定期実行を再開。開発者決定 2026-10-18）。
 - `govulncheck.yml` は週 1 回と手動起動で govulncheck だけを回す（S8。CI の Go job でも毎回回す）。`local-release.yml` はローカル版のビルド・3 OS の起動確認・タグ `v*` で draft の Release（S8。必須 check ではないので `paths` フィルタあり。3 OS の起動確認は job を分けないとできないので、上の「job を増やさない」の例外とした。public で分数は無料、ローカル版に関わるパスが変わったときだけ走る）。
+- サイトのデプロイ（S9）は `ci.yml` の `deploy` job。main への push と手動起動（main）のときだけ、Go・Web の job の成功を待って、Web の job で作り E2E を通した `dist` を出す。Environment `production`（開発者の承認）を通り、トークンは `wrangler deploy` の 1 段だけに渡す。`workflow_run` の別 workflow にはしない（フォークの PR の完了でも起動し main の扱いで動く。CodeQL のキャッシュ汚染の指摘。守りは `scripts/check-deploy-workflow.py` が見る）。集計の `analytics.yml` は S9 で削除した（public の Actions のログは誰でも読めるため。集計は手元）。
 - **CI は main 向けの PR・main と `claude/**` への push・手動起動で走る**（public 化で Actions が無料になったので、`claude/` への push での起動を戻した。開発者決定 2026-10-18）。それでも完了報告の「緑」は手元で回した `EXIT=` と件数で示す（§8-1）。
-- 課金は job ごとに 1 分単位で切り上げなので、**job を増やさない**（いまは Go 側・Web 側の 2 つ）。同じ job の中で互いに独立な検査は `if: ${{ !cancelled() }}` で回し、1 つの失敗で他の結果が消えないようにする。
+- 課金は job ごとに 1 分単位で切り上げなので、**job を増やさない**（いまは Go 側・Web 側の 2 つと、main でだけ走る `deploy`）。同じ job の中で互いに独立な検査は `if: ${{ !cancelled() }}` で回し、1 つの失敗で他の結果が消えないようにする。
 
 ---
 

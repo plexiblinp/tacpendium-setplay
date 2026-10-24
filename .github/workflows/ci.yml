@@ -6,6 +6,10 @@
 # - paths フィルタは入れない(必須 check を登録するまで。skip された必須 check は pending のまま残る)
 # - Action はコミット SHA 固定(scripts/check-actions-pinned.sh が検査する)
 # - ブランチ名に `/` を含んでも動く(ブランチ名を条件に使わない。PR の head が claude/... でもよい)
+# - デプロイ(S9): main への push と手動起動(main)のときだけ、Go と Web の job が成功した後に deploy job が
+#   Web の job で作った dist(E2E を通したもの)を Cloudflare へ出す。Environment production(開発者の承認)を通る。
+#   別の workflow(workflow_run)にしない: フォークの PR の完了でも起動し main の扱いで動くうえ、CodeQL の
+#   キャッシュ汚染の指摘(actions/cache-poisoning)に当たるため(S9。PR #6 の指摘で作り直した)。
 name: CI
 
 on:
@@ -18,9 +22,10 @@ on:
 permissions:
   contents: read
 
+# main ではデプロイの途中で打ち切らない(新しい実行は待たせる)。ほかの ref は古い実行を打ち切る。
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   # リポジトリ検査 → Go(本家の正解との突き合わせ・moves DB の再生成)→ 事前計算 → 本家の正解の再生成 → WASM。
@@ -68,6 +73,13 @@ jobs:
         run: |
           set -o pipefail
           bash scripts/check-actions-pinned.sh | tee /tmp/pinned.txt
+      # デプロイの workflow の守り(フォークの PR から起動しない条件・トークンはデプロイの 1 段だけ。S9)。
+      - name: デプロイの workflow の守り
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          python3 -I scripts/check_deploy_workflow_test.py
+          python3 -I scripts/check-deploy-workflow.py | tee /tmp/deploy-workflow.txt
       # Go / フロントの段は決まった場所(ルートの go.mod / web/package.json)だけを見る。
       # 別の場所にできると黙ってスキップして緑になるため、ここで落とす。場所を変えるなら ci.yml を直す。
       - name: go.mod / package.json の置き場所
@@ -90,7 +102,7 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         if: ${{ !cancelled() }}
         with:
-          node-version: "22"
+          node-version: "22.23.4"
       # 見張るコード(scripts/ci/logic-version.json の watched)を変えたのに影響の記録(ack)が無ければ止める
       # (S4 後の開発者決定 3・4。コードの変更をそのまま再計算のきっかけにしない＝案 A)。
       # go.mod は計算に効く部分だけを go list で見るので、setup-go の後に回す。
@@ -268,6 +280,7 @@ jobs:
             echo ""
             echo "- ライセンス宣言: $(grep -E '^違反:' /tmp/licenses.txt || echo '件数を読めなかった')"
             echo "- Action の固定: $(grep -E '^違反:' /tmp/pinned.txt || echo '件数を読めなかった')"
+            echo "- デプロイの workflow の守り: $(grep -E '^違反:' /tmp/deploy-workflow.txt 2>/dev/null || echo '件数を読めなかった')"
             echo "- 公開してはいけない語: $(grep -E '^違反:' /tmp/private-refs.txt 2>/dev/null || echo '件数を読めなかった')"
             echo "- 計算に効くコードの変更の記録: $(grep -E '^違反:' /tmp/logic-check.txt 2>/dev/null || echo '件数を読めなかった')"
             echo "- govulncheck: $(grep -E '^違反:' /tmp/govulncheck.txt 2>/dev/null || echo '件数を読めなかった')"
@@ -336,7 +349,7 @@ jobs:
   # フロント(S5)。tsc ・vitest(単体)→ サイトデータと WASM の用意 → ビルド(配信の上限の検査を含む)→ ローカル版のビルド → E2E(Playwright)。
   # E2E はビルドした dist を web/public/_headers どおりのヘッダで配って回す(CSP 等の下で WASM ・Worker ・コピーが動くこと)。
   # ローカル版(S8)は実バイナリを起動して project local で回す(3 OS の起動確認は local-release.yml)。
-  # ★生成物(dist)は成果物として残さない。公開物は CI からだけ出す(AGENTS §8-12)。
+  # ★生成物(dist)は main への push・手動起動(main)のときだけ成果物にし、deploy job が出す(1 日で消える)。公開物は CI からだけ出す(AGENTS §8-12)。
   web:
     name: Web
     runs-on: ubuntu-latest
@@ -351,7 +364,7 @@ jobs:
           package_json_file: web/package.json
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: "22"
+          node-version: "22.23.4"
           cache: pnpm
           cache-dependency-path: web/pnpm-lock.yaml
       # サイトデータ(cmd/precompute)と WASM(cmd/wasm)を作るのに Go が要る。
@@ -384,6 +397,14 @@ jobs:
         run: |
           set -o pipefail
           pnpm build 2>&1 | tee /tmp/build.txt
+      # デプロイする dist(deploy job の条件と同じ)。前の段がすべて成功したときだけ。
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: ${{ success() && github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+        with:
+          name: site-dist
+          path: web/dist/
+          retention-days: 1
+          if-no-files-found: error
       # ローカル版の単一バイナリ(この OS 向け 1 つ。build/local/)。データと WASM は前の段のものを使う。
       - name: ローカル版のビルド
         if: ${{ !cancelled() }}
@@ -416,3 +437,61 @@ jobs:
             printf -- '- ローカル版: %s\n' "${local_bin:-読めなかった}"
             printf -- '- E2E: %s\n' "${e2e:-件数を読めなかった}"
           } >> "$GITHUB_STEP_SUMMARY"
+
+  # サイトを Cloudflare Workers へ出す(S9・HANDOVER §3・§7.4。公開物は CI からだけ出す＝AGENTS §8-12)。
+  # - main への push と手動起動(main)だけ。Go と Web の job が成功したときだけ(needs。if に状態の関数が無いので success() が付く)。
+  # - Environment production: 必須の承認者(開発者)・main だけ(設定は開発者。docs/release-checklist.md G-9)。
+  # - トークンは wrangler deploy の 1 段だけに渡す。依存は lockfile どおりに入れ、install のスクリプトは動かさない。
+  #   出すのは Web の job で作り E2E を通した dist(成果物)。ここではビルドしない。
+  # 要るもの(開発者が Environment production の secrets に置く。Repository secret・Variables には置かない):
+  #   CLOUDFLARE_API_TOKEN   … アカウント所有・Individual Workers: Editor(tacpendium-setplay だけ)・有効期限つき(docs/telemetry.md)
+  #   CLOUDFLARE_ACCOUNT_ID  … アカウント ID
+  deploy:
+    name: Cloudflare へ出す
+    needs: [go, web]
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          package_json_file: web/package.json
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22.23.4"
+      - name: pnpm install(スクリプトは動かさない)
+        working-directory: web
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: site-dist
+          path: web/dist
+      - name: 成果物の確認
+        working-directory: web
+        run: test -f dist/index.html
+      # ★トークンはこの段だけに渡す。値をログに出す・形を変えて出す処理を足さない(伏せ字は値そのものにしか効かない)。
+      - name: wrangler deploy
+        working-directory: web
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: "false"
+        run: |
+          set -o pipefail
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "Environment production の secrets(CLOUDFLARE_API_TOKEN・CLOUDFLARE_ACCOUNT_ID)が無い"; exit 1
+          fi
+          pnpm exec wrangler deploy 2>&1 | tee /tmp/deploy.txt
+      - name: Summary
+        if: always()
+        env:
+          SHA: ${{ github.sha }}
+        run: |
+          strip() { sed -E 's/\x1b\[[0-9;]*[A-Za-z]//g' "$1" 2>/dev/null; }
+          url="$(strip /tmp/deploy.txt | grep -oE 'https://[A-Za-z0-9.-]+\.workers\.dev' | head -n 1)"
+          ver="$(strip /tmp/deploy.txt | grep -oE 'Current Version ID: [0-9a-f-]+' | tail -n 1)"
+          printf '### デプロイ\n\n- コミット: `%s`\n- URL: %s\n- 版: %s\n' "$SHA" "${url:-読めなかった}" "${ver:-読めなかった}" >> "$GITHUB_STEP_SUMMARY"

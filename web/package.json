@@ -5,7 +5,7 @@
   "type": "module",
   "packageManager": "pnpm@10.28.0",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.23.4"
   },
   "scripts": {
     "assets": "bash scripts/prepare-assets.sh",
@@ -37,6 +37,7 @@
     "opencc-js": "^1.4.2",
     "typescript": "^7.0.2",
     "vite": "^8.3.4",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.3",
+    "wrangler": "^4.150.0"
   }
 }
