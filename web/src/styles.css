@@ -53,6 +53,8 @@ a { color: var(--accent); }
 .field { display: grid; gap: 4px; }
 .label, .field > span:first-child { font-size: 0.9rem; color: var(--muted); }
 .inline { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.share { margin: 4px 0 8px; }
+.share-x { font-size: 0.9rem; }
 .group { display: grid; gap: 4px; }
 fieldset { border: 1px solid var(--line); border-radius: var(--radius); margin: 0; padding: 8px 12px; }
 fieldset.segmented { border: none; padding: 0; display: inline-flex; gap: 0; align-items: center; }

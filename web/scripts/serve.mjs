@@ -50,6 +50,7 @@ const TYPES = {
   ".wasm": "application/wasm",
   ".bin": "application/octet-stream",
   ".svg": "image/svg+xml",
+  ".png": "image/png",
 };
 
 http

@@ -163,6 +163,16 @@
     "hiddenCount": "{{count}}개를 숨겼습니다(다음 검색에서 다시 표시됩니다).",
     "unhideAll": "모두 다시 표시"
   },
+  "share": {
+    "button": "이 조건 공유",
+    "text": "{{character}} KA {{ka}} 세트플레이",
+    "copyUrl": "URL 복사",
+    "copied": "URL을 복사했습니다",
+    "copyFailed": "복사하지 못했습니다",
+    "postX": "X에 게시",
+    "postXAria": "X에 게시(새 탭에서 열림)",
+    "shareFailed": "공유하지 못했습니다"
+  },
   "category": {
     "normal": "통상기",
     "unique": "특수기",

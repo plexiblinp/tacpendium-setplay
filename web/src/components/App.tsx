@@ -11,6 +11,7 @@ import { formFromConditions, initialForm, type FormState } from "../lib/formStat
 import { detectLang, type Lang } from "../lib/i18n";
 import { loadManifest, loadMoves, type FetchFn, type LoadedManifest } from "../lib/loader";
 import { LruCache } from "../lib/lru";
+import { characterDisplayName, shareText, shareUrl } from "../lib/share";
 import { defaultNotation, indexMoves } from "../lib/notation";
 import { DEFAULT_SAMPLE_RATE, loadConfig, sendRun, type BeaconSender, type RunRecord } from "../lib/telemetry";
 import { fetchVotes, postVote, scoresForEngine, type LoadedVotes } from "../lib/votes";
@@ -21,6 +22,7 @@ import { Guide } from "./Guide";
 import { Footer } from "./Footer";
 import { PrivacyPolicy, PRIVACY_HASH } from "./PrivacyPolicy";
 import { Results, type MyVote, type RunState } from "./Results";
+import { Share } from "./Share";
 import { SettingsBar } from "./SettingsBar";
 
 /** 計算の窓口(EngineClient。試験では差し替える)。 */
@@ -302,6 +304,19 @@ export function App({
     replaceSearch("");
   };
 
+  // 共有の操作(結果があるときだけ)。ローカル版は URL(127.0.0.1)を相手が開けないので出さない(開発者決定 2026-10-20)。
+  const sharedCharacter = run.status === "done" ? characters.find((x) => x.code === run.conditions.character) : undefined;
+  const sharedUrl = run.status === "done" ? shareUrl(location.href, run.conditions) : "";
+  const share =
+    online && run.status === "done" && sharedCharacter != null ? (
+      <Share
+        // 条件が変わったら作り直す(前の条件の「コピーしました」を残さない。レビュー低-2)。
+        key={sharedUrl}
+        url={sharedUrl}
+        text={shareText(t("share.text", { character: characterDisplayName(sharedCharacter.name, lang), ka: run.conditions.ka }))}
+      />
+    ) : undefined;
+
   if (manifest.status === "loading") {
     return (
       <main className="page">
@@ -363,6 +378,7 @@ export function App({
           notation={notation}
           myVotes={myVotes}
           onVote={(c, recipe, value) => void vote(c, recipe, value)}
+          share={share}
         />
         {showPrivacy && <PrivacyPolicy onClose={() => setShowPrivacy(false)} lang={lang} />}
       </main>

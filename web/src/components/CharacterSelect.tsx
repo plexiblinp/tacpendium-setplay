@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { filterCharacters } from "../lib/characterSearch";
 import type { ManifestCharacter } from "../lib/data";
 import type { Lang } from "../lib/i18n";
+import { characterDisplayName } from "../lib/share";
 
 interface Props {
   characters: readonly ManifestCharacter[];
@@ -26,7 +27,7 @@ export function CharacterSelect({ characters, value, onChange, lang, labelId }: 
   const listRef = useRef<HTMLUListElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
-  const nameOf = (c: ManifestCharacter) => (lang === "ja" ? c.name.ja : c.name.en);
+  const nameOf = (c: ManifestCharacter) => characterDisplayName(c.name, lang);
   const current = characters.find((c) => c.code === value) ?? null;
   const matched = filterCharacters(characters, query);
 

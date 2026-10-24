@@ -746,3 +746,113 @@ describe("ローカル版(HANDOVER D10・S8)", () => {
     expect(await screen.findByTestId("form-error-kaInvalid")).toHaveTextContent("0 以上の整数を入れてください");
   });
 });
+
+describe("この条件を共有(開発者決定 2026-10-20)", () => {
+  afterEach(() => {
+    Reflect.deleteProperty(navigator, "share");
+  });
+
+  it("共有の仕組みが無い(PC)ときは URL のコピーと X への投稿リンクを出す。結果が出るまでは出さない", async () => {
+    const user = userEvent.setup();
+    const writeText = vi.fn(async () => undefined);
+    Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
+    const { engine } = renderApp();
+    await search(user);
+    expect(screen.queryByTestId("share")).toBeNull();
+    await engine.finish();
+    await screen.findAllByTestId("result-row");
+    expect(screen.queryByTestId("share-native")).toBeNull();
+    const x = screen.getByTestId("share-x");
+    expect(x).toHaveAttribute("target", "_blank");
+    expect(x).toHaveAttribute("rel", "noopener noreferrer");
+    const href = new URL(x.getAttribute("href")!);
+    expect(href.origin + href.pathname).toBe("https://x.com/intent/post");
+    expect(href.searchParams.get("text")).toBe("リュウ KA 40 のセットプレイ | Tacpendium-Setplay");
+    expect(href.searchParams.get("url")).toBe("https://example.test/?c=ryu&ka=40");
+    await user.click(screen.getByTestId("share-copy"));
+    expect(writeText).toHaveBeenCalledWith("https://example.test/?c=ryu&ka=40");
+    expect(await screen.findByText("URL をコピーしました")).toBeInTheDocument();
+  });
+
+  it("操作のまとまりに「この条件を共有」の名前が付いている(コロンは読ませない)", async () => {
+    const user = userEvent.setup();
+    const { engine } = renderApp();
+    await search(user);
+    await engine.finish();
+    await screen.findAllByTestId("result-row");
+    expect(screen.getByRole("group", { name: "この条件を共有" })).toBe(screen.getByTestId("share"));
+  });
+
+  it("条件を変えたら(キャッシュからすぐ出ても)前の条件の「コピーしました」を残さない", async () => {
+    const user = userEvent.setup();
+    Object.defineProperty(navigator, "clipboard", { value: { writeText: vi.fn(async () => undefined) }, configurable: true });
+    const { engine } = renderApp();
+    await search(user);
+    await engine.finish();
+    await screen.findAllByTestId("result-row");
+    await search(user, "ryu", "41");
+    await engine.finish();
+    await waitFor(() => expect(screen.getByTestId("share")).toHaveAttribute("data-share-url", "https://example.test/?c=ryu&ka=41"));
+    await user.clear(screen.getByTestId("ka-input"));
+    await user.type(screen.getByTestId("ka-input"), "40");
+    await user.click(screen.getByTestId("generate"));
+    expect(screen.getByTestId("timing")).toHaveTextContent("計算済みの結果");
+    await user.click(screen.getByTestId("share-copy"));
+    expect(await screen.findByText("URL をコピーしました")).toBeInTheDocument();
+    await user.clear(screen.getByTestId("ka-input"));
+    await user.type(screen.getByTestId("ka-input"), "41");
+    await user.click(screen.getByTestId("generate"));
+    expect(screen.getByTestId("share")).toHaveAttribute("data-share-url", "https://example.test/?c=ryu&ka=41");
+    expect(screen.getByTestId("share-copy")).toHaveTextContent(/^URL をコピー$/);
+  });
+
+  it("結果が 0 件のときは出さない", async () => {
+    const user = userEvent.setup();
+    const { engine } = renderApp();
+    await search(user);
+    await engine.finish({ kind: "result", result: { items: [], truncated: false, totalFound: 0 }, timings: { boot: 0, load: 0, compute: 1, wasmMemoryBytes: 0 }, wallMs: 1 });
+    expect(await screen.findByTestId("empty")).toBeInTheDocument();
+    expect(screen.queryByTestId("share")).toBeNull();
+  });
+
+  it("共有の仕組みがある(スマホ)ときは端末の共有メニューを開く。閉じただけなら何も出さず、失敗は出す", async () => {
+    const user = userEvent.setup();
+    const share = vi.fn(async (_data: ShareData) => Promise.reject(new DOMException("canceled", "AbortError")));
+    Object.defineProperty(navigator, "share", { value: share, configurable: true });
+    const { engine } = renderApp("", ["en-US"]);
+    await search(user, "ryu", "55");
+    await engine.finish();
+    await screen.findAllByTestId("result-row");
+    expect(screen.queryByTestId("share-x")).toBeNull();
+    expect(screen.queryByTestId("share-copy")).toBeNull();
+    await user.click(screen.getByTestId("share-native"));
+    expect(share).toHaveBeenCalledWith({
+      title: "Tacpendium-Setplay",
+      text: "Ryu KA 55 setplays | Tacpendium-Setplay",
+      url: "https://example.test/?c=ryu&ka=55",
+    });
+    await act(async () => undefined);
+    expect(screen.queryByTestId("share-failed")).toBeNull();
+    share.mockImplementation(async () => Promise.reject(new Error("NotAllowedError")));
+    await user.click(screen.getByTestId("share-native"));
+    expect(await screen.findByTestId("share-failed")).toHaveTextContent("Could not share");
+  });
+
+  it("共有する URL は画面の条件(既定でない条件も入る)", async () => {
+    const { engine } = renderApp("c=ken&ka=30&mode=gap&chain=1");
+    await engine.finish();
+    await screen.findAllByTestId("result-row");
+    expect(screen.getByTestId("share")).toHaveAttribute("data-share-url", "https://example.test/?c=ken&ka=30&mode=gap&chain=1");
+  });
+
+  it("ローカル版では出さない(URL が 127.0.0.1 で相手が開けない)", async () => {
+    const user = userEvent.setup();
+    Object.defineProperty(navigator, "share", { value: vi.fn(), configurable: true });
+    const { engine } = renderApp("", ["ja"], fetchFn, "local");
+    await search(user);
+    await engine.finish();
+    await screen.findAllByTestId("result-row");
+    expect(screen.queryByTestId("share")).toBeNull();
+    expect(screen.queryByTestId("share-native")).toBeNull();
+  });
+});
