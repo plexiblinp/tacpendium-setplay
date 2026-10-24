@@ -38,5 +38,6 @@ test("/api(Worker)の応答にも付く(成功・204・誤り)", async ({ reques
   for (const [label, r] of [["votes", votes], ["beacon 400", badBeacon], ["404", missing]] as const) {
     expectCommon(r, label);
     expect(r.headers()["content-security-policy"], label).toContain("default-src 'none'");
+    expect(r.headers()["permissions-policy"] ?? "", label).toContain("clipboard-write=()");
   }
 });

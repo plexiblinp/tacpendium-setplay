@@ -447,6 +447,9 @@ describe("セキュリティのヘッダ(S7)", () => {
       "x-frame-options": "DENY",
       "cross-origin-resource-policy": "same-origin",
       "strict-transport-security": "max-age=31536000",
+      // JSON の応答は画面の機能を使わないので、clipboard-write も含めて全部を拒否する(公開後のヘッダ診断の指摘。S9)。
+      "permissions-policy":
+        "accelerometer=(), autoplay=(), camera=(), clipboard-read=(), clipboard-write=(), display-capture=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), hid=(), idle-detection=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), usb=(), xr-spatial-tracking=()",
     };
     expect(API_SECURITY_HEADERS).toEqual(expected);
     for (const r of responses) {
