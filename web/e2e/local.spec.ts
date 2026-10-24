@@ -53,6 +53,7 @@ test("共有 URL の KA 100 超えで自動で計算する", async ({ page }) =>
   await expect(page.getByTestId("ka-input")).toHaveValue("110");
   // 共有の操作は出さない(127.0.0.1 の URL は相手が開けない。開発者決定 2026-10-20)。
   await expect(page.getByTestId("share")).toHaveCount(0);
+  await expect(page.getByTestId("app-share")).toHaveCount(0);
   expect(w.errors).toEqual([]);
 });
 

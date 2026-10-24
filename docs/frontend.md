@@ -61,18 +61,24 @@ pnpm e2e             # Playwright。dist を public/_headers どおりのヘッ�
 - キャラ・KA が無いか誤りなら自動計算しない。ほかのキーの誤りはそのキーだけ既定値に戻し、画面に「読めなかった」と出す。いまのモードで押せない組（重ねるの n、汚連携の g の最大 < 最小）・モードに合わないキー（有利調整でない `sj`、重ねるでない `block_safe`）・安全な整数を超える数も同じ扱い。数の規則は画面の欄と同じで、画面で押せる条件は共有しても同じ条件になる（往復の試験）。
 - エンジンに渡すクエリは本家の画面と同じ規則で組む（`toEngineQuery`。`n_max` は重ねるだけ、`g_*` は汚連携だけ、`block_safe_only` は重ねるだけ、安全飛びでは `approach_only` を掛けない）。
 
-### この条件を共有（開発者決定 2026-10-20）
+### この条件を共有・このサイトを共有（開発者決定 2026-10-20・要望 2026-10-24）
 
-`web/src/components/Share.tsx`・`web/src/lib/share.ts`。結果が 1 件以上出ているとき、件数の行の下に出す。
+`web/src/components/Share.tsx`（2 か所で使う部品）・`web/src/lib/share.ts`。
+
+- **この条件を共有**: 結果が 1 件以上出ているとき、件数の行の下に出す。
+- **このサイトを共有**: フッターの先頭（結果の共有と取り違えないよう離して置く）。結果の有無にかかわらず出す。共有する URL はサイトのトップ（`siteUrl`＝ページの origin と path。条件・ハッシュは付けない）、文は紹介の一言（`share.appText`）。
+- ボタンは色付き（`button.primary`。X のリンクは枠線付きのボタンの形 `a.button-like`）。
 
 - 共有する URL は、ページの origin と path に結果の条件のクエリ（`conditionsToSearch`）を付けたもの（`shareUrl`。ハッシュは付けない）。画面が `replaceState` で書いた後の `location.href` と同じ文字列になる（E2E が確かめる）。App の `location` は起動時の写しで、`replaceState` の後も古いままなので、そのまま使わない。
 - 端末の共有メニュー（`navigator.share`）があればボタン 1 つでそれを開く（主にスマホ。macOS の Safari、Windows の Chrome・Edge など PC でもあるものはこちらになり、OS の共有メニューにコピー・X 等が並ぶ）。渡すのは title = アプリ名・text = 共有の文・url。メニューを閉じただけ（`AbortError`）なら何も出さず、ほかの失敗は「共有できませんでした」。無ければ「URL をコピー」と「X に投稿」（`https://x.com/intent/post?text=…&url=…` を新しいタブで開くリンク。`rel="noopener noreferrer"`）。
-- 共有の文は選んでいる言語で「キャラ名 KA n のセットプレイ | Tacpendium-Setplay」（`share.text`。キャラ名は ja だけ日本語名、ほかは英語名＝キャラ選択と同じ規則）。モード・絞り込みは文に入れない（URL に入る）。
+- 共有の文は選んでいる言語で「キャラ名 KA n の〈モード〉 — Tacpendium-Setplay」（例「リュウ KA 43 の重ね — Tacpendium-Setplay」。`share.text`・`share.mode.*`。安全飛びの検索ではモードの代わりに安全飛びの種類＝`setplay.safeJumpKind.*`。キャラ名は ja だけ日本語名、ほかは英語名＝キャラ選択と同じ規則）。絞り込みは文に入れない（URL に入る）。区切りは `SHARE_TEXT_SEPARATOR`。
+- 文の長さ: X の数え方（URL は 23、CJK は 2）で、全ロケール・長いキャラ名・KA 100 でも 280 以内（`share.test.ts`）。
+- 「URL をコピー」は URL だけを写す（文は付けない）。アドレス欄にもそのまま貼れ、SNS・チャットに貼れば OGP のカードが出るため（開発者への提案 2026-10-24）。
 - X 以外の SNS のリンクは置かない（共有メニューがある端末はそこから、無い端末は URL のコピーで足りる。開発者決定 2026-10-20）。
-- 操作のまとまりは `role="group"` で「この条件を共有」の名前を付ける。条件が変わると作り直す（前の条件の「コピーしました」を残さない）。
-- **ローカル版では出さない**（URL が 127.0.0.1 で相手が開けない。開発者決定 2026-10-20）。
+- 操作のまとまりは `role="group"` で「この条件を共有」「このサイトを共有」の名前を付ける。条件が変わると作り直す（前の条件の「コピーしました」を残さない）。
+- **ローカル版ではどちらも出さない**（URL が 127.0.0.1 で相手が開けない。開発者決定 2026-10-20）。
 - 外部の JS・SNS のウィジェットは使わず、押した回数も計測しない。`_headers`（CSP・Permissions-Policy）とプライバシーポリシーは変えていない（`web-share` は Permissions-Policy に無く、既定の self で使える。X へは利用者が押したリンクで移るだけ）。
-- OGP: `web/index.html` に `og:title`・`og:description`（日本語の固定文）・`og:type`・`og:url`（サイトの URL）・`og:image`（同じ host の `/og.png`。幅・高さ・alt も）・`twitter:card=summary_large_image`。画像は `web/public/og.png`（自作の 1200×630。ゲームのロゴ・画像は使わない）で、`node web/scripts/og-image.mjs` で作り直してコミットする（字形が環境で変わらないよう英語だけ）。サイトの URL を変えたら `og:url`・`og:image` と E2E（`setplay.spec.ts`）を直す。ローカル版の HTML にも同じタグが入るが、ローカル版は共有しないので害はない。条件ごとのカード（キャラ名入り）は、配信側で HTML を書き換えないと出せないので作っていない。
+- OGP: `web/index.html` に `og:title`・`og:description`（日本語の固定文）・`og:type`・`og:url`（サイトの URL）・`og:image`（同じ host の `/og.png`。幅・高さ・alt も）・`twitter:card=summary_large_image`。**カードはアプリ共通**（キャラ・条件ごとには変えない。変えるには Worker で HTML を書き換える仕組みが要る。開発者決定 2026-10-24）。画像は `web/public/og.png`（自作の 1200×630。ゲームのロゴ・画像は使わない）で、`node web/scripts/og-image.mjs` で作り直してコミットする（字形が環境で変わらないよう英語だけ）。サイトの URL を変えたら `og:url`・`og:image` と E2E（`setplay.spec.ts`）を直す。ローカル版の HTML にも同じタグが入るが、ローカル版は共有しないので害はない。条件ごとのカード（キャラ名入り）は、配信側で HTML を書き換えないと出せないので作っていない。
 - `og.png` にも `_headers` の `/*` の `Cross-Origin-Resource-Policy: same-origin` が付く。SNS のサーバが取りに来る形（ブラウザの外）には効かないが、**別のサイトのページがブラウザで直接 `<img>` に読む形では読めない**（手元で確かめた。`docs/progress/feat-share-report.md`）。
 
 ### 本家の画面から変えたところ
