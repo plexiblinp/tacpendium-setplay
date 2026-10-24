@@ -21,9 +21,23 @@ export function shareUrl(href: string, c: Conditions): string {
   return `${u.origin}${u.pathname}?${conditionsToSearch(c)}`;
 }
 
-/** 共有の文(「リュウ KA 40 のセットプレイ | Tacpendium-Setplay」)。subject は選んでいる言語で訳した前半。 */
+/** 共有の文の「モード」の i18n キー。安全飛びの検索では安全飛びの種類(例: 真安全飛び)、それ以外はモードの名前。 */
+export function shareModeKey(c: Pick<Conditions, "mode" | "safeJump">): string {
+  return c.safeJump != null ? `setplay.safeJumpKind.${c.safeJump}` : `share.mode.${c.mode}`;
+}
+
+/** 共有の文とアプリ名の間の区切り。 */
+export const SHARE_TEXT_SEPARATOR = " — ";
+
+/** 共有の文(「リュウ KA 43 の重ね — Tacpendium-Setplay」)。subject は選んでいる言語で訳した前半。 */
 export function shareText(subject: string): string {
-  return `${subject} | ${APP_NAME}`;
+  return `${subject}${SHARE_TEXT_SEPARATOR}${APP_NAME}`;
+}
+
+/** サイトのトップの URL(アプリの紹介の共有。ページの origin と path。クエリ・ハッシュは付けない)。 */
+export function siteUrl(href: string): string {
+  const u = new URL(href);
+  return `${u.origin}${u.pathname}`;
 }
 
 /** X の投稿画面の URL(新しいタブで開く)。 */

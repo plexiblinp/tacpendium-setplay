@@ -165,13 +165,20 @@
   },
   "share": {
     "button": "이 조건 공유",
-    "text": "{{character}} KA {{ka}} 세트플레이",
+    "text": "{{character}} KA {{ka}} {{mode}}",
+    "mode": {
+      "meaty": "겹치기",
+      "gap": "일부러 비우기",
+      "filler": "유리 조정"
+    },
     "copyUrl": "URL 복사",
     "copied": "URL을 복사했습니다",
     "copyFailed": "복사하지 못했습니다",
     "postX": "X에 게시",
     "postXAria": "X에 게시(새 탭에서 열림)",
-    "shareFailed": "공유하지 못했습니다"
+    "shareFailed": "공유하지 못했습니다",
+    "appButton": "이 사이트 공유",
+    "appText": "캐릭터와 다운 후 유리 프레임으로 SF6 기상 공격 레시피를 찾아 주는 비공식 도구"
   },
   "category": {
     "normal": "통상기",

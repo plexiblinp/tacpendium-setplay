@@ -115,6 +115,14 @@ test.describe("セットプレイ提案", () => {
     const img = await page.request.get(ogImage.pathname);
     expect(img.status()).toBe(200);
     expect(img.headers()["content-type"]).toMatch(/^image\/png/);
+    // フッターの「このサイトを共有」: 結果の前から出て、サイトのトップ(条件なし)を共有する。
+    const appShare = page.locator("footer").getByTestId("app-share");
+    await expect(appShare.getByTestId("app-share-x")).toBeVisible();
+    const top = new URL("/", page.url()).href;
+    await expect(appShare).toHaveAttribute("data-share-url", top);
+    const appX = new URL((await appShare.getByTestId("app-share-x").getAttribute("href")) ?? "");
+    expect(appX.searchParams.get("url")).toBe(top);
+    expect(appX.searchParams.get("text")).toMatch(/SF6 .+ — Tacpendium-Setplay$/);
     await choose(page, "ryu", 40);
     await page.getByTestId("mode-gap").click();
     await expect(page.getByTestId("share")).toHaveCount(0);
@@ -126,7 +134,10 @@ test.describe("セットプレイ提案", () => {
     const x = new URL((await page.getByTestId("share-x").getAttribute("href")) ?? "");
     expect(`${x.origin}${x.pathname}`).toBe("https://x.com/intent/post");
     expect(x.searchParams.get("url")).toBe(page.url());
-    expect(x.searchParams.get("text")).toMatch(/^(リュウ|Ryu) KA 40 .+ \| Tacpendium-Setplay$/);
+    // 文にはキャラ・KA・モード(汚連携)・アプリ名が入る(言語はブラウザの設定)。
+    expect(x.searchParams.get("text")).toMatch(/^(リュウ KA 40 の汚連携|Ryu KA 40 deliberate-gap setplays) — Tacpendium-Setplay$/);
+    // 結果の共有の後もフッターの共有は条件の無いトップのまま。
+    await expect(appShare).toHaveAttribute("data-share-url", top);
     await page.getByTestId("share-copy").click();
     await expect(page.getByTestId("share-copy")).toHaveText(/URL copied|URL をコピーしました/);
     const reader = await context.newPage();
