@@ -80,6 +80,10 @@ export const API_SECURITY_HEADERS: Readonly<Record<string, string>> = {
   "x-frame-options": "DENY",
   "cross-origin-resource-policy": "same-origin",
   "strict-transport-security": "max-age=31536000",
+  // 画面(public/_headers)と同じ一覧を、clipboard-write も含めて全部拒否する(JSON の応答は画面の機能を使わない。
+  // 公開後の外部のヘッダ診断〔securityheaders.com〕で /api の応答に無いと指摘された。S9)。
+  "permissions-policy":
+    "accelerometer=(), autoplay=(), camera=(), clipboard-read=(), clipboard-write=(), display-capture=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), hid=(), idle-detection=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), usb=(), xr-spatial-tracking=()",
 };
 
 /**

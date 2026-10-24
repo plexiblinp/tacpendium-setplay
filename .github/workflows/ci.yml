@@ -444,7 +444,7 @@ jobs:
   # - トークンは wrangler deploy の 1 段だけに渡す。依存は lockfile どおりに入れ、install のスクリプトは動かさない。
   #   出すのは Web の job で作り E2E を通した dist(成果物)。ここではビルドしない。
   # 要るもの(開発者が Environment production の secrets に置く。Repository secret・Variables には置かない):
-  #   CLOUDFLARE_API_TOKEN   … アカウント所有・Workers Scripts: Edit・自分のアカウントだけ・有効期限つき(docs/telemetry.md)
+  #   CLOUDFLARE_API_TOKEN   … アカウント所有・Individual Workers: Editor(tacpendium-setplay だけ)・有効期限つき(docs/telemetry.md)
   #   CLOUDFLARE_ACCOUNT_ID  … アカウント ID
   deploy:
     name: Cloudflare へ出す

@@ -14,8 +14,8 @@ GitHub 設定の項目は、本家（非公開）の公開手順書を S7 で読
 | 3 | 非公開の言及が無い | 済 | 本家の名前・文書 ID は公開版 tacpendium で既に公開されているため対象外（開発者決定 2026-10-18）。公開されていない本家の SHA とメモ名は伏せ、`python3 scripts/check-private-refs.py`（CI でも回す）で 0 件。語はハッシュで持つ。§13 の語ごとの扱いは下の表 |
 | 4 | LICENSE・DATA-LICENSE・NOTICE・クレジット・非公式表記 | 済 | `python3 scripts/check-licenses.py` 違反 0。画面のフッターにソース（AGPL）・データ（CC BY-SA 4.0）・非公式の表記。NOTICE §4 の公開 URL と README 冒頭の帯は公開時に直した（§4） |
 | 5 | プライバシーポリシー・計測の説明 | 済（照合は開発者） | 画面のプライバシーポリシー（5 言語）と `docs/telemetry.md`。法令との照合の材料は `docs/progress/S7-privacy-research.md`。`PRIVACY_LAST_UPDATED`（`web/src/components/PrivacyPolicy.tsx`）は 2026-10-22（S9 のセキュリティ修正で、回線のハッシュの説明を 5 言語に足した） |
-| 6 | セキュリティヘッダと CSP（外部診断） | 済（手元）／デプロイ後 | 手元の本物の配信（`_headers`＋Worker）で E2E `web/e2e/headers.spec.ts` が静的アセットと `/api` の両方を検査。外部診断は §3 |
-| 7 | Cloudflare にカード未登録・Worker の回数制限 | 開発者 | カードを登録しない（無料プランは超過で止まるだけ＝HANDOVER §7.5）。回数制限は Worker のコードの中（isolate ごと。`web/edge/rate.ts`）で、Cloudflare 側の設定は要らない。D1 の `database_id` を `web/wrangler.toml` に入れた（S9・2026-10-21）。カード未登録は開発者が Billing で確認（2026-10-21） |
+| 6 | セキュリティヘッダと CSP（外部診断） | 済（手元・2026-10-24 のデプロイ後の外部診断。§3） | 手元の本物の配信（`_headers`＋Worker）で E2E `web/e2e/headers.spec.ts` が静的アセットと `/api` の両方を検査。外部診断は §3 |
+| 7 | Cloudflare にカード未登録・Worker の回数制限 | 開発者 | カードを登録しない（無料プランは超過で止まるだけ＝HANDOVER §7.5）。回数制限は Worker のコードの中（isolate ごと。`web/edge/rate.ts`）で、Cloudflare 側の設定は要らない。D1 の `database_id` を `web/wrangler.toml` に入れた（S9・2026-10-21）。カード未登録は開発者が Billing で確認（2026-10-21）。**2026-10-21 確認**: 開発者が Billing で支払い方法が無いことを確かめた |
 | 8 | Actions がコミット SHA 固定・権限は最小 | 済 | `bash scripts/check-actions-pinned.sh` 違反 0（workflow 3 本・uses 14 件）。全 workflow が `permissions: contents: read`、checkout は `persist-credentials: false` |
 | 9 | GitHub のリポジトリ設定 | 開発者 | §5 |
 | 10 | KA 0〜100 で全キャラの生成物が存在し、ゴールデンテストが緑 | 済 | 計算方式 C（サイトはエンジンを WASM で回す。S5 後の開発者決定）なので、KA ごとの生成物は無い。代わりに「31 キャラの moves DB と manifest（KA 上限 100）が生成される」（`go run ./cmd/precompute` キャラ 31・違反 0）と「本家の正解との突き合わせ 5,208 条件・不一致 0、golden 緑」（`go test -count=1 ./...`）で見る。数値は `docs/progress/S7-report.md` |
@@ -60,6 +60,7 @@ GitHub 設定の項目は、本家（非公開）の公開手順書を S7 で読
 - `workers.dev` は HTTPS 固定。HSTS に `preload` は付けていない（自分のドメインでないため）。
 - 存在しないパス（例 `/no-such-page`）も 1 つ見る。アセットに無い要求は Worker の最後の `env.ASSETS.fetch` が返す。`_headers` がこの 404 に掛かるかは Cloudflare の docs に書かれていない（docs は「Worker のコードが作る応答には掛からない」まで。https://developers.cloudflare.com/workers/static-assets/headers/ ）。そこで Worker が誤りの応答（400 以上）に `/api` と同じヘッダを付ける（無いものだけ。S9 のセキュリティ修正 F-07。`web/edge/index.ts` の `withErrorSecurityHeaders`）。診断では 404 に CSP 等が付くことを確かめる。
 - 結果（評価と指摘）を S9 の報告に貼る。直すものがあれば `web/public/_headers` と `web/edge/index.ts` の `API_SECURITY_HEADERS` を同時に直す（E2E `headers.spec.ts` が両方を見る）。
+- **結果（2026-10-24。版 `9b97804c`）**: securityheaders.com は `/` **A+**（指摘なし）・`/no-such-page` **A+**（404 にも全部付く＝F-07 が本番で効いている）・`/api/votes?char=ryu&ka=1` **A**（Permissions-Policy が無い）。MDN Observatory は `/` **A+**（140/100）。パス付きの 2 つは Observatory が 404 として採点しない（推測: Observatory はホスト名のトップを調べる道具）。`/api` の Permissions-Policy は `API_SECURITY_HEADERS` に足した（S9。全部拒否）。デプロイ後に `/api/votes` を診断し直す。
 
 ## 4. 公開時に書き換える箇所
 
@@ -90,16 +91,16 @@ GitHub 設定の項目は、本家（非公開）の公開手順書を S7 で読
 | G-8 | アカウントの 2FA | HANDOVER §7.4。**済**（GitHub Mobile の 2FA。パスキーの追加は開発者が検討） |
 | G-9 | Environment `production` を作る: Required reviewers に開発者、Prevent self-review は**付けない**、Deployment branches は main だけ、管理者の迂回は許さない。secrets `CLOUDFLARE_API_TOKEN`・`CLOUDFLARE_ACCOUNT_ID` は**ここにだけ**置く（Repository secret・Variables に置かない） | S9 で変更（2026-10-20）。集計は手元に移したので集計用の Secrets は置かない。`docs/telemetry.md`「デプロイ用の API トークン」。**済**（2026-10-21: Required reviewers＝開発者、Prevent self-review なし、管理者の迂回なし、Deployment branches は main だけ。secrets は最初のデプロイの直前に入れる） |
 | G-10 | Issues を有効にする（意見・不具合・翻訳の改善とプライバシーの問い合わせの窓口。`CONTRIBUTING.md`）。Pull requests の機能は Dependabot が使うので有効のまま、外からの PR は `CONTRIBUTING.md` のとおり閉じる。Discussions・Wiki・Projects は無効 | 開発者決定 2026-10-18（Google フォーム＋Issues）。**済**（2026-10-21 点検: Issues 有効、Wikis・Discussions・Projects・Sponsorships 無効、Allow merge commits 有効。Preserve this repository〔GitHub Archive Program〕は既定の有効のまま） |
-| G-11 | **About の Website** に、Cloudflare にデプロイしたサイトの URL を入れる（リポジトリの画面の右上 About の歯車 → Website） | **S9 の手番。デプロイが済んでから**（開発者指示 2026-10-18。S8 で記載） |
+| G-11 | **About の Website** に、Cloudflare にデプロイしたサイトの URL を入れる（リポジトリの画面の右上 About の歯車 → Website） | **S9 の手番。デプロイが済んでから**（開発者指示 2026-10-18。S8 で記載）。**未**（2026-10-24 時点。限定公開のうちに入れるか、一般公開のときに入れるかは開発者が決める） |
 
 ## 6. S9 の手番（S8 で追加）
 
 | # | 手番 | 備考 |
 |---|---|---|
-| S9-1 | Cloudflare へのデプロイ後、GitHub の About の **Website** にサイトの URL を入れる（§5 G-11） | 開発者指示 2026-10-18 |
+| S9-1 | Cloudflare へのデプロイ後、GitHub の About の **Website** にサイトの URL を入れる（§5 G-11） | 開発者指示 2026-10-18。**未**（G-11 と同じ） |
 | S9-2 | **済**（2026-10-20）: main の 9880c88 に `v1.0.0` のタグ → Local release の run 39142810181 が全 job 成功（ビルド・ubuntu / macos / windows の起動確認 12 項目 ok・失敗 0・draft の作成）→ 開発者が中身を確かめて公開（https://github.com/plexiblinp/tacpendium-setplay/releases/tag/v1.0.0 、2026-10-20T15:12:39Z）。**v1.0.1**（2026-10-21）: Go 1.26.10 で作り直し（GO-2026-6809 / CVE-2026-111943。eMudhra の中間 CA 鍵の危殆化）。main の 999925d に `v1.0.1` → run 39627631145 が全 5 job 成功 → 開発者が照合して公開（2026-10-21T15:45:32Z。添付 6）。v1.0.0 は残し、本文で v1.0.1 へ案内。以下は手順の記録。ローカル版の最初の Release: main で `v<版>`（例 `v1.0.0`）のタグを push → `local-release.yml` が 3 OS の起動確認の後に **draft** の Release を作る → 中身（5 種の圧縮・`SHA256SUMS`）を確かめて公開する | 手順は `docs/local.md`「配布」。サイトの KA の説明は Releases（`RELEASES_URL`）へ案内するので、**サイトを公開する前か同時に**出す（無いと空の Releases を指す） |
 | S9-3 | **済**（2026-10-21）: main の 999925d で手動起動 → run 39626692726 成功。`govulncheck.yml` の週 1 回の定期実行は default branch（main）に入ってから動く。マージ後に Actions の画面で 1 度手動起動し、緑を確かめる | S8 |
-| S9-4 | ヘッダ診断（§3）・§5 の「済」付け・S9 の報告 | 開発者指示 2026-10-18（S8 ではやらない） |
+| S9-4 | ヘッダ診断（§3）・§5 の「済」付け・S9 の報告 | 開発者指示 2026-10-18（S8 ではやらない）。**一部済**（2026-10-24）: ヘッダ診断・§5 の点検（2026-10-21）。報告は `docs/progress/S9-report.md` |
 
 ## 7. セキュリティ監査（S9）の設定の確認と残りの案
 

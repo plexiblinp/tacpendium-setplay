@@ -85,10 +85,11 @@ CLOUDFLARE_ACCOUNT_ID=… CLOUDFLARE_API_TOKEN=… node scripts/analytics/report
 公開・アカウント・秘密情報（AGENTS §3 の 3〜5）なので、Cloudflare と GitHub の操作は開発者が行う。デプロイは **GitHub Actions の `ci.yml` の `deploy` job からだけ**（AGENTS §8-12。S9 の開発者決定 2026-10-20: 方式 (a)＝Actions ＋ スコープを絞った API トークン ＋ 承認者付きの Environment）。
 
 1. Cloudflare のアカウント（**カードを登録しない**。無料プラン）と 2FA。
-2. D1 を作る（Cloudflare の画面の D1 か `npx wrangler d1 create tacpendium-setplay`）→ `database_id` を `web/wrangler.toml` に入れる（秘密情報ではない）。
-3. `edge/schema.sql` を D1 に流す（画面の D1 の Console か `npx wrangler d1 execute tacpendium-setplay --remote --file=edge/schema.sql`）。1 回だけ。
-4. デプロイ用のトークン（下の「デプロイ用の API トークン」）を作り、GitHub の Environment `production` の secrets に `CLOUDFLARE_API_TOKEN`・`CLOUDFLARE_ACCOUNT_ID` を置く。
-5. main に入った変更は、CI（`ci.yml`）の Go・Web の job が緑になると `deploy` job が承認待ちになり、承認の後に出る。出し直しは Actions →「CI」→ Run workflow（main。検査をすべて回し直してから出す）。
+2. D1 を作る（Cloudflare の画面の Storage & Databases → D1 SQL Database。S9 は画面で作った）→ `database_id` を `web/wrangler.toml` に入れる（秘密情報ではない）。
+3. `edge/schema.sql` を D1 に流す（画面の D1 の Console。表を足したら、その `CREATE TABLE` をデプロイの前に流す。S9 では `quotas` を後から足した）。
+4. **Analytics Engine を有効にする**（アカウントで 1 回。画面の Analytics Engine で **Create Blank Dataset** → 名前 `setplay_runs`・Dataset Binding `TELEMETRY`。`wrangler.toml` と同じ名前にする）。有効にしていないと `wrangler deploy` が「You need to enable Analytics Engine」（code 10089）で止まる（S9 の初回で実際に止まった）。無料プランは 1 日書き込み 10 万件・読み取り 1 万回で、カード未登録なら超えても止まるだけ（https://developers.cloudflare.com/analytics/analytics-engine/pricing/ ）。
+5. デプロイ用のトークン（下の「デプロイ用の API トークン」）を作り、GitHub の Environment `production` の secrets に `CLOUDFLARE_API_TOKEN`・`CLOUDFLARE_ACCOUNT_ID` を置く。
+6. main に入った変更は、CI（`ci.yml`）の Go・Web の job が緑になると `deploy` job が承認待ちになり、承認の後に出る。出し直しは Actions →「CI」→ Run workflow（main。検査をすべて回し直してから出す）。
 
 `deploy` job の作り（`.github/workflows/ci.yml` の冒頭と job のコメントが正本）:
 
@@ -101,7 +102,12 @@ CLOUDFLARE_ACCOUNT_ID=… CLOUDFLARE_API_TOKEN=… node scripts/analytics/report
 
 ### デプロイ用の API トークン
 
-- 作り方: Cloudflare の画面の **Account API tokens**（アカウント所有のトークン）→ Create Token → Custom。権限は **Account → Workers Scripts → Edit**、対象は自分のアカウント 1 つ、**有効期限は 3 か月**（開発者決定 2026-10-20。SF6 の大きな更新の周期に合わせ、更新のたびに作り直す）。D1 の権限が要るかは初回のデプロイで確かめる（S9 報告）。
+- 作り方: Cloudflare の画面の **Manage Account → Account API Tokens**（アカウント所有のトークン）→ Create Token。名前は `github-actions-deploy-tacpendium-setplay`。**有効期限は 3 か月**（開発者決定 2026-10-20。SF6 の大きな更新の周期に合わせ、更新のたびに作り直す）。接続元の IP の制限は付けない（GitHub Actions の IP は変わる）。
+- 権限（2026-10 の新しい画面の「Permission policies」。S9 で実際に通した形。Legacy の「Workers Scripts」は使わない＝開発者決定 2026-10-22）:
+  - **Worker を新しく作るとき（初回だけ）**: Developer Platform の **Workers: Admin**、範囲は Entire Account。`Workers: Editor` では作成できず、`assets-upload-session` が「No access to the specified resource」で止まる（S9 の初回で実際に止まった）。Cloudflare の docs も「Editor は既存の Worker の更新・デプロイだけで作成・削除はできない。作成には Workers 全体の Admin が要る」と書く（https://developers.cloudflare.com/workers/authorization/workers/ ）。
+  - **作成の後（普段）**: 範囲を **Specified Workers → tacpendium-setplay**、方針を **Individual Workers: Editor** に絞る（2026-10-24 に絞り、その状態で CI からのデプロイが通ることを確かめた。漏れたときの被害がこの Worker の差し替えまでに縮む）。
+  - **D1・Analytics Engine の権限は付けない**（束縛を持つ Worker のデプロイに、束縛先の権限は要らない。上の docs。S9 で実際に要らなかった）。
+  - Worker を作り直す・別の Worker を作る必要が出たら、そのときだけ Workers: Admin に戻し、済んだら絞り直す。
 - 置き場所: GitHub の **Environment `production` の secrets だけ**（Repository secret・Variables には置かない。Variables は秘密ではない）。Environment には必須の承認者（開発者）と「main だけ」を付け、Prevent self-review は付けない（一人では承認できなくなる）。
 - 期限が切れたとき: デプロイが認証の誤りで止まるだけで、サイト・票・計測は残る。新しいトークンを作って secret を上書きする。
 - 漏れたとき: `docs/incident.md`。
