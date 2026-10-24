@@ -50,11 +50,24 @@ S9 の途中の別件。開発者が手元でシェアの修正をビルドし�
 
 `pnpm audit --json`（2026-10-24）: high 3・moderate 4。
 
-- **zod `<4.6.6`**（GHSA-mrhx-c7xc-m3w5、high。制約つきの大きな集まりを検査するとメモリを使い切りうる）。直接依存で、画面と Worker（票の受け口）の両方で動く。Worker は本文を `API_BODY_MAX_BYTES`（1024 バイト）までしか読まないので、外から大きな入力は入らない見込み（推測: 1024 バイトの中で起こせるかは試していない）。Dependabot の PR（zod 4.6.6）で直す。
+- **zod `<4.6.6`**（GHSA-mrhx-c7xc-m3w5、high。制約つきの大きな集まりを検査するとメモリを使い切りうる）。直接依存で、画面と Worker（票の受け口）の両方で動く。Worker は本文を `API_BODY_MAX_BYTES`（1024 バイト）までしか読まないので、外から大きな入力は入らない見込み（推測: 1024 バイトの中で起こせるかは試していない）。Dependabot の PR（zod 4.6.6、#9）で直し、main に入った。main を取り込んだ後の監査では high 2・moderate 4（undici だけ）。
 - **undici**（GHSA-4qv8-2p9j-2685・GHSA-f72v-6w45-q472・GHSA-xjj6-f33q-929c。2026-10-23 公開）: 経路は `jsdom>undici`（テスト）と `wrangler>miniflare>undici`（手元の開発用）だけ。公開の Worker・ローカル版には入らない。修正版（8.12.2・7.30.1）はまだ 7 日たっていないので、Dependabot の PR か次の段階で上げる。
 
 ## 残課題・次への入力
 
 - 手元（開発者の PC）: Node を 22.23.4 以上にしてから、`web/` で `pnpm --version` が 10.34.7 になるのを確かめ、`pnpm install --frozen-lockfile` する。この変更がマージされるまでは、10.28.0 で install しない。すでに 10.28.0 で install した `node_modules` は、消して入れ直す。
 - クラウドのセッションの hook（`session-start.sh`）は環境の Node 22.22.0 で `pnpm install` する。pnpm は 10.34.7 に切り替わるが、Node は古い（`engines.node` は警告だけ）。依存を足す・上げるときは AGENTS §5 のとおり Node ≥ 22.23.4 を別に用意する（今回は公式の tarball を SHASUMS256.txt と照合して使った）。
-- マージの順: シェアの PR → zod の PR → 本変更。どれも main に追いつく必要があるので、前の PR をマージした後に「Update branch」を押す。本変更は配信物を変えない（ビルドの道具だけ）。
+- シェアの PR（#10）・zod の PR（#9）のマージ後に main を取り込み、検査を回し直した（下の「main 取り込み後」）。本変更は配信物を変えない（ビルドの道具だけ）。
+
+## main 取り込み後（3bdbc0d を merge）
+
+| 検査 | 結果 |
+|---|---|
+| `pnpm --version` | 10.34.7 |
+| `rm -rf node_modules && pnpm install --frozen-lockfile` | EXIT=0 |
+| `pnpm assets` / `tsc --noEmit` | EXIT=0 / EXIT=0 |
+| `vitest --run` | EXIT=0、Test Files 19 passed (19)、Tests 218 passed (218)（シェアの PR で増えた） |
+| `pnpm build` | EXIT=0 |
+| `playwright test` | EXIT=0、29 passed |
+| `check-deploy-workflow.py` | EXIT=0、違反 0 件 |
+| `pnpm audit --json` | EXIT=1、high 2・moderate 4（すべて undici。zod は解消） |
