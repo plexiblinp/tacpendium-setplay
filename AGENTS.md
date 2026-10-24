@@ -108,6 +108,7 @@
 - **【凍結の解除 2026-10-22】** eMudhra の中間 CA 鍵の漏えいで止めていた依存の追加・更新は、Node.js の修正版（22.23.4。CI・`engines` に反映）が出たので **Node（pnpm）と Go は解除**した。
   - 依存を足す・上げる操作（`pnpm add`・`pnpm update`）は **Node ≥ 22.23.4 で行う**（古い Node はレジストリとの通信で偽の証明書を受け入れうる）。
   - **Python パッケージの追加は、pip ≥ 26.2.2（certifi ≥ 2026.10.19／uv ≥ 0.13.4）の環境でだけ**行う（いまこのリポジトリは Python の依存を持たない）。
+- **pnpm 本体の版**は `web/package.json` の `packageManager`（いまは 10.34.7）で、`engines.pnpm` が下限（≥ 10.34.7。GHSA-vq4v-j7r6-jq4m の修正版 10.34.5 以上）。`web/` で `pnpm --version` がこの版になってから `pnpm install` する（pnpm は `packageManager` の版へ自動で切り替える。CI の web job も版の一致を確かめる）。`--frozen-lockfile` と `pnpm audit` は依存の検査で、pnpm 本体の脆弱性は防がない。上げるときは pnpm の公式アドバイザリを全部見て、公開から 7 日たった版を選ぶ（`docs/progress/fix-pnpm-report.md`）。
 
 ## 6. Git
 
