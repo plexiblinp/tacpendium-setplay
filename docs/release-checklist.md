@@ -74,7 +74,7 @@ GitHub 設定の項目は、本家（非公開）の公開手順書を S7 で読
 | `web/src/lib/constants.ts` | **済**（2026-10-18）: `FEEDBACK_FORM_URL` に Google フォームの URL を入れた（空にすると Issues だけを案内する）。フォームは本家用の Google アカウントで、日英併記の 1 つ。「内容」は回答の検証で URL を含めない（正規表現 `https?://|www\.` を含まない）。メールアドレスは収集しない |
 | `web/wrangler.toml` | **済**（2026-10-21）: D1 の `database_id`（開発者が Cloudflare の画面で作成。秘密情報ではない） |
 | `.github/workflows/ci.yml` の `deploy` job | S9 で追加。main への push で Go・Web が緑 → 承認 → Cloudflare へ。`analytics.yml` は S9 で削除（集計は手元） |
-| `web/index.html` | **済**（2026-10-24。共有ボタンの作業）: `og:url` = `https://tacpendium-setplay.plexiblinp.workers.dev/`、`og:image` = 同じ host の `/og.png`（自作の 1200×630。`web/scripts/og-image.mjs` で作る）、`twitter:card` = `summary_large_image`。**デプロイ後**: X の投稿欄に URL を貼ってカードの画像が出るかを確かめる（`docs/progress/feat-share-report.md`「S9 からの連絡の取り込み」） |
+| `web/index.html` | **済**（2026-10-24。共有ボタンの作業）: `og:url` = `https://tacpendium-setplay.plexiblinp.workers.dev/`、`og:image` = 同じ host の `/og.png`（自作の 1200×630。`web/scripts/og-image.mjs` で作る）、`twitter:card` = `summary_large_image`。**デプロイ後**: X の投稿欄に URL を貼ってカードの画像が出るかを確かめる。出なければ `_headers` に `/og.png` だけ CORP を `cross-origin` にする規則を足す（開発者決定 2026-10-24。いまは変えない。`docs/progress/feat-share-report.md`「S9 からの連絡の取り込み」） |
 
 ## 5. GitHub のリポジトリ設定（公開する新しいリポジトリで。開発者）
 
