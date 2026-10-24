@@ -105,7 +105,16 @@ test.describe("セットプレイ提案", () => {
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", /Tacpendium-Setplay/);
     await expect(page.locator('meta[property="og:description"]')).toHaveAttribute("content", /SF6/);
     await expect(page.locator('meta[property="og:type"]')).toHaveAttribute("content", "website");
-    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary");
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary_large_image");
+    // og:url はサイトの URL(S9)。og:image は同じ host の絶対 URL で、その path をこの配信が画像として返す。
+    const ogUrl = (await page.locator('meta[property="og:url"]').getAttribute("content")) ?? "";
+    expect(ogUrl).toBe("https://tacpendium-setplay.plexiblinp.workers.dev/");
+    const ogImage = new URL((await page.locator('meta[property="og:image"]').getAttribute("content")) ?? "");
+    expect(ogImage.host).toBe(new URL(ogUrl).host);
+    // ブラウザの外からの取得(SNS のサーバが取りに来る形)。CORP(same-origin)はブラウザだけが見るので、ここでは効かない。
+    const img = await page.request.get(ogImage.pathname);
+    expect(img.status()).toBe(200);
+    expect(img.headers()["content-type"]).toMatch(/^image\/png/);
     await choose(page, "ryu", 40);
     await page.getByTestId("mode-gap").click();
     await expect(page.getByTestId("share")).toHaveCount(0);

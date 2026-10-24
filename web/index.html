@@ -6,11 +6,16 @@
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <title>Tacpendium-Setplay | セットプレイ自動提案(非公式)</title>
-    <!-- SNS で URL を貼ったときのカード(OGP)。og:url・og:image は絶対 URL が要るため、サイトの URL が決まってから足す(docs/release-checklist.md)。 -->
+    <!-- SNS で URL を貼ったときのカード(OGP)。og:url・og:image は絶対 URL(サイトの URL。S9)。画像は scripts/og-image.mjs で作る自作の 1 枚。 -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Tacpendium-Setplay | セットプレイ自動提案(非公式)" />
     <meta property="og:description" content="SF6 のキャラとダウン後の有利フレームから、起き攻めのレシピ(空振りの繋ぎ → 重ねる技)を出す非公式ツール。" />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:url" content="https://tacpendium-setplay.plexiblinp.workers.dev/" />
+    <meta property="og:image" content="https://tacpendium-setplay.plexiblinp.workers.dev/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Tacpendium-Setplay: SF6 setplay suggestions (unofficial)" />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <!-- 画面が動き出すまでの表示。止まったときは public/boot.js が理由をここに書く(真っ白にしない)。 -->

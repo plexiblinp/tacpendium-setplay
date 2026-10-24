@@ -72,7 +72,8 @@ pnpm e2e             # Playwright。dist を public/_headers どおりのヘッ�
 - 操作のまとまりは `role="group"` で「この条件を共有」の名前を付ける。条件が変わると作り直す（前の条件の「コピーしました」を残さない）。
 - **ローカル版では出さない**（URL が 127.0.0.1 で相手が開けない。開発者決定 2026-10-20）。
 - 外部の JS・SNS のウィジェットは使わず、押した回数も計測しない。`_headers`（CSP・Permissions-Policy）とプライバシーポリシーは変えていない（`web-share` は Permissions-Policy に無く、既定の self で使える。X へは利用者が押したリンクで移るだけ）。
-- OGP: `web/index.html` に `og:title`・`og:description`・`og:type`・`twitter:card=summary`（日本語の固定文）。`og:url`・`og:image` は絶対 URL が要るので、サイトの URL が決まってから足す（`docs/release-checklist.md` §4）。条件ごとのカード（キャラ名入り）は、配信側で HTML を書き換えないと出せないので作っていない。
+- OGP: `web/index.html` に `og:title`・`og:description`（日本語の固定文）・`og:type`・`og:url`（サイトの URL）・`og:image`（同じ host の `/og.png`。幅・高さ・alt も）・`twitter:card=summary_large_image`。画像は `web/public/og.png`（自作の 1200×630。ゲームのロゴ・画像は使わない）で、`node web/scripts/og-image.mjs` で作り直してコミットする（字形が環境で変わらないよう英語だけ）。サイトの URL を変えたら `og:url`・`og:image` と E2E（`setplay.spec.ts`）を直す。ローカル版の HTML にも同じタグが入るが、ローカル版は共有しないので害はない。条件ごとのカード（キャラ名入り）は、配信側で HTML を書き換えないと出せないので作っていない。
+- `og.png` にも `_headers` の `/*` の `Cross-Origin-Resource-Policy: same-origin` が付く。SNS のサーバが取りに来る形（ブラウザの外）には効かないが、**別のサイトのページがブラウザで直接 `<img>` に読む形では読めない**（手元で確かめた。`docs/progress/feat-share-report.md`）。
 
 ### 本家の画面から変えたところ
 

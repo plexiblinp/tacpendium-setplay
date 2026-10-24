@@ -108,7 +108,7 @@ python3 scripts/check-private-refs.py            走査: 295 ファイル / 違�
 
 ## 残課題・既知の問題
 
-1. **OGP の `og:url`・`og:image`**: サイトの URL が決まったら足す（`docs/release-checklist.md` §4）。画像は自作の 1200×630 を 1 枚にして、`twitter:card` を `summary_large_image` に変える。それまではカードが文字だけになる。
+1. ~~OGP の `og:url`・`og:image`~~ → 2026-10-24 に済（下の「S9 からの連絡の取り込み」）。
 2. `og:title`・`og:description` は日本語の固定文。言語ごとのカードは、配信側で書き換えないと出せない。
 3. `navigator.share` がある PC（macOS の Safari、Windows の Chrome・Edge 等）では、X のリンクとコピーのボタンは出ず、OS の共有メニューだけになる（要求どおり。docs に書いた）。
 4. iOS・Android の実機では確かめていない（E2E は Linux の Chromium で、共有メニューが無い形に固定した）。スマホの形は App.test（偽の `navigator.share`）でだけ見ている。
@@ -119,3 +119,68 @@ python3 scripts/check-private-refs.py            走査: 295 ファイル / 違�
 - S9 のセッションと触りうるファイル: `web/index.html`（head に OGP の 5 行）、`web/src/locales/*.json`（`share` の節を `setplay` の後に足した）、`docs/release-checklist.md` §4（表の末尾に 1 行）、`docs/frontend.md`。取り込みでコンフリクトが出ても、どれも追加だけなので両方を残せる。
 - サイトの URL が決まったら、OGP の残りをやる（残課題 1）。共有の機能自体は、URL が決まらなくても動く（共有 URL はページの origin から組む）。
 - PR はまだ作っていない（開発者が頼んだときだけ作る）。
+
+## S9 からの連絡の取り込み（2026-10-24）
+
+S9（Web 公開）の側からの連絡（サイトの URL・main の取り込み・CORP の確認・PR）を受けて、次をやった。
+
+### main の取り込み
+- `git merge origin/main`（08fa3ed。PR #5・#6・#7）→ マージコミット `9e1166f`。
+- コンフリクトは `docs/release-checklist.md` §4 の表の末尾 1 か所だけ。両方の行を残した（main の `wrangler.toml` の「済」と `deploy` job の行、こちらの `web/index.html` の行）。
+- locales（`privacy.hashBody` の 1 行）は自動で合わさった。`pnpm gen:locales` を回しても zh-Hant に差分が出ないことを確かめた。
+
+### OGP の残り
+- `web/index.html` に足したタグ:
+  - `og:url` = `https://tacpendium-setplay.plexiblinp.workers.dev/`
+  - `og:image` = `https://tacpendium-setplay.plexiblinp.workers.dev/og.png`
+  - `og:image:width`・`og:image:height`・`og:image:alt`
+  - `twitter:card` は `summary_large_image` に変えた
+- 画像 `web/public/og.png`（1200×630、PNG、39,276 bytes）。`web/scripts/og-image.mjs` が、自作の HTML（favicon と同じ形・画面の色・英語の文字だけ）を Playwright の Chromium で撮って作る（依存は増やしていない）。
+  - ゲームのロゴ・画像は使っていない。
+  - 英語だけにしたのは、この環境に日本語のフォントが無く、字形が環境で変わるため。
+  - ライセンスは REUSE の既定（層 A。favicon.svg と同じ）。`check-licenses.py` は違反 0。
+- `web/scripts/serve.mjs`（E2E の静的サーバ）の Content-Type の表に `.png` を足した。本番は Cloudflare が付けるので関係ない。ローカル版の Go のサーバ（`internal/localserver`）は `.png` を `application/octet-stream` で返すが、ローカル版で og.png を読む場面は無いので、Go は触っていない。
+- E2E（`setplay.spec.ts` の共有の試験）で次を確かめる:
+  - `og:url` の値
+  - `og:image` が `og:url` と同じ host であること
+  - その path をこの配信が 200・`image/png` で返すこと
+- わざと壊した確認: `og:image` を `/og-missing.png` にすると E2E が赤になった（Expected 200 / Received 404。1 failed、EXIT=1）。戻して緑。
+
+### CORP（`Cross-Origin-Resource-Policy: same-origin`）の確認
+本番（`tacpendium-setplay.plexiblinp.workers.dev`）には、この環境のネットワークの制限で繋がらなかった（プロキシが 403）。そのため、`_headers` どおりにヘッダを付ける手元の配信（`scripts/serve.mjs`）で確かめた。
+
+| 取り方 | 結果 |
+|---|---|
+| ブラウザの外から取得（Node の fetch。UA は Twitterbot/1.0。SNS のサーバが取りに来る形） | **200・`image/png`・39,276 bytes**。CORP は付いているが効かない |
+| ブラウザで、CSP も CORP も無い別オリジンのページから `<img>` で読む（CORP なしの配信） | load（幅 1200） |
+| 同じページから `<img>` で読む（CORP `same-origin` の配信） | **error**（読めない） |
+
+- 最初の試し方（Playwright の route で作ったページから読む形）は、CORP の有無にかかわらず両方とも timeout になり、何も測れていなかった。CORP なしの対照を置いて、試し方を作り直した。
+- 結論:
+  - X・Discord・Slack・LINE・Facebook 等は、カードの画像を自分のサーバで取って自分の CDN から出す（推測。各社の一般的な作り。本番への実際の取得は確かめていない）。そのため CORP は効かない見込み。
+  - 一方で、**og:image をブラウザの中で直接読む作りの読み手（プロキシを通さない一部の SNS のクライアント等）では、画像が出ない**。
+  - 直すには `_headers` に `/og.png` だけ CORP を `cross-origin` にする規則を足す必要がある。Cloudflare の `_headers` は、同じヘッダを 2 つの規則で付けると値をカンマでつなぐ。そのため `! Cross-Origin-Resource-Policy` で外してから付け直す形になる。
+  - **`_headers` は変えない約束なので、変えていない（開発者に聞く）。**
+- デプロイ後に開発者が確かめること: X の投稿欄にサイトの URL を貼り、カードに画像が出るか（`docs/release-checklist.md` §4）。
+
+### 検査（この回。`web/` で。出力はファイルへ）
+
+```
+pnpm assets                                      EXIT=0
+pnpm typecheck                                   EXIT=0
+pnpm test (vitest --run)                         Test Files  19 passed (19) / Tests  209 passed (209) / EXIT=0
+pnpm build                                       違反: 0 件 / EXIT=0（dist/og.png 39,276 bytes）
+bash scripts/local/build.sh                      EXIT=0
+pnpm e2e (PW_CHROMIUM_PATH=…chromium-1194…)      29 passed (1.2m) / EXIT=0
+python3 scripts/check-licenses.py                違反: 0 件 / EXIT=0
+python3 scripts/check-private-refs.py            違反: 0 件 / EXIT=0
+```
+
+vitest の 186 → 209 は main 側（S9）で増えた試験。この回で足した vitest の試験は無い。E2E は既存の試験に検査を足しただけで、件数は 29 のまま。
+
+この回のレビュー: サブエージェントのレビューは回していない（指示に無い。差分は OGP のタグ・画像・E2E の数行）。
+
+### この回の残課題
+1. `og.png` の CORP（上）。`_headers` を変えるかは開発者の判断。
+2. 本番での OGP の見え方（X 等のカード）は、デプロイ後に開発者が確かめる。
+3. `og:title`・`og:description` は日本語の固定文、画像の文字は英語だけ。
