@@ -43,7 +43,7 @@
 | `internal/model/move.go` | 技カテゴリ・名指しの技 code・startup_basis の定数だけ（`Move` 構造体・技プロパティ等は無い）。`doc.go` は単体版で書いた | 計算が使う定数だけを持ち込む |
 | 移植しない本家ファイル | `internal/service/setup`・`internal/recipehash`・`internal/repository/combo`・`internal/api/setplay`（engine が同じ役を持つ）・`internal/infra/migration` の canary（`engine/canary_test.go` が moves DB に対して同じことを見る。計測専用の `canary_setplay_projection_test.go`・`canary_setplay_perf_test.go` は移植しない） | |
 
-### 公開版 v0.3.0（`5840f6e`）の取り込み（2026-10-25。報告 `docs/progress/upstream-5840f6e-report.md`）
+### 公開版 v0.3.0（取り込み時 `5840f6e`、メールの書き換え後 `ebd2768`。中身は同じ）の取り込み（2026-10-25。報告 `docs/progress/upstream-5840f6e-report.md`）
 
 | ファイル | 変更 | 理由 |
 |---|---|---|

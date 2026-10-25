@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "dataVersion": "5840f6ee0092fa6fcf3be55ca0c94844f3eec015",
+  "dataVersion": "ebd2768d6f19287e36ab68f3f1b8e64f806ec1bf",
   "characters": [
     {
       "code": "ryu",
@@ -106,9 +106,9 @@
       },
       "file": "kimberly.json",
       "moveCount": 105,
-      "dataVersion": "5840f6ee0092fa6fcf3be55ca0c94844f3eec015",
+      "dataVersion": "ebd2768d6f19287e36ab68f3f1b8e64f806ec1bf",
       "calcFingerprint": "e9d74a445b19b68f814e274b5cdbc45857c8d0f2151c456c5d3692db0a774c57",
-      "fileSha256": "7ef5be9011dd970363565f9a9c674cde687d90c09bbcf84180dffcf52591c7b3"
+      "fileSha256": "47cc85ab7cc0aa87b16f310444254b82ebdefc9f7794fcb641539b4d62ac6e1b"
     },
     {
       "code": "juri",
@@ -382,9 +382,9 @@
       },
       "file": "arjun.json",
       "moveCount": 94,
-      "dataVersion": "5840f6ee0092fa6fcf3be55ca0c94844f3eec015",
+      "dataVersion": "ebd2768d6f19287e36ab68f3f1b8e64f806ec1bf",
       "calcFingerprint": "811a490d0b2fc54fd7f260406d0bab1369d308bd600c2c90c8203d7d5bfacb7e",
-      "fileSha256": "471266e4438228bcd07cbe00bef8ed49f58bf3c05eb9817e06812a755d7ef877"
+      "fileSha256": "7d316d130c52a88e1f99a64fc5743e0cfe7ab2c984c5e42e1c0e7ad68fcf3b77"
     }
   ]
 }
