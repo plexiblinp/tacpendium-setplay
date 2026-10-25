@@ -8,6 +8,8 @@ const mv = (code: string, nameJa: string, srk: string): Move => ({
   code,
   category: "normal",
   damage: 300,
+  onHit: null,
+  onBlock: null,
   notation: { nameJa, nameEn: code.toUpperCase(), srk, numeric: `n:${code}` },
 });
 const moves = indexMoves([mv("a", "弱P", "cr.LP"), mv("b", "波動拳", "236P")]);
