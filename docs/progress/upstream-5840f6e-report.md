@@ -112,7 +112,9 @@ $ PW_CHROMIUM_PATH=/opt/pw-browsers/chromium-1194/chrome-linux/chrome pnpm exec 
 - `upstream/tacpendium.lock` → `ebd2768`。
 - moves DB: main のデータ（取り込み前）を `-prev` にして作り直し、版が変わったキャラ（キンバリー・アルジュン）の `dataVersion` を `ebd2768` にした。差分は `index.json`・`kimberly.json`・`arjun.json` の版の文字列だけ（7 行）。
   - ほかの 30 キャラの `dataVersion` は前の値 `ffdb69e…`（旧 v0.2.0）のまま残る。キャラごとの版は計算に効く中身が変わったときだけ上がる決まり（`docs/data/moves-db.md`）で、中身は変わっていないため。**`ffdb69e` は書き換え後の `acab5f9`（v0.2.0）と同じ中身**。そのキャラのデータが次に変わったときに新しい SHA になる。
-- 本家の正解: `ebd2768` で作り直し、コミット済みのものと `cmp` で比べる（結果は次のコミットで追記）。
+- 本家の正解: `ebd2768` で作り直し、コミット済みのものと 1 バイトも違わないことを確かめた。
+  `bash scripts/upstream-oracle/run.sh <tmp>` → EXIT=0（`TestStandaloneOracle` PASS）、`cmp engine/testdata/upstream_oracle.json <tmp>` → 0（一致）。
+  その後 `go test -count=1 ./engine/ ./internal/movesdb/ ./cmd/movesdb/` → EXIT=0（3 パッケージ ok）、`pnpm assets`・`pnpm build` → EXIT=0・違反 0 件。
 - verify-plan: 中身の同じ lock の付け替えなので `ack --none`。
 
 ## 残課題・次への入力
