@@ -80,6 +80,8 @@ CSV に無く本家 DB が seed する技（移動系 9 code・`drive_reversal`�
 
 本家の生成器が表記を作れない技（command が空の派生・語彙外・CSV に無い技等）は、`numeric` = `nameJa`、`srk` = `nameEn` にする。
 
+公開版 v0.3.0（本家の M43-05）から、生成器そのものが**ターゲットコンボを段ごとに `~` でつなぎ末尾に `(TC)`**（numeric `5MP~5HP(TC)`・SRK `st.MP~st.HP (TC)`。以前は `MP>HP`）、**空中から出す技に `j.`（垂直ジャンプ `nj.`・ハイジャンプ `hj.`）**を付ける。そのため、以前は被って区別印で分けていた組の一部は、印が要らなくなった（例 `2HP (しゃがみ強P)` → `2HP`。空中の版が `j.2HP` になったため）。
+
 ### 区別印（D9・HANDOVER §4.3）
 
 本家は表記の逆引きのため、同じキャラで同じ表記になる技の 1 つだけに表記を残す。単体版は逆引きしないので全技に表記を付け、
@@ -93,7 +95,7 @@ CSV に無く本家 DB が seed する技（移動系 9 code・`drive_reversal`�
 
 ### 検査（違反があれば生成も CI も赤）
 
-- 31 キャラ・形どおり（未知のキーは読込で誤り。型が持つキーの欠けも、入れ子・配列の要素・index.json まで含めて誤り）・`state` が `states` にある・`dataVersion` が 40 桁の 16 進（キャラごとの版。中身が変わったキャラが lock になることは `TestCarryDataVersions` が見る）・`index.json` の先頭の `dataVersion` = lock・各キャラの版・sha256・技数・指紋が中身と一致
+- 32 キャラ（`ExpectedCharacterCount`。2026-10 のアルジュンで 31 → 32）・形どおり（未知のキーは読込で誤り。型が持つキーの欠けも、入れ子・配列の要素・index.json まで含めて誤り）・`state` が `states` にある・`dataVersion` が 40 桁の 16 進（キャラごとの版。中身が変わったキャラが lock になることは `TestCarryDataVersions` が見る）・`index.json` の先頭の `dataVersion` = lock・各キャラの版・sha256・技数・指紋が中身と一致
 - **全技が 4 表記を持つ**（空・空白だけは不可）
 - **同一キャラ × 同一表記種で、表示文字列が完全一致する技が 0 件**
 - `originalMove`・`parents` が同じキャラの実在の技を指す
