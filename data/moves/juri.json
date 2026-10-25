@@ -817,8 +817,8 @@
       "notation": {
         "nameJa": "垂直ジャンプ強K",
         "nameEn": "Heavy Neutral Jumping Kick",
-        "srk": "HK",
-        "numeric": "HK"
+        "srk": "nj.HK",
+        "numeric": "nj.HK"
       },
       "calcFingerprint": "a20de9a74d770c30"
     },
@@ -1209,8 +1209,8 @@
       "notation": {
         "nameJa": "OD風破刃",
         "nameEn": "OD Fuhajin",
-        "srk": "214K+K (fuhajin)",
-        "numeric": "214K+K (OD風破刃)"
+        "srk": "214K+K",
+        "numeric": "214K+K"
       },
       "calcFingerprint": "3bbceca386e794ac"
     },
@@ -1603,8 +1603,8 @@
       "notation": {
         "nameJa": "OD疾空閃",
         "nameEn": "OD Shiku Sen",
-        "srk": "214K+K (shiku sen)",
-        "numeric": "214K+K (OD疾空閃)"
+        "srk": "j.214K+K",
+        "numeric": "j.214K+K"
       },
       "calcFingerprint": "69a627314778bf89"
     },
@@ -1633,8 +1633,8 @@
       "notation": {
         "nameJa": "疾空閃",
         "nameEn": "Shiku Sen",
-        "srk": "214K",
-        "numeric": "214K"
+        "srk": "j.214K",
+        "numeric": "j.214K"
       },
       "calcFingerprint": "f4f33e9b4ef902e4"
     },
@@ -1885,8 +1885,8 @@
       "notation": {
         "nameJa": "死紋蹴",
         "nameEn": "Death Crest",
-        "srk": "MP>4HP>HP",
-        "numeric": "MP>4HP>HP"
+        "srk": "st.MP~4HP~st.HP (TC)",
+        "numeric": "5MP~4HP~5HP(TC)"
       },
       "calcFingerprint": "09af9360d8827c6f"
     },

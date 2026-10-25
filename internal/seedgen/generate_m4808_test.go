@@ -1,18 +1,22 @@
 package seedgen
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 	"testing"
+
+	"github.com/plexiblinp/tacpendium-setplay/internal/migrationpin"
 )
 
 // M48-08(CHANGE-256)の生成器テスト。
 //
 //   - 規則: 派生技も層 A ／ 被ったら優先の 1 つだけ残す(派生でない技 → 派生技 → CSV の行順)
 //   - 不変条件: 旧規則で作っていた行は、新しい規則でも 1 行も変わらない(今出ている表記が消えない)
-//   - 生成物: 差分マイグレ 000012 と被りの表 internal/aliascollision/table_gen.go が生成器の出力と一致する
+//   - 生成物: 差分マイグレ 000012 がリポジトリに在る(★M43-07 以降、固定済みなので今の CSV と照らさない＝
+//     assertGeneratedMigration)。被りの表 internal/aliascollision/table_gen.go は TestM4305_CollisionTableIsGenerated
 
 const m4808Stem = "000012_data_preset_aliases_derived_priority"
 
@@ -43,8 +47,8 @@ func readAllCharacterRows(t *testing.T) ([]string, map[string][]MoveRow) {
 		order = append(order, code)
 		rowsByChar[code] = rows
 	}
-	if len(order) != 31 {
-		t.Fatalf("CSV のキャラ数 = %d, want 31", len(order))
+	if len(order) != 32 {
+		t.Fatalf("CSV のキャラ数 = %d, want 32", len(order))
 	}
 	return order, rowsByChar
 }
@@ -83,6 +87,8 @@ func TestM4808_DerivedMoveGetsLayerA(t *testing.T) {
 // TestM4808_CollisionKeepsPrior は被ったら優先の 1 つだけ残ることを固定する(開発者決定 D-1037 ／ Plan §9.4-1)。
 func TestM4808_CollisionKeepsPrior(t *testing.T) {
 	t.Run("非派生どうしは CSV の行順で先が残る", func(t *testing.T) {
+		// ★合成の fixture(is_aerial を立てていない)。実データのフライングボディプレスは is_aerial=1 であり、
+		//   M43-05 以降は `j.2HP` になってしゃがみ強P と被らない。本テストは優先の規則だけを見る。
 		rows := withIndex(
 			mkRow("zangief", "crouching_heavy_punch", "normal", "しゃがみ強P", "d plus p_h", false),
 			mkRow("zangief", "flying_body_press", "unique", "フライングボディプレス", "d plus p_h", false),
@@ -158,7 +164,7 @@ func TestM4808_CollisionKeepsPrior(t *testing.T) {
 }
 
 // TestM4808_ExistingRowsSurvive は「旧規則で作っていた行は、新しい規則でも同じ表記で残る」を
-// 実データの全 31 キャラ × numeric ・srk で固定する(M48-08 §3.3-1 (c)＝今出ている表記が消えるボタン 0 の根拠)。
+// 実データの全 32 キャラ × numeric ・srk で固定する(M48-08 §3.3-1 (c)＝今出ている表記が消えるボタン 0 の根拠)。
 func TestM4808_ExistingRowsSurvive(t *testing.T) {
 	order, rows := readAllCharacterRows(t)
 	for _, rule := range []AliasPresetRule{NumericRule, SRKRule} {
@@ -166,7 +172,9 @@ func TestM4808_ExistingRowsSurvive(t *testing.T) {
 		if err != nil {
 			t.Fatalf("旧規則: %v", err)
 		}
-		newRes, err := GenerateAliases(rule, order, rows, order, AliasHeader("m", "m"))
+		// ★M43-05 以降、「新しい規則」は M48-08 の規則を凍結した FormatPreM4305 を指す
+		//   (FormatCurrent はターゲットコンボ ・空中の技の表記を変える＝TestM4305_*)。
+		newRes, err := GenerateAliases(rule, order, rows, order, AliasHeader("m", "m"), WithFormat(FormatPreM4305))
 		if err != nil {
 			t.Fatalf("新しい規則: %v", err)
 		}
@@ -187,7 +195,7 @@ func TestM4808_ExistingRowsSurvive(t *testing.T) {
 	}
 }
 
-// TestM4808_GenerationMeasurements は新しい規則の実測値(全 31 キャラ)を固定する。
+// TestM4808_GenerationMeasurements は新しい規則の実測値(全 32 キャラ)を固定する。
 //
 // ★投入行と非投入行を対で固定する(SUPP-001 §5.5.2 (3))。旧規則の実測は
 // TestM2002_GenerationMeasurements ・TestFourthWave_GenerationMeasurements(FormatPreM4808)。
@@ -200,21 +208,21 @@ func TestM4808_GenerationMeasurements(t *testing.T) {
 		derivedNoCommand, noCommand, indexSkip int
 		rushOrigUnfilled                       int
 	}{
-		{rule: NumericRule, oldRows: 1996, newRows: 2356, added: 360,
-			collision: 344, collisionGroups: 243, droppedSum: 335,
-			derivedNoCommand: 20, noCommand: 6, indexSkip: 5, rushOrigUnfilled: 12},
+		{rule: NumericRule, oldRows: 2065, newRows: 2429, added: 364,
+			collision: 347, collisionGroups: 245, droppedSum: 338,
+			derivedNoCommand: 20, noCommand: 14, indexSkip: 5, rushOrigUnfilled: 12},
 		// ★srk は numeric の移動系の表記(4 ・6 ・66 ・8 等)を予約するため、派生技 7 行と
 		//   その DR 版 3 行が作られない(Plan 未決 5 の開発者決定)。
-		{rule: SRKRule, oldRows: 2024, newRows: 2371, added: 347,
-			collision: 330, collisionGroups: 229, droppedSum: 321,
-			derivedNoCommand: 20, noCommand: 6, indexSkip: 5, rushOrigUnfilled: 11},
+		{rule: SRKRule, oldRows: 2093, newRows: 2444, added: 351,
+			collision: 333, collisionGroups: 231, droppedSum: 324,
+			derivedNoCommand: 20, noCommand: 14, indexSkip: 5, rushOrigUnfilled: 11},
 	} {
 		t.Run(tc.rule.PresetCode, func(t *testing.T) {
 			oldRes, err := GenerateAliases(tc.rule, order, rows, order, AliasHeader("m", "m"), WithFormat(FormatPreM4808))
 			if err != nil {
 				t.Fatal(err)
 			}
-			res, err := GenerateAliases(tc.rule, order, rows, order, AliasHeader("m", "m"))
+			res, err := GenerateAliases(tc.rule, order, rows, order, AliasHeader("m", "m"), WithFormat(FormatPreM4305))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -281,8 +289,14 @@ func renderDeltaMigration(t *testing.T) (string, string) {
 }
 
 // assertGenerated は生成物とコミット済みのファイルの一致を見る(TACPENDIUM_UPDATE_GOLDEN=1 で書く)。
+//
+// ★★書き先が固定の一覧(internal/migrationpin/applied.sha256)に載るファイルなら、照らさず書かずに止める(M43-07)。
+// ⇒ 差分マイグレは assertGeneratedMigration を通すこと。本関数を直接使うのは被りの表のようなマイグレでない生成物だけ。
 func assertGenerated(t *testing.T, path, want string) {
 	t.Helper()
+	if loadPins(t).Has(filepath.Base(path)) {
+		t.Fatalf("%s は固定済みのマイグレである。照らし合わせも出し直しもしない。\n%s", path, migrationpin.Guidance)
+	}
 	if os.Getenv(goldenUpdateEnv) != "" {
 		if err := os.WriteFile(path, []byte(want), 0o644); err != nil {
 			t.Fatalf("write %s: %v", path, err)
@@ -300,31 +314,92 @@ func assertGenerated(t *testing.T, path, want string) {
 	}
 }
 
-// TestM4808_DeltaMigrationIsGenerated は差分マイグレ 000012 が生成器の出力と byte 一致することを固定する。
-//
-// ★★本ファイルは適用済みになったら改変してはならない(SUPP-001 §5.5.4)。⇒ CSV を直した後に
-// 本テストが赤くなったら、000012 を書き換えるのではなく新しい連番の差分マイグレを起こすこと。
-func TestM4808_DeltaMigrationIsGenerated(t *testing.T) {
-	up, down := renderDeltaMigration(t)
-	dir := filepath.Join(repoRoot(t), "migrations")
-	assertGenerated(t, filepath.Join(dir, m4808Stem+".up.sql"), up)
-	assertGenerated(t, filepath.Join(dir, m4808Stem+".down.sql"), down)
+func loadPins(t *testing.T) migrationpin.Manifest {
+	t.Helper()
+	m, err := migrationpin.Load()
+	if err != nil {
+		t.Fatalf("固定の一覧を読めない: %v", err)
+	}
+	return m
 }
 
-// TestM4808_CollisionTableIsGenerated は取込の被りの表が生成器の出力と一致することを固定する。
-func TestM4808_CollisionTableIsGenerated(t *testing.T) {
-	order, rows := readAllCharacterRows(t)
-	results := map[string]*AliasResult{}
-	for _, rule := range []AliasPresetRule{NumericRule, SRKRule} {
-		res, err := GenerateAliases(rule, order, rows, order, AliasHeader("m", "m"))
-		if err != nil {
-			t.Fatal(err)
-		}
-		results[rule.PresetCode] = res
-	}
-	src, err := RenderCollisionTable(results)
-	if err != nil {
-		t.Fatal(err)
-	}
-	assertGenerated(t, filepath.Join(repoRoot(t), "internal", "aliascollision", "table_gen.go"), src)
+// generatedMigrationResult は syncGeneratedMigration の結果。
+type generatedMigrationResult struct {
+	pinned   bool     // 固定済みだったか(＝今の CSV と照らさなかったか)
+	wrote    []string // 書いたファイル
+	problems []string // 赤にする理由
 }
+
+// syncGeneratedMigration は差分マイグレ(stem の up / down)を、固定の一覧に載っているかで分けて扱う(M43-07 指示書 §1.2)。
+//
+//	固定済み … 在ることだけを確かめる。render(今の CSV の読み込み)を呼ばない。update でも書かない。
+//	未固定   … render の出力と byte 一致で照らす。update なら書く(作業中のサブのものだけが出し直せる)。
+func syncGeneratedMigration(dir, stem string, pins migrationpin.Manifest, update bool,
+	render func() (up, down string)) generatedMigrationResult {
+	var res generatedMigrationResult
+	paths := [2]string{filepath.Join(dir, stem+".up.sql"), filepath.Join(dir, stem+".down.sql")}
+	if pins.Has(stem+".up.sql") || pins.Has(stem+".down.sql") {
+		res.pinned = true
+		if !pins.Pinned(stem) {
+			res.problems = append(res.problems, fmt.Sprintf("%s: up と down の片方だけが固定の一覧に載っている", stem))
+		}
+		for _, p := range paths {
+			if _, err := os.Stat(p); err != nil {
+				res.problems = append(res.problems, fmt.Sprintf("%s: 固定済みなのにファイルが無い: %v", p, err))
+			}
+		}
+		return res
+	}
+	up, down := render()
+	for i, want := range [2]string{up, down} {
+		p := paths[i]
+		if update {
+			if err := os.WriteFile(p, []byte(want), 0o644); err != nil {
+				res.problems = append(res.problems, fmt.Sprintf("write %s: %v", p, err))
+				continue
+			}
+			res.wrote = append(res.wrote, p)
+			continue
+		}
+		got, err := os.ReadFile(p)
+		if err != nil {
+			res.problems = append(res.problems, fmt.Sprintf("read %s: %v (★未固定なので %s=1 で生成できる)", p, err, goldenUpdateEnv))
+			continue
+		}
+		if string(got) != want {
+			res.problems = append(res.problems, fmt.Sprintf("%s が生成器の出力と不一致。CSV 正本と規則のどちらが変わったかを特定してから "+
+				"%s=1 go test ./internal/seedgen/ -run <このテスト> で出し直すこと(未固定＝作業中のサブのものだけ)", p, goldenUpdateEnv))
+		}
+	}
+	return res
+}
+
+// assertGeneratedMigration は syncGeneratedMigration を migrations/ と埋め込みの固定の一覧で回す。
+func assertGeneratedMigration(t *testing.T, stem string, render func() (up, down string)) {
+	t.Helper()
+	res := syncGeneratedMigration(filepath.Join(repoRoot(t), "migrations"), stem, loadPins(t),
+		os.Getenv(goldenUpdateEnv) != "", render)
+	for _, p := range res.problems {
+		t.Error(p)
+	}
+	switch {
+	case res.pinned:
+		t.Logf("%s は固定済み(適用済み)。在ることだけを確かめ、今の CSV と照らさない・出し直さない(中身は sha256 が守る)", stem)
+	case len(res.wrote) > 0:
+		t.Logf("生成物を更新(未固定): %s ／ ★完了報告の前に %s へ sha256 を足すこと", strings.Join(res.wrote, ", "), migrationpin.ManifestPath)
+	}
+}
+
+// TestM4808_DeltaMigrationIsGenerated は差分マイグレ 000012 を固定の一覧の基準で扱う(M43-07)。
+//
+// ★★000012 は固定済み(適用済み)である。⇒ 在ることだけを確かめ、今の CSV から作り直して照らさない。
+// 中身は internal/migrationpin の sha256 が守る。CSV を直して生成器の出力が変わっても、000012 は書き換えず、
+// 新しい連番の差分マイグレを起こすこと(character_data/seed-progress.md)。
+// ★失われる主張＝「000012 が今の CSV ＋ FormatPreM4305 で再現できる」(M43-07 完了報告 §失われる主張)。
+func TestM4808_DeltaMigrationIsGenerated(t *testing.T) {
+	assertGeneratedMigration(t, m4808Stem, func() (string, string) { return renderDeltaMigration(t) })
+}
+
+// ★【M43-05】取込の被りの表(internal/aliascollision/table_gen.go)は今の規則(FormatCurrent)の出力であり、
+// TestM4305_CollisionTableIsGenerated が生成 ・固定する。M48-08 の規則で出した表は 000012 と一緒に凍結しない
+// (取込が引くのは今の組み込みの行と一致する表だけである)。

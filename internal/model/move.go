@@ -53,6 +53,13 @@ const (
 	//   isApproachMove。開発者の回答＝前ステップ ／ 前ジャンプ ／ ラッシュから出す技＝D-1005)。
 	//   後ろステップ(dash_back)は接近に数えない(D-1007)。
 	MoveCodeDashForward = "dash_forward"
+
+	// MoveCodeJumpNeutral は垂直ジャンプ(移動 system 技。全キャラに 1 行ずつ在る)。
+	//
+	// ★M43-13: 確定反撃サーチの jump レーンから新規登録するとき、垂直ジャンプの攻撃
+	//   (code が neutral_jumping_ で始まる始動技)の前へ置く移動として、画面が名指しする
+	//   (FE 側 web/src/features/combo/lockedLead.ts)。BE は名指ししない(FE と 1:1 で同期するために置く)。
+	MoveCodeJumpNeutral = "jump_neutral"
 )
 
 // startup_basis の値域(DES-003 §3.3、M19-DESIGN-07 §3)。

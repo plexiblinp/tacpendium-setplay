@@ -991,8 +991,8 @@
       "notation": {
         "nameJa": "フリッカーコンビネーション(2発止め)",
         "nameEn": "Flicker Combination (2 hits)",
-        "srk": "LK>LK",
-        "numeric": "LK>LK"
+        "srk": "st.LK~st.LK (TC)",
+        "numeric": "5LK~5LK(TC)"
       },
       "calcFingerprint": "6456c672eda63daa"
     },
@@ -1019,8 +1019,8 @@
       "notation": {
         "nameJa": "フリッカーコンビネーション",
         "nameEn": "Flicker Combination",
-        "srk": "LK>LK>LK",
-        "numeric": "LK>LK>LK"
+        "srk": "st.LK~st.LK~st.LK (TC)",
+        "numeric": "5LK~5LK~5LK(TC)"
       },
       "calcFingerprint": "e9d73b04cb59d682"
     },
@@ -1047,8 +1047,8 @@
       "notation": {
         "nameJa": "ボディブローコンビネーション",
         "nameEn": "Body Blow Combination",
-        "srk": "MP>HP",
-        "numeric": "MP>HP"
+        "srk": "st.MP~st.HP (TC)",
+        "numeric": "5MP~5HP(TC)"
       },
       "calcFingerprint": "f8c26bdead1c72a2"
     },
@@ -1075,8 +1075,8 @@
       "notation": {
         "nameJa": "ヒットマンコンビネーション(2発止め)",
         "nameEn": "Hitman Combination (2 hits)",
-        "srk": "MK>MK",
-        "numeric": "MK>MK"
+        "srk": "st.MK~st.MK (TC)",
+        "numeric": "5MK~5MK(TC)"
       },
       "calcFingerprint": "cb3d90051950e414"
     },
@@ -1103,8 +1103,8 @@
       "notation": {
         "nameJa": "ヒットマンコンビネーション",
         "nameEn": "Hitman Combination",
-        "srk": "MK>MK>HP",
-        "numeric": "MK>MK>HP"
+        "srk": "st.MK~st.MK~st.HP (TC)",
+        "numeric": "5MK~5MK~5HP(TC)"
       },
       "calcFingerprint": "6bb6d8a8e88b705e"
     },
@@ -1131,8 +1131,8 @@
       "notation": {
         "nameJa": "ロースマッシュコンビネーション",
         "nameEn": "Low Smash Combination",
-        "srk": "2HK>HP",
-        "numeric": "2HK>HP"
+        "srk": "cr.HK~st.HP (TC)",
+        "numeric": "2HK~5HP(TC)"
       },
       "calcFingerprint": "cd9a286b70e537ab"
     },

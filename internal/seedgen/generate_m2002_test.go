@@ -161,6 +161,8 @@ func TestAliases_LayerB_IncompleteFormFallsThrough(t *testing.T) {
 		// 接頭辞あり・パーツ数が 3 → 層 B 不成立。command が無く派生 → 埋めない。
 		mkRow("zangief", "standing_light_punch_rapid", "normal", "立ち弱P連打", "", true),
 	}
+	// ★terry/jumping_knee は M43-05 の除外表に在る(名前に jumping を含むが地上の技＝開発者決定)ため、
+	//   今の規則でも `j.` は付かない。
 	res := genOne(t, NumericRule, "terry", rows[:1])
 	got, ok := aliasOf(res, "jumping_knee")
 	if !ok {

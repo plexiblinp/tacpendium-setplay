@@ -42,6 +42,7 @@
     "latest": "Updated {{date}}: {{text}}",
     "title": "Recent updates (last {{n}})",
     "items": {
+      "arjun": "Added Arjun. Target combo (5MP~5HP(TC)) and airborne move (j.) notation now matches Tacpendium",
       "meatyAdvantage": "Meaty suggestions now show frame advantage on block/hit. Click the site name to reset the conditions"
     }
   },

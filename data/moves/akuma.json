@@ -544,7 +544,7 @@
         "nameJa": "しゃがみ中K",
         "nameEn": "Crouching Medium Kick",
         "srk": "cr.MK",
-        "numeric": "2MK (しゃがみ中K)"
+        "numeric": "2MK"
       },
       "calcFingerprint": "3589a66cf65589ae"
     },
@@ -991,8 +991,8 @@
       "notation": {
         "nameJa": "六腑穿ち",
         "nameEn": "Viscera Piercer",
-        "srk": "MP>MP",
-        "numeric": "MP>MP"
+        "srk": "st.MP~st.MP (TC)",
+        "numeric": "5MP~5MP(TC)"
       },
       "calcFingerprint": "174777232f71484d"
     },
@@ -1019,8 +1019,8 @@
       "notation": {
         "nameJa": "骸斬り",
         "nameEn": "Bone Crusher Axe Kick",
-        "srk": "MK>HK",
-        "numeric": "MK>HK"
+        "srk": "st.MK~st.HK (TC)",
+        "numeric": "5MK~5HK(TC)"
       },
       "calcFingerprint": "21e8d519ad41688e"
     },
@@ -1075,8 +1075,8 @@
       "notation": {
         "nameJa": "鬼哭連撃(2発止め)",
         "nameEn": "Kikoku Combination (2 hits)",
-        "srk": "6HP>6HP",
-        "numeric": "6HP>6HP"
+        "srk": "6HP~6HP (TC)",
+        "numeric": "6HP~6HP(TC)"
       },
       "calcFingerprint": "fa630c325f9b459e"
     },
@@ -1103,8 +1103,8 @@
       "notation": {
         "nameJa": "鬼哭連撃",
         "nameEn": "Kikoku Combination",
-        "srk": "6HP>6HP>HK",
-        "numeric": "6HP>6HP>HK"
+        "srk": "6HP~6HP~st.HK (TC)",
+        "numeric": "6HP~6HP~5HK(TC)"
       },
       "calcFingerprint": "98584fd829b2a19d"
     },
@@ -1133,8 +1133,8 @@
       "notation": {
         "nameJa": "天魔空刃脚",
         "nameEn": "Tenmaku Blade Kick",
-        "srk": "2MK",
-        "numeric": "2MK (天魔空刃脚)"
+        "srk": "j.2MK",
+        "numeric": "j.2MK"
       },
       "calcFingerprint": "458e45aba538354f"
     },
@@ -1161,8 +1161,8 @@
       "notation": {
         "nameJa": "弱豪波動拳",
         "nameEn": "Light Gou Hadoken",
-        "srk": "236LP (gou)",
-        "numeric": "236LP (弱豪波動拳)"
+        "srk": "236LP",
+        "numeric": "236LP"
       },
       "calcFingerprint": "9717cc3676609729"
     },
@@ -1189,8 +1189,8 @@
       "notation": {
         "nameJa": "中豪波動拳",
         "nameEn": "Medium Gou Hadoken",
-        "srk": "236MP (gou)",
-        "numeric": "236MP (中豪波動拳)"
+        "srk": "236MP",
+        "numeric": "236MP"
       },
       "calcFingerprint": "18c9d76a6411df28"
     },
@@ -1217,8 +1217,8 @@
       "notation": {
         "nameJa": "強豪波動拳",
         "nameEn": "Heavy Gou Hadoken",
-        "srk": "236HP (gou)",
-        "numeric": "236HP (強豪波動拳)"
+        "srk": "236HP",
+        "numeric": "236HP"
       },
       "calcFingerprint": "be6bf7f600f9def8"
     },
@@ -1245,8 +1245,8 @@
       "notation": {
         "nameJa": "OD豪波動拳",
         "nameEn": "OD Gou Hadoken",
-        "srk": "236P+P (gou)",
-        "numeric": "236P+P (OD豪波動拳)"
+        "srk": "236P+P",
+        "numeric": "236P+P"
       },
       "calcFingerprint": "945ba3c543a09160"
     },
@@ -1469,8 +1469,8 @@
       "notation": {
         "nameJa": "弱斬空波動拳",
         "nameEn": "Light Zanku Hadoken",
-        "srk": "236LP (zanku)",
-        "numeric": "236LP (弱斬空波動拳)"
+        "srk": "j.236LP",
+        "numeric": "j.236LP"
       },
       "calcFingerprint": "4f4ce37ba78f20de"
     },
@@ -1497,8 +1497,8 @@
       "notation": {
         "nameJa": "中斬空波動拳",
         "nameEn": "Medium Zanku Hadoken",
-        "srk": "236MP (zanku)",
-        "numeric": "236MP (中斬空波動拳)"
+        "srk": "j.236MP",
+        "numeric": "j.236MP"
       },
       "calcFingerprint": "2ed18cf04c28739c"
     },
@@ -1525,8 +1525,8 @@
       "notation": {
         "nameJa": "強斬空波動拳",
         "nameEn": "Heavy Zanku Hadoken",
-        "srk": "236HP (zanku)",
-        "numeric": "236HP (強斬空波動拳)"
+        "srk": "j.236HP",
+        "numeric": "j.236HP"
       },
       "calcFingerprint": "dc24946d4bb61d0b"
     },
@@ -1553,8 +1553,8 @@
       "notation": {
         "nameJa": "OD斬空波動拳",
         "nameEn": "OD Zanku Hadoken",
-        "srk": "236P+P (zanku)",
-        "numeric": "236P+P (OD斬空波動拳)"
+        "srk": "j.236P+P",
+        "numeric": "j.236P+P"
       },
       "calcFingerprint": "7e57a799483c22ab"
     },
@@ -2575,8 +2575,8 @@
       "notation": {
         "nameJa": "百鬼豪斬空",
         "nameEn": "Demon Gou Zanku",
-        "srk": "236P",
-        "numeric": "236P"
+        "srk": "j.236P",
+        "numeric": "j.236P"
       },
       "calcFingerprint": "c609ec1aaf3f82b7"
     },
@@ -2750,8 +2750,8 @@
       "notation": {
         "nameJa": "SA1 天魔豪斬空",
         "nameEn": "SA1 Tenma Gozanku",
-        "srk": "236236K (SA1)",
-        "numeric": "236236K (SA1)"
+        "srk": "j.236236K (SA1)",
+        "numeric": "j.236236K (SA1)"
       },
       "calcFingerprint": "0f665ad138803ffc"
     },

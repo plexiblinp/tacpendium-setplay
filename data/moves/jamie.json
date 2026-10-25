@@ -1034,8 +1034,8 @@
       "notation": {
         "nameJa": "幻酔舞",
         "nameEn": "Phantom Sway",
-        "srk": "2HK>HK",
-        "numeric": "2HK>HK"
+        "srk": "cr.HK~st.HK (TC)",
+        "numeric": "2HK~5HK(TC)"
       },
       "calcFingerprint": "e2bb8465af8dbbae"
     },
@@ -1062,8 +1062,8 @@
       "notation": {
         "nameJa": "幻酔舞(飲酒)",
         "nameEn": "Phantom Sway (Drink)",
-        "srk": "2HK>HK>P",
-        "numeric": "2HK>HK>P (飲酒)"
+        "srk": "cr.HK~st.HK~st.P (TC)",
+        "numeric": "2HK~5HK~5P(TC) (飲酒)"
       },
       "calcFingerprint": "43dcadbe4989ffd5"
     },
@@ -1090,8 +1090,8 @@
       "notation": {
         "nameJa": "幻酔舞(飲酒 / 酔いLv4到達)",
         "nameEn": "Phantom Sway Drink and Reach Drink Lv4",
-        "srk": "2HK>HK>P (drink and reach Lv4)",
-        "numeric": "2HK>HK>P (飲酒 / 酔いLv4到達)"
+        "srk": "cr.HK~st.HK~st.P (TC) (drink and reach Lv4)",
+        "numeric": "2HK~5HK~5P(TC) (飲酒 / 酔いLv4到達)"
       },
       "calcFingerprint": "d6c1f9057afd3ea7"
     },
@@ -1118,8 +1118,8 @@
       "notation": {
         "nameJa": "鋭鍾打(2発止め)",
         "nameEn": "Bitter Strikes (2 hits)",
-        "srk": "LP>LK",
-        "numeric": "LP>LK"
+        "srk": "st.LP~st.LK (TC)",
+        "numeric": "5LP~5LK(TC)"
       },
       "calcFingerprint": "bb84b0e0e323c4ae"
     },
@@ -1146,8 +1146,8 @@
       "notation": {
         "nameJa": "鋭鍾打",
         "nameEn": "Bitter Strikes",
-        "srk": "LP>LK>MP",
-        "numeric": "LP>LK>MP"
+        "srk": "st.LP~st.LK~st.MP (TC)",
+        "numeric": "5LP~5LK~5MP(TC)"
       },
       "calcFingerprint": "bece6109770a9e9f"
     },
@@ -1174,8 +1174,8 @@
       "notation": {
         "nameJa": "円月脚",
         "nameEn": "Full Moon Kick",
-        "srk": "6MK>MK",
-        "numeric": "6MK>MK"
+        "srk": "6MK~st.MK (TC)",
+        "numeric": "6MK~5MK(TC)"
       },
       "calcFingerprint": "fdd2b50891c639c5"
     },
@@ -1202,8 +1202,8 @@
       "notation": {
         "nameJa": "円月脚(飲酒)",
         "nameEn": "Full Moon Kick (Drink)",
-        "srk": "6MK>MK>P",
-        "numeric": "6MK>MK>P (飲酒)"
+        "srk": "6MK~st.MK~st.P (TC)",
+        "numeric": "6MK~5MK~5P(TC) (飲酒)"
       },
       "calcFingerprint": "47398840638498ac"
     },
@@ -1230,8 +1230,8 @@
       "notation": {
         "nameJa": "円月脚(飲酒 / 酔いLv4到達)",
         "nameEn": "Full Moon Kick Drink and Reach Drink Lv4",
-        "srk": "6MK>MK>P (drink and reach Lv4)",
-        "numeric": "6MK>MK>P (飲酒 / 酔いLv4到達)"
+        "srk": "6MK~st.MK~st.P (TC) (drink and reach Lv4)",
+        "numeric": "6MK~5MK~5P(TC) (飲酒 / 酔いLv4到達)"
       },
       "calcFingerprint": "6f72e1a8def930f8"
     },
@@ -1398,8 +1398,8 @@
       "notation": {
         "nameJa": "[酔いレベル3]酩酊襲(2発止め)",
         "nameEn": "[Drink Level 3] Intoxicated Assault (2 hits)",
-        "srk": "4HP>HP",
-        "numeric": "4HP>HP"
+        "srk": "4HP~st.HP (TC)",
+        "numeric": "4HP~5HP(TC)"
       },
       "calcFingerprint": "2defff638dbe075a"
     },
@@ -1426,8 +1426,8 @@
       "notation": {
         "nameJa": "[酔いレベル3]酩酊襲",
         "nameEn": "[Drink Level 3] Intoxicated Assault",
-        "srk": "4HP>HP>HK",
-        "numeric": "4HP>HP>HK"
+        "srk": "4HP~st.HP~st.HK (TC)",
+        "numeric": "4HP~5HP~5HK(TC)"
       },
       "calcFingerprint": "865c0daa72d971be"
     },
@@ -1456,8 +1456,8 @@
       "notation": {
         "nameJa": "[酔いレベル4]乱酔旋(2段目/後退)",
         "nameEn": "[Drink Level 4] Ransui Haze 2 Retreat",
-        "srk": "6HK>4HK",
-        "numeric": "6HK>4HK"
+        "srk": "6HK~4HK (TC)",
+        "numeric": "6HK~4HK(TC)"
       },
       "calcFingerprint": "9e8cd27c2663f10e"
     },
@@ -1486,8 +1486,8 @@
       "notation": {
         "nameJa": "[酔いレベル4]乱酔旋(3段目/即時)",
         "nameEn": "[Drink Level 4] Ransui Haze 3 Immediate",
-        "srk": "6HK>4HK>P (immediate)",
-        "numeric": "6HK>4HK>P (3段目/即時)"
+        "srk": "6HK~4HK~st.P (TC) (immediate)",
+        "numeric": "6HK~4HK~5P(TC) (3段目/即時)"
       },
       "calcFingerprint": "ebfd9648a4b02c10"
     },
@@ -2512,8 +2512,8 @@
       "notation": {
         "nameJa": "弱無影蹴",
         "nameEn": "Light Luminous Dive Kick",
-        "srk": "214LK",
-        "numeric": "214LK"
+        "srk": "j.214LK",
+        "numeric": "j.214LK"
       },
       "calcFingerprint": "70878f9d1502bb96"
     },
@@ -2542,8 +2542,8 @@
       "notation": {
         "nameJa": "中無影蹴",
         "nameEn": "Medium Luminous Dive Kick",
-        "srk": "214MK",
-        "numeric": "214MK"
+        "srk": "j.214MK",
+        "numeric": "j.214MK"
       },
       "calcFingerprint": "f32c142fd2b92c18"
     },
@@ -2572,8 +2572,8 @@
       "notation": {
         "nameJa": "強無影蹴",
         "nameEn": "Heavy Luminous Dive Kick",
-        "srk": "214HK",
-        "numeric": "214HK"
+        "srk": "j.214HK",
+        "numeric": "j.214HK"
       },
       "calcFingerprint": "c90576f27c9654cc"
     },
@@ -2602,8 +2602,8 @@
       "notation": {
         "nameJa": "OD無影蹴",
         "nameEn": "OD Luminous Dive Kick",
-        "srk": "214K+K",
-        "numeric": "214K+K"
+        "srk": "j.214K+K",
+        "numeric": "j.214K+K"
       },
       "calcFingerprint": "9f7c127e296af625"
     },
@@ -3320,8 +3320,8 @@
       "notation": {
         "nameJa": "[酔いレベル4]乱酔旋(3段目/ディレイ)",
         "nameEn": "[Drink Level 4] Ransui Haze 3 Delay",
-        "srk": "6HK>4HK>P (delay)",
-        "numeric": "6HK>4HK>P (3段目/ディレイ)"
+        "srk": "6HK~4HK~st.P (TC) (delay)",
+        "numeric": "6HK~4HK~5P(TC) (3段目/ディレイ)"
       },
       "calcFingerprint": "b2f6860d2b53c8ed"
     },
@@ -3350,8 +3350,8 @@
       "notation": {
         "nameJa": "[酔いレベル4]乱酔旋（3段目/後退飲酒）",
         "nameEn": "[Drink Level 4] Ransui Haze 3 Drink While Retreating",
-        "srk": "6HK>4HK>P (drink while retreating)",
-        "numeric": "6HK>4HK>P (3段目/後退飲酒)"
+        "srk": "6HK~4HK~st.P (TC) (drink while retreating)",
+        "numeric": "6HK~4HK~5P(TC) (3段目/後退飲酒)"
       },
       "calcFingerprint": "2621a3d615f6ecc3"
     },

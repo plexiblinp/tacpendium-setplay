@@ -1055,8 +1055,8 @@
       "notation": {
         "nameJa": "上段二連撃",
         "nameEn": "High Double Strike",
-        "srk": "HP>HK",
-        "numeric": "HP>HK"
+        "srk": "st.HP~st.HK (TC)",
+        "numeric": "5HP~5HK(TC)"
       },
       "calcFingerprint": "057c83df93318bf8"
     },
@@ -1083,8 +1083,8 @@
       "notation": {
         "nameJa": "不破三連撃(2発止め)",
         "nameEn": "Fuwa Triple Strike (2 hits)",
-        "srk": "MP>LK",
-        "numeric": "MP>LK"
+        "srk": "st.MP~st.LK (TC)",
+        "numeric": "5MP~5LK(TC)"
       },
       "calcFingerprint": "0156bdd37c3656df"
     },
@@ -1111,8 +1111,8 @@
       "notation": {
         "nameJa": "不破三連撃",
         "nameEn": "Fuwa Triple Strike",
-        "srk": "MP>LK>HK",
-        "numeric": "MP>LK>HK"
+        "srk": "st.MP~st.LK~st.HK (TC)",
+        "numeric": "5MP~5LK~5HK(TC)"
       },
       "calcFingerprint": "fcc187634c1ad5a8"
     },
@@ -1563,8 +1563,8 @@
       "notation": {
         "nameJa": "空中竜巻旋風脚",
         "nameEn": "Aerial Tatsumaki Senpu Kyaku",
-        "srk": "214K",
-        "numeric": "214K"
+        "srk": "j.214K",
+        "numeric": "j.214K"
       },
       "calcFingerprint": "c94f6fbf326a0afa"
     },

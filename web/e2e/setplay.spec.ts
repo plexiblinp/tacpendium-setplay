@@ -70,6 +70,16 @@ test.describe("セットプレイ提案", () => {
     expect(errors).toEqual([]);
   });
 
+  test("アルジュン(公開版 v0.3.0 で追加): 選んで提案が出る", async ({ page }) => {
+    const errors = watchErrors(page);
+    await page.goto("/");
+    await choose(page, "arjun", 40);
+    await page.getByTestId("generate").click();
+    await expect(page.getByTestId("result-row").first()).toBeVisible();
+    await expect(page).toHaveURL(/\?c=arjun&ka=40$/);
+    expect(errors).toEqual([]);
+  });
+
   test("モード(汚連携・有利調整・安全飛び)と絞り込み", async ({ page }) => {
     const errors = watchErrors(page);
     await page.goto("/");

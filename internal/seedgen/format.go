@@ -21,6 +21,8 @@ const (
 	// cmd/seedgen はオプションを渡さないため自動的に本形式になる。
 	// ★M48-08 以降、表記の規則は「派生技も層 A ・被ったら優先の 1 つだけ残す」である
 	// (旧規則は FormatPreM4808)。
+	// ★M43-05 以降、ターゲットコンボは段を `~` でつなぎ末尾に `(TC)` を付け、空中から出す技には
+	// `j.`(垂直ジャンプ `nj.` ／ ハイジャンプ `hj.`)を付ける(旧規則は FormatPreM4305)。
 	FormatCurrent SQLFormat = iota
 
 	// FormatPreM2003 は character_id を含まない旧形式。
@@ -61,6 +63,23 @@ const (
 	//
 	// ★新規生成では使わないこと。使うと派生技の表記が作られず、被った表記が両方とも落ちる。
 	FormatPreM4808
+
+	// FormatPreM4305 は M43-05 より前の表記の規則(＝M48-08 の規則。★SQL の形は FormatCurrent と同じ)。
+	//
+	// M43-05(CHANGE-257・開発者決定 D-1051 と Plan §0)が 2 つの規則を変えた:
+	//   (1) ターゲットコンボは段ごとに通常技の表記を書き `~` でつなぎ、末尾に `(TC)` を付ける
+	//       (numeric `5MP~5HP(TC)` ／ srk `st.MP~st.HP (TC)`。旧＝command の正規化キー `MP>HP`)
+	//   (2) 空中から出す技に `j.` を付ける(垂直ジャンプ `nj.` ／ ハイジャンプ `hj.`)
+	// ⇒ FormatPreM4808 と同じく、旧規則を「当時の生成器の挙動」として名前付きで凍結する。
+	//
+	// ★対象は閉じた集合である:
+	//
+	//	migrations/000012 の差分(FormatPreM4305 − FormatPreM4808)… 000012 を生成したときの規則
+	//	  (★M43-07 以降、000012 は固定済みであり、今の CSV で作り直して照らさない＝internal/migrationpin)
+	//	M43-05 の差分マイグレ(000014)の引き算の基準(＝000008 ＋ 000012 の numeric / srk の行)
+	//
+	// ★新規生成では使わないこと。使うとターゲットコンボが `>` の形になり、空中の技に `j.` が付かない。
+	FormatPreM4305
 )
 
 // includesCharacterID は本形式が preset_aliases へ character_id を出すかを返す。
@@ -76,7 +95,13 @@ func (f SQLFormat) includesNoInputDerived() bool { return f != FormatPreM2003 }
 
 // resolvesDerivedWithPriority は本形式が M48-08 の規則(派生技も層 A ・被ったら優先の
 // 1 つだけ残す)で表記を解決するかを返す(FormatPreM4808 の注記)。
-func (f SQLFormat) resolvesDerivedWithPriority() bool { return f == FormatCurrent }
+func (f SQLFormat) resolvesDerivedWithPriority() bool {
+	return f == FormatCurrent || f == FormatPreM4305
+}
+
+// notatesTargetComboAndAerial は本形式が M43-05 の規則(ターゲットコンボの `~`/`(TC)` ・空中の技の
+// `j.`)で表記を作るかを返す(FormatPreM4305 の注記)。
+func (f SQLFormat) notatesTargetComboAndAerial() bool { return f == FormatCurrent }
 
 // Option は生成の任意設定。可変長で受けるため、既存の呼び出しは無改変で
 // 既定(FormatCurrent)になる。

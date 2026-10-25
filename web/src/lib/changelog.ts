@@ -12,7 +12,10 @@ export interface ChangelogEntry {
 /** 画面に出す件数(これより古いものは出さない)。 */
 export const CHANGELOG_SHOWN = 10;
 
-export const CHANGELOG: readonly ChangelogEntry[] = [{ date: "2026-10-25", key: "meatyAdvantage" }];
+export const CHANGELOG: readonly ChangelogEntry[] = [
+  { date: "2026-10-27", key: "arjun" },
+  { date: "2026-10-25", key: "meatyAdvantage" },
+];
 
 /** 新しい順に並べてから CHANGELOG_SHOWN 件で切る(AGENTS §4。並べ替えの後で切る)。同じ日は書いた順。 */
 export function recentChanges(entries: readonly ChangelogEntry[] = CHANGELOG, limit = CHANGELOG_SHOWN): ChangelogEntry[] {

@@ -963,8 +963,8 @@
       "notation": {
         "nameJa": "ア・テール",
         "nameEn": "A Terre",
-        "srk": "MP>MK",
-        "numeric": "MP>MK"
+        "srk": "st.MP~st.MK (TC)",
+        "numeric": "5MP~5MK(TC)"
       },
       "calcFingerprint": "ca2f54aa47683b1e"
     },
@@ -991,8 +991,8 @@
       "notation": {
         "nameJa": "アン・オー",
         "nameEn": "En Haut",
-        "srk": "4MK>MK",
-        "numeric": "4MK>MK"
+        "srk": "4MK~st.MK (TC)",
+        "numeric": "4MK~5MK(TC)"
       },
       "calcFingerprint": "02c23258cf5ddda7"
     },
@@ -1047,8 +1047,8 @@
       "notation": {
         "nameJa": "アロンジェ",
         "nameEn": "Allonge",
-        "srk": "2HP>HP",
-        "numeric": "2HP>HP"
+        "srk": "cr.HP~st.HP (TC)",
+        "numeric": "2HP~5HP(TC)"
       },
       "calcFingerprint": "511bd44a43042163"
     },
@@ -1075,8 +1075,8 @@
       "notation": {
         "nameJa": "タン・リエ",
         "nameEn": "Temps Lie",
-        "srk": "HP>HP",
-        "numeric": "HP>HP"
+        "srk": "st.HP~st.HP (TC)",
+        "numeric": "5HP~5HP(TC)"
       },
       "calcFingerprint": "bd3290f086bd5568"
     },

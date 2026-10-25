@@ -1062,8 +1062,8 @@
       "notation": {
         "nameJa": "グロームストレルカ",
         "nameEn": "Grom Strelka",
-        "srk": "4MP>MP",
-        "numeric": "4MP>MP"
+        "srk": "4MP~st.MP (TC)",
+        "numeric": "4MP~5MP(TC)"
       },
       "calcFingerprint": "766d177c7cf8db54"
     },
@@ -1874,8 +1874,8 @@
       "notation": {
         "nameJa": "ジラント",
         "nameEn": "Zilant",
-        "srk": "HK>HP",
-        "numeric": "HK>HP"
+        "srk": "st.HK~st.HP (TC)",
+        "numeric": "5HK~5HP(TC)"
       },
       "calcFingerprint": "3d693d388a73d7aa"
     },
@@ -1902,8 +1902,8 @@
       "notation": {
         "nameJa": "ジラントルカー",
         "nameEn": "Zilant Mid",
-        "srk": "HK>HP>HP",
-        "numeric": "HK>HP>HP"
+        "srk": "st.HK~st.HP~st.HP (TC)",
+        "numeric": "5HK~5HP~5HP(TC)"
       },
       "calcFingerprint": "21a02bb4b0fce9bd"
     },
@@ -1930,8 +1930,8 @@
       "notation": {
         "nameJa": "ジラントナガー",
         "nameEn": "Zilant Low",
-        "srk": "HK>HP>HK",
-        "numeric": "HK>HP>HK"
+        "srk": "st.HK~st.HP~st.HK (TC)",
+        "numeric": "5HK~5HP~5HK(TC)"
       },
       "calcFingerprint": "4c2183f347658923"
     },

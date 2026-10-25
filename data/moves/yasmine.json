@@ -985,8 +985,8 @@
       "notation": {
         "nameJa": "キドラット・ナ・ヒワ",
         "nameEn": "Kidlat Na Hiwa",
-        "srk": "LP>LP",
-        "numeric": "LP>LP"
+        "srk": "st.LP~st.LP (TC)",
+        "numeric": "5LP~5LP(TC)"
       },
       "calcFingerprint": "9526a0461bd9a02c"
     },
@@ -1013,8 +1013,8 @@
       "notation": {
         "nameJa": "タッロング・ヒワ",
         "nameEn": "Tatlong Hiwa",
-        "srk": "MP>MP",
-        "numeric": "MP>MP"
+        "srk": "st.MP~st.MP (TC)",
+        "numeric": "5MP~5MP(TC)"
       },
       "calcFingerprint": "c065ac4d11cf0c7c"
     },
@@ -1041,8 +1041,8 @@
       "notation": {
         "nameJa": "スノスノッド・ナ・シパ(2発止め)",
         "nameEn": "Sunod Sunod Na Sipa (2 hits)",
-        "srk": "MK>MK",
-        "numeric": "MK>MK"
+        "srk": "st.MK~st.MK (TC)",
+        "numeric": "5MK~5MK(TC)"
       },
       "calcFingerprint": "4e0a1c393b3fc438"
     },
@@ -1069,8 +1069,8 @@
       "notation": {
         "nameJa": "スノスノッド・ナ・シパ",
         "nameEn": "Sunod Sunod Na Sipa",
-        "srk": "MK>MK>HK",
-        "numeric": "MK>MK>HK"
+        "srk": "st.MK~st.MK~st.HK (TC)",
+        "numeric": "5MK~5MK~5HK(TC)"
       },
       "calcFingerprint": "3cf7d71e8512285d"
     },
@@ -1097,8 +1097,8 @@
       "notation": {
         "nameJa": "コンビナション・パムパバッグサ",
         "nameEn": "Kumbinasyong Pampabagsak",
-        "srk": "2MK>HK",
-        "numeric": "2MK>HK"
+        "srk": "cr.MK~st.HK (TC)",
+        "numeric": "2MK~5HK(TC)"
       },
       "calcFingerprint": "d92389b0c5fe4cfc"
     },

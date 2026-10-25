@@ -42,6 +42,7 @@
     "latest": "업데이트 {{date}}: {{text}}",
     "title": "업데이트 기록(최근 {{n}}건)",
     "items": {
+      "arjun": "Arjun 대응. 타깃 콤보(5MP~5HP(TC))와 공중에서 내는 기술(j.)의 표기를 Tacpendium에 맞춰 변경",
       "meatyAdvantage": "겹치기 제안에 겹쳤을 때의 유리 프레임(가드/히트)을 표시. 사이트 이름을 누르면 조건 초기화"
     }
   },

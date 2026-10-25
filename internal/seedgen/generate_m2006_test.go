@@ -65,9 +65,10 @@ func TestM2006_HumanizeAddsNoNewWords(t *testing.T) {
 	}
 }
 
-// TestM2006_TargetSetIsEighteen は対象集合が 18 件であることを固定する。
+// TestM2006_TargetSetIsEighteen は対象集合が 22 件であることを固定する(関数名は 18 件の時代のまま)。
 //
-// ★内訳は 既 seed 19 キャラの 13 件(D-367)＋ 第四波の 5 件(M14-03f・2026-09-02 開発者判断)。
+// ★内訳は 既 seed 19 キャラの 13 件(D-367)＋ 第四波の 5 件(M14-03f・2026-09-02 開発者判断)
+// ＋ アルジュンの 4 件(2026-10-17 開発者判断)。
 // ★19 キャラ側は 27 件のうち 13 件だけが値の決まった集合である。とくに
 // jp/departure_window_double_warp_od は「エッジケースでありフォールバックでよい」として
 // 意図的に外してある。★第四波側は 11 件のうち 5 件である(外した 6 件は下で対象外を主張する)。
@@ -75,8 +76,8 @@ func TestM2006_HumanizeAddsNoNewWords(t *testing.T) {
 // ★本テストは「足した瞬間に赤くなる」ためのものである。増やすときは、どの判断で
 // 増やしたのかを noInputDerivedTargets の注記へ書いてから、ここの数を動かすこと。
 func TestM2006_TargetSetIsEighteen(t *testing.T) {
-	if got := noInputDerivedTargetCount(); got != 18 {
-		t.Errorf("層 C-3 の対象 move_code = %d 件, want 18(D-367 の 13 件 + M14-03f の 5 件)", got)
+	if got := noInputDerivedTargetCount(); got != 22 {
+		t.Errorf("層 C-3 の対象 move_code = %d 件, want 22(D-367 の 13 件 + M14-03f の 5 件 + アルジュンの 4 件)", got)
 	}
 	if isNoInputDerivedTarget("jp", "departure_window_double_warp_od") {
 		t.Error("jp/departure_window_double_warp_od が対象に入っている(D-367 で対象外)")
@@ -103,6 +104,13 @@ func TestM2006_TargetSetIsEighteen(t *testing.T) {
 	} {
 		if !isNoInputDerivedTarget(tc.charCode, tc.moveCode) {
 			t.Errorf("%s/%s が対象に入っていない(M14-03f で足した 5 件)", tc.charCode, tc.moveCode)
+		}
+	}
+
+	// ★アルジュンで足した 4 件(2026-10-17)。
+	for _, code := range []string{"justice_beyond_light", "justice_beyond_medium", "justice_beyond_heavy", "justice_beyond_od"} {
+		if !isNoInputDerivedTarget("arjun", code) {
+			t.Errorf("arjun/%s が対象に入っていない(2026-10-17 に足した 4 件)", code)
 		}
 	}
 

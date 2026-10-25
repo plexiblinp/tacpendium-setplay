@@ -1413,8 +1413,8 @@
       "notation": {
         "nameJa": "弱キャノンストライク",
         "nameEn": "Light Cannon Strike",
-        "srk": "214LK",
-        "numeric": "214LK"
+        "srk": "j.214LK",
+        "numeric": "j.214LK"
       },
       "calcFingerprint": "9d67ad780de14952"
     },
@@ -1443,8 +1443,8 @@
       "notation": {
         "nameJa": "中キャノンストライク",
         "nameEn": "Medium Cannon Strike",
-        "srk": "214MK",
-        "numeric": "214MK"
+        "srk": "j.214MK",
+        "numeric": "j.214MK"
       },
       "calcFingerprint": "1e13a8cb1d7f1992"
     },
@@ -1473,8 +1473,8 @@
       "notation": {
         "nameJa": "強キャノンストライク",
         "nameEn": "Heavy Cannon Strike",
-        "srk": "214HK",
-        "numeric": "214HK"
+        "srk": "j.214HK",
+        "numeric": "j.214HK"
       },
       "calcFingerprint": "6da31425a29a772d"
     },
@@ -1503,8 +1503,8 @@
       "notation": {
         "nameJa": "ODキャノンストライク",
         "nameEn": "OD Cannon Strike",
-        "srk": "214K+K",
-        "numeric": "214K+K"
+        "srk": "j.214K+K",
+        "numeric": "j.214K+K"
       },
       "calcFingerprint": "13a8cad5c9610f7f"
     },
@@ -2638,8 +2638,8 @@
       "notation": {
         "nameJa": "リフトコンビネーション",
         "nameEn": "Lift Combination",
-        "srk": "4MP>HK",
-        "numeric": "4MP>HK"
+        "srk": "4MP~st.HK (TC)",
+        "numeric": "4MP~5HK(TC)"
       },
       "calcFingerprint": "00334dd158c2efbc"
     },
@@ -2666,8 +2666,8 @@
       "notation": {
         "nameJa": "スイングコンビネーション",
         "nameEn": "Swing Combination",
-        "srk": "HP>HK",
-        "numeric": "HP>HK"
+        "srk": "st.HP~st.HK (TC)",
+        "numeric": "5HP~5HK(TC)"
       },
       "calcFingerprint": "7b109ba0c5e2bb20"
     },

@@ -833,8 +833,8 @@
       "notation": {
         "nameJa": "ハイジャンプ弱P",
         "nameEn": "Light High Jumping Punch",
-        "srk": "LP",
-        "numeric": "LP"
+        "srk": "hj.LP",
+        "numeric": "hj.LP"
       },
       "calcFingerprint": "0e17dc554f35e9c9"
     },
@@ -863,8 +863,8 @@
       "notation": {
         "nameJa": "ハイジャンプ弱K",
         "nameEn": "Light High Jumping Kick",
-        "srk": "LK",
-        "numeric": "LK"
+        "srk": "hj.LK",
+        "numeric": "hj.LK"
       },
       "calcFingerprint": "e9988b4638f9543c"
     },
@@ -893,8 +893,8 @@
       "notation": {
         "nameJa": "ハイジャンプ中P",
         "nameEn": "Medium High Jumping Punch",
-        "srk": "MP",
-        "numeric": "MP"
+        "srk": "hj.MP",
+        "numeric": "hj.MP"
       },
       "calcFingerprint": "7b7a23b986ce067b"
     },
@@ -923,8 +923,8 @@
       "notation": {
         "nameJa": "ハイジャンプ中K",
         "nameEn": "Medium High Jumping Kick",
-        "srk": "MK",
-        "numeric": "MK"
+        "srk": "hj.MK",
+        "numeric": "hj.MK"
       },
       "calcFingerprint": "5f4cf33b0475ac60"
     },
@@ -953,8 +953,8 @@
       "notation": {
         "nameJa": "ハイジャンプ強P",
         "nameEn": "Heavy High Jumping Punch",
-        "srk": "HP",
-        "numeric": "HP"
+        "srk": "hj.HP",
+        "numeric": "hj.HP"
       },
       "calcFingerprint": "2e096ab88382657f"
     },
@@ -984,7 +984,7 @@
         "nameJa": "ハイジャンプ強K",
         "nameEn": "Heavy High Jumping Kick",
         "srk": "hj.HK",
-        "numeric": "hj.HK (ハイジャンプ強K)"
+        "numeric": "hj.HK"
       },
       "calcFingerprint": "8586563ae34b0465"
     },
@@ -1013,8 +1013,8 @@
       "notation": {
         "nameJa": "ハイジャンプ垂直ジャンプ強K",
         "nameEn": "Heavy High Jumping Neutral Kick",
-        "srk": "hj.HK (neutral)",
-        "numeric": "hj.HK (ハイジャンプ垂直ジャンプ強K)"
+        "srk": "hj.nj.HK",
+        "numeric": "hj.nj.HK"
       },
       "calcFingerprint": "99a0944de901cf33"
     },

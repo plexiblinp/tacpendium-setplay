@@ -580,7 +580,7 @@
         "nameJa": "しゃがみ強P",
         "nameEn": "Crouching Heavy Punch",
         "srk": "cr.HP",
-        "numeric": "2HP (しゃがみ強P)"
+        "numeric": "2HP"
       },
       "calcFingerprint": "38e5b8f1768c527a"
     },
@@ -971,8 +971,8 @@
       "notation": {
         "nameJa": "グレートスピン",
         "nameEn": "Great Spin",
-        "srk": "2HP",
-        "numeric": "2HP (グレートスピン)"
+        "srk": "j.2HP",
+        "numeric": "j.2HP"
       },
       "calcFingerprint": "2400b260d160135e"
     },
@@ -1590,8 +1590,8 @@
       "notation": {
         "nameJa": "ODコンドルダイブ",
         "nameEn": "OD Condor Dive",
-        "srk": "P+P+P",
-        "numeric": "P+P+P"
+        "srk": "j.P+P+P",
+        "numeric": "j.P+P+P"
       },
       "calcFingerprint": "8a2b07c5f6985b54"
     },
@@ -1621,8 +1621,8 @@
       "notation": {
         "nameJa": "コンドルダイブ",
         "nameEn": "Condor Dive",
-        "srk": "P+P",
-        "numeric": "P+P"
+        "srk": "j.P+P",
+        "numeric": "j.P+P"
       },
       "calcFingerprint": "f2ee59a97e6b84b6"
     },
@@ -1652,8 +1652,8 @@
       "notation": {
         "nameJa": "[風纏い]ODコンドルダイブ",
         "nameEn": "[Windclad] OD Condor Dive",
-        "srk": "[Windclad] P+P+P",
-        "numeric": "[風纏い] P+P+P"
+        "srk": "[Windclad] j.P+P+P",
+        "numeric": "[風纏い] j.P+P+P"
       },
       "calcFingerprint": "6ba5e8ac3a5f55f2"
     },
@@ -1683,8 +1683,8 @@
       "notation": {
         "nameJa": "[風纏い]コンドルダイブ",
         "nameEn": "[Windclad] Condor Dive",
-        "srk": "[Windclad] P+P",
-        "numeric": "[風纏い] P+P"
+        "srk": "[Windclad] j.P+P",
+        "numeric": "[風纏い] j.P+P"
       },
       "calcFingerprint": "ca2c66ff8d246634"
     },
@@ -1908,7 +1908,7 @@
         "nameJa": "SA2 サンダーバード",
         "nameEn": "SA2 Thunderbird",
         "srk": "236236K (SA2)",
-        "numeric": "236236K (SA2) (SA2 サンダーバード)"
+        "numeric": "236236K (SA2)"
       },
       "calcFingerprint": "39c58b84eb5681e4"
     },
@@ -1936,7 +1936,7 @@
         "nameJa": "SA2 [風纏い]サンダーバード",
         "nameEn": "[Windclad] SA2 Thunderbird",
         "srk": "[Windclad] 236236K (SA2)",
-        "numeric": "[風纏い] 236236K (SA2) (SA2 [風纏い]サンダーバード)"
+        "numeric": "[風纏い] 236236K (SA2)"
       },
       "calcFingerprint": "047647400a15a574"
     },
@@ -1963,8 +1963,8 @@
       "notation": {
         "nameJa": "SA2 スカイサンダーバード",
         "nameEn": "SA2 Soaring Thunderbird",
-        "srk": "236236K (SA2) (soaring)",
-        "numeric": "236236K (SA2) (SA2 スカイサンダーバード)"
+        "srk": "j.236236K (SA2)",
+        "numeric": "j.236236K (SA2)"
       },
       "calcFingerprint": "b6dabfaa0164ee9d"
     },
@@ -1991,8 +1991,8 @@
       "notation": {
         "nameJa": "SA2 [風纏い]スカイサンダーバード",
         "nameEn": "[Windclad] SA2 Soaring Thunderbird",
-        "srk": "[Windclad] 236236K (SA2) (soaring)",
-        "numeric": "[風纏い] 236236K (SA2) (SA2 [風纏い]スカイサンダーバード)"
+        "srk": "[Windclad] j.236236K (SA2)",
+        "numeric": "[風纏い] j.236236K (SA2)"
       },
       "calcFingerprint": "d1e26850045e5e25"
     },
@@ -2075,8 +2075,8 @@
       "notation": {
         "nameJa": "デザートストーム(2発止め)",
         "nameEn": "Desert Storm (2 hits)",
-        "srk": "6HP>HP",
-        "numeric": "6HP>HP"
+        "srk": "6HP~st.HP (TC)",
+        "numeric": "6HP~5HP(TC)"
       },
       "calcFingerprint": "dfcce22c642cf150"
     },
@@ -2103,8 +2103,8 @@
       "notation": {
         "nameJa": "デザートストーム",
         "nameEn": "Desert Storm",
-        "srk": "6HP>HP>HP",
-        "numeric": "6HP>HP>HP"
+        "srk": "6HP~st.HP~st.HP (TC)",
+        "numeric": "6HP~5HP~5HP(TC)"
       },
       "calcFingerprint": "e531ee29bc8ef199"
     },
@@ -2131,8 +2131,8 @@
       "notation": {
         "nameJa": "ダブルアロー",
         "nameEn": "Double Arrow",
-        "srk": "MP>MP",
-        "numeric": "MP>MP"
+        "srk": "st.MP~st.MP (TC)",
+        "numeric": "5MP~5MP(TC)"
       },
       "calcFingerprint": "9dc8ce9b261d32a8"
     },

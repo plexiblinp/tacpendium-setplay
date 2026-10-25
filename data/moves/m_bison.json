@@ -2025,8 +2025,8 @@
       "notation": {
         "nameJa": "シャドウハンマー",
         "nameEn": "Shadow Hammer",
-        "srk": "MP>6HP",
-        "numeric": "MP>6HP"
+        "srk": "st.MP~6HP (TC)",
+        "numeric": "5MP~6HP(TC)"
       },
       "calcFingerprint": "ef514e4d6bbd21e8"
     },
@@ -2053,8 +2053,8 @@
       "notation": {
         "nameJa": "シャドウスピア",
         "nameEn": "Shadow Spear",
-        "srk": "MP>2HK",
-        "numeric": "MP>2HK"
+        "srk": "st.MP~cr.HK (TC)",
+        "numeric": "5MP~2HK(TC)"
       },
       "calcFingerprint": "029ddd11ad390060"
     },
@@ -2081,8 +2081,8 @@
       "notation": {
         "nameJa": "ヘルアタック",
         "nameEn": "Hell Attack",
-        "srk": "MP>MP",
-        "numeric": "MP>MP"
+        "srk": "st.MP~st.MP (TC)",
+        "numeric": "5MP~5MP(TC)"
       },
       "calcFingerprint": "8966d50bf154be1d"
     },

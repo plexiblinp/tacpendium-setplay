@@ -15,6 +15,7 @@
 | `internal/service/setplay/`（テスト含む）（S3） | 同じ | lock SHA |
 | `internal/repository/setplay/repository.go`（S3。型だけ移植し、読み口は単体版で書き直し） | 同じ | lock SHA |
 | `internal/model/move.go`（S3。使う定数だけ） | 同じ | lock SHA |
+| `internal/migrationpin/`（テスト・`applied.sha256` 含む）（公開版 v0.3.0 の取り込みで追加。`internal/seedgen` のテストが使う） | 同じ | lock SHA |
 
 本家に当たるものが無い単体版だけのもの（S3）: `engine/`（本家の API 層 `internal/api/setplay` の handler・dto に当たる入口）、`cmd/wasm/`、
 `scripts/upstream-oracle/`（本家の実装で適合性テストの正解を作る）、`scripts/wasm/`。
@@ -41,6 +42,16 @@
 | `internal/repository/setplay/repository_test.go`（新規・本家に無い） | `ParseCharacter`・`Store` の単体テスト | 単体版で書いた読み口のテスト |
 | `internal/model/move.go` | 技カテゴリ・名指しの技 code・startup_basis の定数だけ（`Move` 構造体・技プロパティ等は無い）。`doc.go` は単体版で書いた | 計算が使う定数だけを持ち込む |
 | 移植しない本家ファイル | `internal/service/setup`・`internal/recipehash`・`internal/repository/combo`・`internal/api/setplay`（engine が同じ役を持つ）・`internal/infra/migration` の canary（`engine/canary_test.go` が moves DB に対して同じことを見る。計測専用の `canary_setplay_projection_test.go`・`canary_setplay_perf_test.go` は移植しない） | |
+
+### 公開版 v0.3.0（`5840f6e`）の取り込み（2026-10-25。報告 `docs/progress/upstream-5840f6e-report.md`）
+
+| ファイル | 変更 | 理由 |
+|---|---|---|
+| `internal/service/setplay/suggest_for_combo.go`（本家で新規） | 本家は `SuggestForCombo` の本体を service.go からこのファイルへ移し、手順ごとの関数（`checkSuggestPreconditions`・`loadSuggestMaterial`・`suggestTargets`・`targetOptions`・`limitProposals`）に分けた。単体版は同じファイル・同じ関数名で入口を `SuggestForKnockdown` のまま移した。`findComboForSuggest`・`markAlreadyAdopted` の呼び出しは持たない。`loadSuggestMaterial` はキャラを code で受け、`CharacterCode` を読まない。並べ替えの後・件数で切る前に `applyVotes` を掛ける（S6 と同じ位置） | 上の S3 の変更をこの形へ当てた |
+| `internal/service/setplay/service.go` | 本家の `withoutParentsHash`（親行を除いた並びのレシピハッシュ）と `markAlreadyAdopted` は移さない | 採用済みの印（alreadyAdopted）のためだけの値で、単体版に無い |
+| `internal/service/setplay/suggest_for_combo_golden_test.go` | fixture の `goldenMoves` だけを移した。`TestSuggestForComboGolden` と `testdata/suggest_for_combo_golden.json` は移さない | golden の出力に採用済みの印と重複判定の呼び出し順を含む。関数を分けた後も同じ振る舞いであることは engine の適合性テスト（本家の新しい実装で作り直した正解との全件の突き合わせ）が見る |
+| `internal/service/setplay/service_m4305_test.go` | 移さない | 採用済みの印の試験 |
+| `internal/service/setplay/suggest_for_combo_branches_test.go` | そのまま移した（`SuggestForCombo` は試験用の `testService` 経由） | |
 
 ### S4（事前計算）
 

@@ -488,7 +488,7 @@
         "nameJa": "しゃがみ弱K",
         "nameEn": "Crouching Light Kick",
         "srk": "cr.LK",
-        "numeric": "2LK (しゃがみ弱K)"
+        "numeric": "2LK"
       },
       "calcFingerprint": "b7ab370db3d85c59"
     },
@@ -907,8 +907,8 @@
       "notation": {
         "nameJa": "ニーショット",
         "nameEn": "Knee Shot",
-        "srk": "2LK",
-        "numeric": "2LK (ニーショット)"
+        "srk": "j.2LK",
+        "numeric": "j.2LK"
       },
       "calcFingerprint": "9530d11b041a0039"
     },
@@ -991,8 +991,8 @@
       "notation": {
         "nameJa": "3ビートコンボ(2発止め)",
         "nameEn": "Threebeat Combo (2 hits)",
-        "srk": "LP>MK",
-        "numeric": "LP>MK"
+        "srk": "st.LP~st.MK (TC)",
+        "numeric": "5LP~5MK(TC)"
       },
       "calcFingerprint": "2ea9a1e215d6b7b5"
     },
@@ -1019,8 +1019,8 @@
       "notation": {
         "nameJa": "3ビートコンボ",
         "nameEn": "Threebeat Combo",
-        "srk": "LP>MK>MK",
-        "numeric": "LP>MK>MK"
+        "srk": "st.LP~st.MK~st.MK (TC)",
+        "numeric": "5LP~5MK~5MK(TC)"
       },
       "calcFingerprint": "7961970b569a9ce8"
     },
@@ -1047,8 +1047,8 @@
       "notation": {
         "nameJa": "ディージェイスペシャル(2発止め)",
         "nameEn": "Dee Jay Special (2 hits)",
-        "srk": "MP>HP",
-        "numeric": "MP>HP"
+        "srk": "st.MP~st.HP (TC)",
+        "numeric": "5MP~5HP(TC)"
       },
       "calcFingerprint": "b7d36874531dd609"
     },
@@ -1075,8 +1075,8 @@
       "notation": {
         "nameJa": "ディージェイスペシャル",
         "nameEn": "Dee Jay Special",
-        "srk": "MP>HP>HK",
-        "numeric": "MP>HP>HK"
+        "srk": "st.MP~st.HP~st.HK (TC)",
+        "numeric": "5MP~5HP~5HK(TC)"
       },
       "calcFingerprint": "b453458512f378cd"
     },
@@ -1103,8 +1103,8 @@
       "notation": {
         "nameJa": "ファンキーダンス(2発止め)",
         "nameEn": "Funky Dance (2 hits)",
-        "srk": "MP>MP",
-        "numeric": "MP>MP"
+        "srk": "st.MP~st.MP (TC)",
+        "numeric": "5MP~5MP(TC)"
       },
       "calcFingerprint": "121914c5e7d47a62"
     },
@@ -1133,8 +1133,8 @@
       "notation": {
         "nameJa": "ファンキーダンス",
         "nameEn": "Funky Dance",
-        "srk": "MP>MP>HP",
-        "numeric": "MP>MP>HP"
+        "srk": "st.MP~st.MP~st.HP (TC)",
+        "numeric": "5MP~5MP~5HP(TC)"
       },
       "calcFingerprint": "bdb88659b5d83b16"
     },
@@ -1161,8 +1161,8 @@
       "notation": {
         "nameJa": "ファンキーダンス・フェイク",
         "nameEn": "Funky Dance Feint",
-        "srk": "MP>MP>4HP",
-        "numeric": "MP>MP>4HP"
+        "srk": "st.MP~st.MP~4HP (TC)",
+        "numeric": "5MP~5MP~4HP(TC)"
       },
       "calcFingerprint": "da538db9c7beaa74"
     },
@@ -1189,8 +1189,8 @@
       "notation": {
         "nameJa": "フライングパーティー",
         "nameEn": "Party in the Air",
-        "srk": "j.MP>HP",
-        "numeric": "j.MP>HP"
+        "srk": "j.MP~j.HP (TC)",
+        "numeric": "j.MP~j.HP(TC)"
       },
       "calcFingerprint": "3a51fbdd4d0070ac"
     },

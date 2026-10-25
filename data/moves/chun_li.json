@@ -1159,8 +1159,8 @@
       "notation": {
         "nameJa": "鷹嘴連拳",
         "nameEn": "Soaring Eagle Punches",
-        "srk": "HP>HP",
-        "numeric": "HP>HP"
+        "srk": "j.HP~j.HP (TC)",
+        "numeric": "j.HP~j.HP(TC)"
       },
       "calcFingerprint": "57b41915337e4885"
     },

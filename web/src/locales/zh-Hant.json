@@ -42,6 +42,7 @@
     "latest": "更新 {{date}}：{{text}}",
     "title": "更新記錄（最近 {{n}} 條）",
     "items": {
+      "arjun": "支援 Arjun。目標連段(5MP~5HP(TC))與空中招式(j.)的標記改為與 Tacpendium 一致",
       "meatyAdvantage": "壓起身推薦會顯示壓制時的有利幀（防禦/命中）。點選站名可重置條件"
     }
   },
