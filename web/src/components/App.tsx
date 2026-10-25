@@ -17,6 +17,7 @@ import { DEFAULT_SAMPLE_RATE, loadConfig, sendRun, type BeaconSender, type RunRe
 import { fetchVotes, postVote, scoresForEngine, type LoadedVotes } from "../lib/votes";
 import type { VoteValue } from "../shared/api";
 import type { SuggestRequest } from "../worker/protocol";
+import { Changelog } from "./Changelog";
 import { ConditionsPanel } from "./ConditionsPanel";
 import { Guide } from "./Guide";
 import { Footer } from "./Footer";
@@ -349,22 +350,39 @@ export function App({
   return (
     <>
       <header className="site-header">
-        <h1>
-          {APP_NAME} <span className="subtitle">{t("app.title")}</span>
-          {!online && (
-            <span className="badge" data-testid="local-badge">
-              {t("app.localBadge")}
-            </span>
-          )}
-        </h1>
-        <SettingsBar
-          lang={lang}
-          onLang={setLang}
-          notation={notation}
-          onNotation={setNotationChoice}
-        />
+        {/* 中身は .page と同じ幅で中央に置く(開発者の要望 2026-10-25)。 */}
+        <div className="site-header-inner">
+          <h1>
+            {/* サイト名を押すと条件をリセットする(開発者の要望 2026-10-25)。リンクなので、新しいタブでは初期の画面が開く。 */}
+            <a
+              className="home"
+              href="./"
+              onClick={(e) => {
+                if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+                e.preventDefault();
+                reset();
+              }}
+              data-testid="home"
+            >
+              {APP_NAME}
+            </a>{" "}
+            <span className="subtitle">{t("app.title")}</span>
+            {!online && (
+              <span className="badge" data-testid="local-badge">
+                {t("app.localBadge")}
+              </span>
+            )}
+          </h1>
+          <SettingsBar
+            lang={lang}
+            onLang={setLang}
+            notation={notation}
+            onNotation={setNotationChoice}
+          />
+        </div>
       </header>
       <main className="page">
+        <Changelog />
         <Guide voting={online} />
         {urlRejected.length > 0 && (
           <p className="notice" role="status" data-testid="url-rejected">

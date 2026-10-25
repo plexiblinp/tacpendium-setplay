@@ -92,16 +92,16 @@ GitHub 設定の項目は、本家（非公開）の公開手順書を S7 で読
 | G-8 | アカウントの 2FA | HANDOVER §7.4。**済**（GitHub Mobile の 2FA。パスキーの追加は開発者が検討） |
 | G-9 | Environment `production` を作る: Required reviewers に開発者、Prevent self-review は**付けない**、Deployment branches は main だけ、管理者の迂回は許さない。secrets `CLOUDFLARE_API_TOKEN`・`CLOUDFLARE_ACCOUNT_ID` は**ここにだけ**置く（Repository secret・Variables に置かない） | S9 で変更（2026-10-20）。集計は手元に移したので集計用の Secrets は置かない。`docs/telemetry.md`「デプロイ用の API トークン」。**済**（2026-10-21: Required reviewers＝開発者、Prevent self-review なし、管理者の迂回なし、Deployment branches は main だけ。secrets は最初のデプロイの直前に入れる） |
 | G-10 | Issues を有効にする（意見・不具合・翻訳の改善とプライバシーの問い合わせの窓口。`CONTRIBUTING.md`）。Pull requests の機能は Dependabot が使うので有効のまま、外からの PR は `CONTRIBUTING.md` のとおり閉じる。Discussions・Wiki・Projects は無効 | 開発者決定 2026-10-18（Google フォーム＋Issues）。**済**（2026-10-21 点検: Issues 有効、Wikis・Discussions・Projects・Sponsorships 無効、Allow merge commits 有効。Preserve this repository〔GitHub Archive Program〕は既定の有効のまま） |
-| G-11 | **About の Website** に、Cloudflare にデプロイしたサイトの URL を入れる（リポジトリの画面の右上 About の歯車 → Website） | **S9 の手番。デプロイが済んでから**（開発者指示 2026-10-18。S8 で記載）。**未**（2026-10-24 時点。限定公開のうちに入れるか、一般公開のときに入れるかは開発者が決める） |
+| G-11 | **About の Website** に、Cloudflare にデプロイしたサイトの URL を入れる（リポジトリの画面の右上 About の歯車 → Website） | **S9 の手番。デプロイが済んでから**（開発者指示 2026-10-18。S8 で記載）。**済**（2026-10-25。一般公開に合わせて開発者が入れた） |
 
 ## 6. S9 の手番（S8 で追加）
 
 | # | 手番 | 備考 |
 |---|---|---|
-| S9-1 | Cloudflare へのデプロイ後、GitHub の About の **Website** にサイトの URL を入れる（§5 G-11） | 開発者指示 2026-10-18。**未**（G-11 と同じ） |
+| S9-1 | Cloudflare へのデプロイ後、GitHub の About の **Website** にサイトの URL を入れる（§5 G-11） | 開発者指示 2026-10-18。**済**（2026-10-25。G-11 と同じ） |
 | S9-2 | **済**（2026-10-20）: main の 9880c88 に `v1.0.0` のタグ → Local release の run 39142810181 が全 job 成功（ビルド・ubuntu / macos / windows の起動確認 12 項目 ok・失敗 0・draft の作成）→ 開発者が中身を確かめて公開（https://github.com/plexiblinp/tacpendium-setplay/releases/tag/v1.0.0 、2026-10-20T15:12:39Z）。**v1.0.1**（2026-10-21）: Go 1.26.10 で作り直し（GO-2026-6809 / CVE-2026-111943。eMudhra の中間 CA 鍵の危殆化）。main の 999925d に `v1.0.1` → run 39627631145 が全 5 job 成功 → 開発者が照合して公開（2026-10-21T15:45:32Z。添付 6）。v1.0.0 は残し、本文で v1.0.1 へ案内。以下は手順の記録。ローカル版の最初の Release: main で `v<版>`（例 `v1.0.0`）のタグを push → `local-release.yml` が 3 OS の起動確認の後に **draft** の Release を作る → 中身（5 種の圧縮・`SHA256SUMS`）を確かめて公開する | 手順は `docs/local.md`「配布」。サイトの KA の説明は Releases（`RELEASES_URL`）へ案内するので、**サイトを公開する前か同時に**出す（無いと空の Releases を指す） |
 | S9-3 | **済**（2026-10-21）: main の 999925d で手動起動 → run 39626692726 成功。`govulncheck.yml` の週 1 回の定期実行は default branch（main）に入ってから動く。マージ後に Actions の画面で 1 度手動起動し、緑を確かめる | S8 |
-| S9-4 | ヘッダ診断（§3）・§5 の「済」付け・S9 の報告 | 開発者指示 2026-10-18（S8 ではやらない）。**一部済**（2026-10-24）: ヘッダ診断・§5 の点検（2026-10-21）。報告は `docs/progress/S9-report.md` |
+| S9-4 | ヘッダ診断（§3）・§5 の「済」付け・S9 の報告 | 開発者指示 2026-10-18（S8 ではやらない）。**済**（2026-10-25）: ヘッダ診断（2026-10-24。`/`・`/no-such-page`・`/api/votes` とも A+）・§5 の点検（2026-10-21）。報告は `docs/progress/S9-report.md` |
 
 ## 7. セキュリティ監査（S9）の設定の確認と残りの案
 

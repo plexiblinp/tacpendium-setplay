@@ -20,10 +20,12 @@ const MANIFEST = {
     { code: "ken", name: { ja: "ケン", en: "Ken" }, dataVersion: "x", calcFingerprint: "f", safeJump: null, moves: "moves/ken.1.json" },
   ],
 };
-const mv = (code: string, nameJa: string, srk: string, category = "normal") => ({
+const mv = (code: string, nameJa: string, srk: string, category = "normal", onHit: number | null = 4, onBlock: number | null = -1) => ({
   code,
   category,
   damage: 300,
+  onHit,
+  onBlock,
   notation: { nameJa, nameEn: `${code} en`, srk, numeric: `${srk}#` },
 });
 const MOVES = {
@@ -167,6 +169,25 @@ describe("App", () => {
     expect(screen.getByTestId("count")).toHaveTextContent("Showing 200 of 250");
   });
 
+  it("更新履歴: いちばん新しい 1 件を出し、開くと直近の一覧", async () => {
+    const user = userEvent.setup();
+    renderApp();
+    const latest = await screen.findByTestId("changelog-latest");
+    expect(latest).toHaveTextContent(/^更新 \d{4}-\d{2}-\d{2}: ./);
+    await user.click(latest);
+    expect(screen.getAllByTestId("changelog-item").length).toBeGreaterThan(0);
+  });
+
+  it("重ねる提案の行に、重ねたときの有利を出す", async () => {
+    const user = userEvent.setup();
+    const { engine } = renderApp();
+    await search(user);
+    await engine.finish();
+    const adv = await screen.findAllByTestId("advantage");
+    expect(adv[0]).toHaveTextContent("ガード -1 / ヒット +4");
+    expect(adv[1]).toHaveTextContent("ガード ±0 / ヒット +5");
+  });
+
   it("コピーは選択中の表記のレシピとフレームの説明を書く", async () => {
     const user = userEvent.setup();
     const writeText = vi.fn(async () => undefined);
@@ -175,7 +196,8 @@ describe("App", () => {
     await search(user);
     await engine.finish();
     await user.click((await screen.findAllByTestId("copy"))[2]!);
-    expect(writeText).toHaveBeenCalledWith("弱P > 波動拳 (持続3F目ヒット)");
+    // 3 行目は持続 3F 目(n=3)。波動拳はガード -1・ヒット +4 なので +2 ずつ。
+    expect(writeText).toHaveBeenCalledWith("弱P > 波動拳 (持続3F目ヒット · ガード +1 / ヒット +6)");
     expect(await screen.findByText("コピーしました")).toBeInTheDocument();
   });
 

@@ -2,6 +2,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
+import { formatAdvantage, meatyAdvantage } from "../lib/advantage";
 import { hasAppliedFilters, type Conditions } from "../lib/conditions";
 import { PAGE_SIZE, REASON_KNOCKDOWN_NEGATIVE, REASON_REMAIN_NOT_BELOW_KNOCKDOWN } from "../lib/constants";
 import type { NotationKind } from "../lib/data";
@@ -10,6 +11,9 @@ import type { Item } from "../lib/engineTypes";
 import { copyText, itemKey, recipeText, type MovesByCode } from "../lib/notation";
 import type { LoadedVotes } from "../lib/votes";
 import type { VoteValue } from "../shared/api";
+
+/** フレームの説明と有利の区切り(画面とコピーで同じ)。 */
+const ADVANTAGE_SEPARATOR = " · ";
 
 export type RunState =
   | { status: "idle" }
@@ -107,6 +111,11 @@ export function Results({ run, onCancel, movesByCode, notation, myVotes, onVote,
     }
     return it.mode === "gap" ? t("setplay.gapBeforeWakeup", { g: it.g }) : t("setplay.hitOnActive", { n: it.n });
   };
+  // 重ねたときの有利(重ねる提案の打撃・飛び道具だけ。lib/advantage.ts)。
+  const advantageLabel = (it: Item): string | null => {
+    const adv = meatyAdvantage(it, movesByCode);
+    return adv == null ? null : t("setplay.meatyAdvantage", { block: formatAdvantage(adv.block), hit: formatAdvantage(adv.hit) });
+  };
 
   return (
     <section className="results" aria-live="polite">
@@ -157,6 +166,7 @@ export function Results({ run, onCancel, movesByCode, notation, myVotes, onVote,
                   recipeKey={it.recipeKey}
                   recipe={recipeText(it.steps, movesByCode, notation)}
                   frameLabel={frameLabel(it)}
+                  advantage={advantageLabel(it)}
                   good={mine?.good ?? counted?.[0] ?? 0}
                   bad={mine?.bad ?? counted?.[1] ?? 0}
                   mine={mine}
@@ -197,6 +207,8 @@ export function canonicalLine(it: Item): string {
 interface RowProps {
   recipe: string;
   frameLabel: string;
+  /** 重ねたときの有利の表示。出さない行は null。 */
+  advantage: string | null;
   canonical: string;
   recipeKey: string;
   good: number;
@@ -217,7 +229,7 @@ function ThumbIcon({ down }: { down?: boolean }) {
   );
 }
 
-function Row({ recipe, frameLabel, canonical, recipeKey, good, bad, mine, voting, onVote, onHide }: RowProps) {
+function Row({ recipe, frameLabel, advantage, canonical, recipeKey, good, bad, mine, voting, onVote, onHide }: RowProps) {
   const { t } = useTranslation();
   const [copy, setCopy] = useState<"idle" | "copied" | "failed">("idle");
   useEffect(() => {
@@ -227,7 +239,7 @@ function Row({ recipe, frameLabel, canonical, recipeKey, good, bad, mine, voting
   }, [copy]);
 
   const onCopy = () => {
-    const text = copyText(recipe, frameLabel);
+    const text = copyText(recipe, advantage == null ? frameLabel : `${frameLabel}${ADVANTAGE_SEPARATOR}${advantage}`);
     // clipboard が無い(安全でない接続・権限の拒否)ときも例外で落とさず、失敗を出す。
     const write = navigator.clipboard?.writeText(text) ?? Promise.reject(new Error("clipboard unavailable"));
     write.then(
@@ -243,6 +255,12 @@ function Row({ recipe, frameLabel, canonical, recipeKey, good, bad, mine, voting
       </span>
       <span className="frame" data-testid="frame-label">
         {frameLabel}
+        {advantage != null && (
+          <span className="advantage" data-testid="advantage">
+            {ADVANTAGE_SEPARATOR}
+            {advantage}
+          </span>
+        )}
       </span>
       <button
         type="button"
