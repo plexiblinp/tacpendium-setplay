@@ -38,6 +38,13 @@
     "ruleStance": "Characters with special branches, such as Chun-Li's stance, Elena's spin or Alex's stance, are not supported or only partly supported.",
     "ruleNewCharacters": "New characters are added 2 weeks after their in-game release, to leave players the fun of discovering setplays on their own."
   },
+  "changelog": {
+    "latest": "Updated {{date}}: {{text}}",
+    "title": "Recent updates (last {{n}})",
+    "items": {
+      "meatyAdvantage": "Meaty suggestions now show frame advantage on block/hit. Click the site name to reset the conditions"
+    }
+  },
   "settings": {
     "language": "Language",
     "notation": "Move notation",

@@ -17,6 +17,7 @@ import { DEFAULT_SAMPLE_RATE, loadConfig, sendRun, type BeaconSender, type RunRe
 import { fetchVotes, postVote, scoresForEngine, type LoadedVotes } from "../lib/votes";
 import type { VoteValue } from "../shared/api";
 import type { SuggestRequest } from "../worker/protocol";
+import { Changelog } from "./Changelog";
 import { ConditionsPanel } from "./ConditionsPanel";
 import { Guide } from "./Guide";
 import { Footer } from "./Footer";
@@ -381,6 +382,7 @@ export function App({
         </div>
       </header>
       <main className="page">
+        <Changelog />
         <Guide voting={online} />
         {urlRejected.length > 0 && (
           <p className="notice" role="status" data-testid="url-rejected">

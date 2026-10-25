@@ -38,6 +38,13 @@
     "ruleStance": "春麗的架勢、艾蕾娜的旋轉、亞歷克斯的架勢等具有特殊分支的角色尚未支援或支援不完整。",
     "ruleNewCharacters": "新角色會在遊戲內上線 2 個星期後才支援(為了保留自己發掘的樂趣)。"
   },
+  "changelog": {
+    "latest": "更新 {{date}}：{{text}}",
+    "title": "更新記錄（最近 {{n}} 條）",
+    "items": {
+      "meatyAdvantage": "壓起身推薦會顯示壓制時的有利幀（防禦/命中）。點選站名可重置條件"
+    }
+  },
   "settings": {
     "language": "語言",
     "notation": "招式表記",

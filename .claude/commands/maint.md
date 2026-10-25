@@ -17,6 +17,7 @@ argument-hint: <security|ux|data> <内容（例: "Node の修正版" "結果の�
 ## 2. 直す
 - 不具合なら、直す前に赤くなるテストを足して赤を確かめる（AGENTS §8-3）。
 - 節目ごとにコミット・push（Conventional Commits。スコープは種類。例 `fix(ux): ...`・`chore(security): ...`）。
+- 利用者に見える変更なら、更新履歴に 1 行足す（`docs/maintenance.md`「更新履歴」）。
 
 ## 3. 検査
 - 変えた側のテスト・検査を、出力をファイルへ書いて `EXIT=` と件数で判定する（AGENTS §8-1）。Go を変えたら `go test -count=1 ./...`、Web を変えたら `tsc`・`vitest --run`・`pnpm build`・E2E。

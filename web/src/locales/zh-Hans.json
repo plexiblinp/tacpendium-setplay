@@ -38,6 +38,13 @@
     "ruleStance": "春丽的架势、艾蕾娜的旋转、亚历克斯的架势等具有特殊分支的角色尚未支持或支持不完整。",
     "ruleNewCharacters": "新角色会在游戏内上线 2 个星期后才支持(为了保留自己发掘的乐趣)。"
   },
+  "changelog": {
+    "latest": "更新 {{date}}：{{text}}",
+    "title": "更新记录（最近 {{n}} 条）",
+    "items": {
+      "meatyAdvantage": "压起身推荐会显示压制时的有利帧（防御/命中）。点击站名可重置条件"
+    }
+  },
   "settings": {
     "language": "语言",
     "notation": "招式表记",

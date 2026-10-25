@@ -169,6 +169,15 @@ describe("App", () => {
     expect(screen.getByTestId("count")).toHaveTextContent("Showing 200 of 250");
   });
 
+  it("更新履歴: いちばん新しい 1 件を出し、開くと直近の一覧", async () => {
+    const user = userEvent.setup();
+    renderApp();
+    const latest = await screen.findByTestId("changelog-latest");
+    expect(latest).toHaveTextContent(/^更新 \d{4}-\d{2}-\d{2}: ./);
+    await user.click(latest);
+    expect(screen.getAllByTestId("changelog-item").length).toBeGreaterThan(0);
+  });
+
   it("重ねる提案の行に、重ねたときの有利を出す", async () => {
     const user = userEvent.setup();
     const { engine } = renderApp();

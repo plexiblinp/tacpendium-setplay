@@ -242,6 +242,10 @@ test.describe("セットプレイ提案", () => {
     expect(header).not.toBeNull();
     expect(body).not.toBeNull();
     expect(Math.abs(header!.x - body!.x)).toBeLessThanOrEqual(1);
+    // 更新履歴: 新しい 1 件を出し、開くと一覧。
+    await expect(page.getByTestId("changelog-latest")).toHaveText(/\d{4}-\d{2}-\d{2}/);
+    await page.getByTestId("changelog-latest").click();
+    await expect(page.getByTestId("changelog-item").first()).toBeVisible();
     await page.getByTestId("home").click();
     await expect(page).toHaveURL(/\/$/);
     await expect(page.getByTestId("character-select")).toHaveAttribute("data-value", "");

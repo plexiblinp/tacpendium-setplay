@@ -94,6 +94,10 @@ ul.warn { padding-left: 1.2em; }
 .picker { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
 .picker label { display: inline-flex; gap: 6px; align-items: center; }
 .picker select { max-width: 100%; }
+.changelog { margin: 0 0 8px; }
+.changelog summary { cursor: pointer; }
+.changelog .changelog-title { margin: 6px 0 2px; }
+.changelog ul { margin: 0; padding-left: 1.4em; }
 .guide { margin-bottom: 12px; }
 .guide .lead { margin-bottom: 4px; }
 .guide details { margin: 6px 0; font-size: 0.9rem; }
