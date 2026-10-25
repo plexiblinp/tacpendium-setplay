@@ -34,6 +34,11 @@
 - 利用者へ: README の冒頭と、固定した Issue に「いつからいつまで、何が起きたか・利用者がすべきこと（なければ無い）」を書く。
 - 本サービスが持つのは IP そのものではなく日替わりのハッシュ（`docs/telemetry.md`）。それでも、利用者の情報に触れられたおそれがあるときは、個人情報保護法の報告・通知が要るかを専門家に相談する（法的な判断は Claude はしない。`docs/progress/S7-privacy-research.md`）。
 
+## 弱点を見つけた・知らされたとき（まだ悪用されていない）
+
+- public のブランチで直すと、直す前に弱点が見えてしまう。利用者に害が出うるもの（票の受け口・ヘッダ・配信）は、GitHub の Security → Advisories → **New draft security advisory** で作る非公開の fork（temporary private fork）で直し、マージと advisory の公開を同時に行う（`docs/maintenance.md`「弱点を見つけた・知らされたとき」）。
+- 知らせてくれた人には、受け取ったことと直す見込みを返す。直したら advisory で公開する（CVE は要るときだけ GitHub に頼む）。
+
 ## GitHub アカウントが乗っ取られたとき
 
 - ログインできる: パスワードを変える → Settings → Sessions で他のセッションを切る → SSH 鍵・Personal access token・OAuth アプリ・GitHub Apps・メールアドレス・2FA の方法に見覚えの無いものがあれば消す → Settings → Security log を見る。

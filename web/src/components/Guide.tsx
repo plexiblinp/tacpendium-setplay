@@ -9,6 +9,7 @@ const STEPS = ["step1", "step2", "step3"] as const;
 const TIPS = ["tipVote", "tipHide"] as const;
 /** 注意と、その対策(「→」で続ける)。 */
 const CAUTIONS = [
+  ["advantage", "advantageFix"],
   ["distance", "distanceFix"],
   ["rush", "rushFix"],
   ["multiHit", "ignoreFix"],

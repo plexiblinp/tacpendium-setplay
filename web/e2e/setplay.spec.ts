@@ -42,6 +42,34 @@ test.describe("セットプレイ提案", () => {
     expect(errors).toEqual([]);
   });
 
+  test("重ねたときの有利: 実データの当てる技の有利 + (N − 1) が行に出る(moves DB → 画面の通し)", async ({ page }) => {
+    const errors = watchErrors(page);
+    await page.goto("/");
+    await choose(page, "ryu", 40);
+    await page.getByTestId("generate").click();
+    const row = page.getByTestId("result-row").first();
+    await expect(row).toBeVisible();
+    const key = (await row.getAttribute("data-recipe-key")) ?? "";
+    const target = key.split("|")[1] ?? "";
+    const label = (await row.getByTestId("frame-label").textContent()) ?? "";
+    const n = Number(/\d+/.exec(label)?.[0]);
+    // 配信している moves DB から、当てる技の有利を読む(画面と同じ manifest → moves の経路)。
+    const move = await page.evaluate(async (code) => {
+      const manifest = (await (await fetch("/data/manifest.json")).json()) as { characters: { code: string; moves: string }[] };
+      const ryu = manifest.characters.find((c) => c.code === "ryu")!;
+      const db = (await (await fetch(new URL(ryu.moves, new URL("/data/manifest.json", location.href)).href)).json()) as {
+        moves: { code: string; onHit: number | null; onBlock: number | null }[];
+      };
+      return db.moves.find((m) => m.code === code) ?? null;
+    }, target);
+    expect(move).not.toBeNull();
+    const fmt = (v: number | null) => (v == null ? "—" : v === 0 ? "±0" : v > 0 ? `+${v}` : `${v}`);
+    const block = fmt(move!.onBlock == null ? null : move!.onBlock + n - 1);
+    const hit = fmt(move!.onHit == null ? null : move!.onHit + n - 1);
+    await expect(row.getByTestId("advantage")).toHaveText(new RegExp(`(On block|ガード) ${block.replace("+", "\\+")} / (On hit|ヒット) ${hit.replace("+", "\\+")}$`));
+    expect(errors).toEqual([]);
+  });
+
   test("モード(汚連携・有利調整・安全飛び)と絞り込み", async ({ page }) => {
     const errors = watchErrors(page);
     await page.goto("/");
@@ -49,6 +77,8 @@ test.describe("セットプレイ提案", () => {
     await page.getByTestId("mode-gap").click();
     await page.getByTestId("generate").click();
     await expect(page.getByTestId("frame-label").first()).toHaveText(/before wake-up|前に空振り/);
+    // 重ねない提案には有利を出さない。
+    await expect(page.getByTestId("advantage")).toHaveCount(0);
 
     await page.getByTestId("mode-filler").click();
     await page.getByTestId("safe-jump-true").click();
@@ -202,6 +232,28 @@ test.describe("セットプレイ提案", () => {
     expect(used).toEqual({ local: 0, session: 0, idb: 0, cookie: "" });
     expect(await context.cookies()).toEqual([]);
   });
+  test("ヘッダ: 中身が本体と同じ左端・サイト名を押すと条件と結果をリセット", async ({ page }) => {
+    const errors = watchErrors(page);
+    await page.setViewportSize({ width: 1400, height: 900 });
+    await page.goto("/?c=ryu&ka=40&block_safe=1");
+    await expect(page.getByTestId("count").or(page.getByTestId("empty"))).toBeVisible();
+    const header = await page.getByTestId("home").boundingBox();
+    const body = await page.getByTestId("guide").boundingBox();
+    expect(header).not.toBeNull();
+    expect(body).not.toBeNull();
+    expect(Math.abs(header!.x - body!.x)).toBeLessThanOrEqual(1);
+    // 更新履歴: 新しい 1 件を出し、開くと一覧。
+    await expect(page.getByTestId("changelog-latest")).toHaveText(/\d{4}-\d{2}-\d{2}/);
+    await page.getByTestId("changelog-latest").click();
+    await expect(page.getByTestId("changelog-item").first()).toBeVisible();
+    await page.getByTestId("home").click();
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page.getByTestId("character-select")).toHaveAttribute("data-value", "");
+    await expect(page.getByTestId("ka-input")).toHaveValue("");
+    await expect(page.getByTestId("result-row")).toHaveCount(0);
+    expect(errors).toEqual([]);
+  });
+
   test("重ねる技(S7・A 案): 名前検索 → 1 つの技を指定 → 提案 → URL に技 → 条件をリセット", async ({ page }) => {
     const errors = watchErrors(page);
     await page.goto("/");

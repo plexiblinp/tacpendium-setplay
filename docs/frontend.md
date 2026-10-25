@@ -98,9 +98,23 @@ pnpm e2e             # Playwright。dist を public/_headers どおりのヘッ�
 - 旧項目のうち、要約の方針（長いと読まれない）で**載せなかったもの**: 有利フレームが 100 を超える場合（入力欄が 0〜100 しか受け付けない。S8 で KA の説明にローカル版への案内を足した）・持続未入力の技・単独で最速でも当たらない技・ダメージ 0 の技（既定）・派生技の扱い（親を前に置く表記）・候補が多いときは上位のみ（「さらに表示」がある）・安全飛びは通常の前ジャンプのみ・汚連携は相手次第・状態を前提とする技が繋ぎに混じる・設置技の硬直を持続として扱う・提案が無くても無いとは限らない。計算の挙動は変えていない。
 - 本家への導線は公開版 tacpendium（`DATA_SOURCE_URL`）。
 
+## 更新履歴（2026-10-25）
+
+画面の先頭（`Guide` の上）に、いちばん新しい更新を 1 行だけ薄く出し、押すと直近 `CHANGELOG_SHOWN`（10）件を開く（`web/src/components/Changelog.tsx`・`web/src/lib/changelog.ts`。文言 `changelog.*`）。足し方は `docs/maintenance.md`「更新履歴」。並べ替え（新しい順）の後で件数を切る。
+
+## 重ねたときの有利（2026-10-25）
+
+重ねる提案（`mode=meaty`）の行に、当てる技の「ガード／ヒットの有利」を出す（`web/src/lib/advantage.ts`。文言 `setplay.meatyAdvantage`）。
+
+- 値は moves DB の `onBlock`・`onHit`（持続 1F 目を当てたとき）＋（N − 1）。N は行の「持続 N F目ヒット」。
+- 出さない行: 重ねない提案（`gap`・`filler`）、当てる技が投げ（`category=throw`）、`onBlock`・`onHit` が両方 null。片方だけ null なら、その側を「—」にする（ヒットでダウンする技のヒット側など）。
+- 飛び道具にも出す（空振りしていない＝重なったときの値。開発者決定 2026-10-25）。
+- 計算上の値で、多段技（値は最後のヒット）・持続のどこで当てても有利が変わらない技・飛び道具の距離による差は考えない（開発者決定 2026-10-25）。そのことは「注意と対策」の先頭（`guide.advantage`）に書き、行には「目安」と付けない。
+- エンジン・データ・票の鍵は変えていない（moves DB はもともと `onHit`・`onBlock` を配っていて、画面の schema が読んでいなかっただけ）。
+
 ## コピー（D16）
 
-選択中の表記で `レシピ (フレームの説明)` を `navigator.clipboard.writeText` で書く（例: `2LP > 2LP > 236HP (Hits on active frame 3)`）。
+選択中の表記で `レシピ (フレームの説明)` を `navigator.clipboard.writeText` で書く（例: `2LP > 2LP > 236HP (Hits on active frame 3 · On block -2 / On hit +3)`。有利を出す行は ` · ` の後に有利も書く）。
 失敗したら（権限の拒否・安全でない接続）ボタンに「コピーできませんでした」と出す。
 **`Permissions-Policy` で `clipboard-write` を拒否すると、実ブラウザ（Chromium）で書き込みが失敗する**ことを S5 で確かめた（E2E の壊し方で「コピーできませんでした」になる）。そのため `_headers` は `clipboard-write=(self)` だけを許可している（HANDOVER §7.4）。
 

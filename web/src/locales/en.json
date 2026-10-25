@@ -20,6 +20,8 @@
     "tipVote": "Use Good / Bad to point other players to good recipes (optional).",
     "tipHide": "Remove unwanted rows with \"Hide\" (pressing \"Generate suggestions\" again brings them back). When there are many results, narrow them with the filters first.",
     "cautionsTitle": "Caveats and workarounds",
+    "advantage": "Meaty frame advantage is calculated as the move's advantage plus how deep into its active frames it hits. Multi-hit moves, moves whose advantage does not change with the active frame, and distance effects on projectiles are not considered",
+    "advantageFix": "Check in game",
     "distance": "Distance is not considered, so midscreen suggestions are often not usable",
     "distanceFix": "Check \"Only suggestions with an approach\"",
     "rush": "Extending a move with Drive Rush or similar is not supported",
@@ -35,6 +37,13 @@
     "ruleExcluded": "Specials out of Drive Rush, and Drive Rush out of a whiffed light attack, never appear in recipes.",
     "ruleStance": "Characters with special branches, such as Chun-Li's stance, Elena's spin or Alex's stance, are not supported or only partly supported.",
     "ruleNewCharacters": "New characters are added 2 weeks after their in-game release, to leave players the fun of discovering setplays on their own."
+  },
+  "changelog": {
+    "latest": "Updated {{date}}: {{text}}",
+    "title": "Recent updates (last {{n}})",
+    "items": {
+      "meatyAdvantage": "Meaty suggestions now show frame advantage on block/hit. Click the site name to reset the conditions"
+    }
   },
   "settings": {
     "language": "Language",
@@ -89,6 +98,7 @@
     "sortByN": "Deepest active first",
     "sortByTarget": "By meaty move",
     "hitOnActive": "Hits on active frame {{n}}",
+    "meatyAdvantage": "On block {{block}} / On hit {{hit}}",
     "truncated": "Too many candidates; only a subset was computed. Please narrow the conditions",
     "notSearched": "Set conditions and press \"Generate suggestions\"",
     "generate": "Generate suggestions",

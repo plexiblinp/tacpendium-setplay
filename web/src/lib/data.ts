@@ -42,6 +42,9 @@ export const moveSchema = z.object({
   code: z.string().min(1),
   category: z.string(),
   damage: z.number().nullable(),
+  /** ヒット・ガードの有利(持続 1F 目を当てたとき)。null はデータに値が無い。重ねたときの有利の表示に使う(lib/advantage.ts)。 */
+  onHit: z.number().int().nullable(),
+  onBlock: z.number().int().nullable(),
   notation: notationSchema,
 });
 export type Move = z.infer<typeof moveSchema>;
