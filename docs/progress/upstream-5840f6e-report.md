@@ -24,7 +24,7 @@
 1. **アルジュンを選べる**（32 キャラ。技 94、状態「神気の巨巌接地」、安全飛び 真 43・5F 42・6F 41）。画面の名前は ja「アルジュン」・en「Arjun」（ko・zh は英語名。ほかのキャラと同じ）。
 2. **表記（ナンバリング・SRK）**: ターゲットコンボが `LP>LP` → `5LP~5LP(TC)`（SRK `st.LP~st.LP (TC)`）、空中から出す技に `j.`（例 アキの蚣蝮 `2HP (蚣蝮)` → `j.2HP`）。そのため、被りを分けていた区別印の一部が要らなくなった（例 アキのしゃがみ強P `2HP (しゃがみ強P)` → `2HP`）。既存 31 キャラで numeric 236 技・SRK 228 技の表記が変わった。日本語技名・英語技名は変わらない。
 3. **キンバリー**: 疾駆け（OD 疾駆け）からの派生 6 技（急停止・首刈り・影すべり と OD 版）に親が付き、レシピの先頭に「疾駆け >」が付く。計算の結果が変わったのはキンバリーの 53 条件だけ（本家の正解の差。ほかの 30 キャラの 5,040 条件は 1 件も変わっていない）。
-   - ★票の鍵（RecipeKey）は親の手を含むので、この 6 技を含むレシピの鍵が変わる。公開から 2 日の間にそれらへ入った票があれば、新しい鍵には引き継がれない（D1 に残るが画面には出ない）。確かめるなら D1 の Console で `SELECT recipe, good, bad FROM votes WHERE char = 'kimberly' AND (recipe LIKE '%emergency_stop%' OR recipe LIKE '%torso_cleaver%' OR recipe LIKE '%shadow_slide%');`。
+   - ★票の鍵（RecipeKey）は親の手を含むので、この 6 技を含むレシピの鍵が変わる。公開から 2 日の間にそれらへ入った票があれば、新しい鍵には引き継がれない（D1 に残るが画面には出ない）。開発者が D1 の Console で `SELECT recipe, ka, good, bad FROM votes WHERE char = 'kimberly' AND (recipe LIKE '%emergency_stop%' OR recipe LIKE '%torso_cleaver%' OR recipe LIKE '%shadow_slide%');` を回し、**0 行**（2026-10-26）。引き継ぎの要る票は無い。
 4. **更新履歴**に 2026-10-27 の 1 行（アルジュン・表記の変更。5 言語）。
 
 ## 判断と理由
