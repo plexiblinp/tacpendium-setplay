@@ -1019,8 +1019,8 @@
       "notation": {
         "nameJa": "ダブルインパクト",
         "nameEn": "Double Impact",
-        "srk": "6HP>HP",
-        "numeric": "6HP>HP"
+        "srk": "6HP~st.HP (TC)",
+        "numeric": "6HP~5HP(TC)"
       },
       "calcFingerprint": "84a1bc48b5cbfde0"
     },
@@ -1531,8 +1531,8 @@
       "notation": {
         "nameJa": "【ホールド】エアフラッシュナックル",
         "nameEn": "Aerial Flash Knuckle (Hold)",
-        "srk": "214P(hold)",
-        "numeric": "214P(hold)"
+        "srk": "j.214P(hold)",
+        "numeric": "j.214P(hold)"
       },
       "calcFingerprint": "24dd79c38ef0c951"
     },
@@ -1562,8 +1562,8 @@
       "notation": {
         "nameJa": "エアフラッシュナックル",
         "nameEn": "Aerial Flash Knuckle",
-        "srk": "214P",
-        "numeric": "214P"
+        "srk": "j.214P",
+        "numeric": "j.214P"
       },
       "calcFingerprint": "d5066da9443ef612"
     },
@@ -2018,8 +2018,8 @@
       "notation": {
         "nameJa": "トリプルインパクト(2発止め)",
         "nameEn": "Triple Impact (2 hits)",
-        "srk": "LP>MP",
-        "numeric": "LP>MP"
+        "srk": "st.LP~st.MP (TC)",
+        "numeric": "5LP~5MP(TC)"
       },
       "calcFingerprint": "47a9985cda059d3d"
     },
@@ -2046,8 +2046,8 @@
       "notation": {
         "nameJa": "トリプルインパクト",
         "nameEn": "Triple Impact",
-        "srk": "LP>MP>HP",
-        "numeric": "LP>MP>HP"
+        "srk": "st.LP~st.MP~st.HP (TC)",
+        "numeric": "5LP~5MP~5HP(TC)"
       },
       "calcFingerprint": "15fe857993ef58db"
     },
@@ -2074,8 +2074,8 @@
       "notation": {
         "nameJa": "ノーズブレイカー",
         "nameEn": "Nose Breaker",
-        "srk": "2MK>2HP",
-        "numeric": "2MK>2HP"
+        "srk": "cr.MK~cr.HP (TC)",
+        "numeric": "2MK~2HP(TC)"
       },
       "calcFingerprint": "09b2df3b8e938912"
     },
@@ -2102,8 +2102,8 @@
       "notation": {
         "nameJa": "スナップバックコンボ(2発止め)",
         "nameEn": "Snapback Combo (2 hits)",
-        "srk": "MP>MP",
-        "numeric": "MP>MP"
+        "srk": "st.MP~st.MP (TC)",
+        "numeric": "5MP~5MP(TC)"
       },
       "calcFingerprint": "5f09c31c08fbeb90"
     },
@@ -2130,8 +2130,8 @@
       "notation": {
         "nameJa": "スナップバックコンボ(3発止め)",
         "nameEn": "Snapback Combo (3 hits)",
-        "srk": "MP>MP>MP",
-        "numeric": "MP>MP>MP"
+        "srk": "st.MP~st.MP~st.MP (TC)",
+        "numeric": "5MP~5MP~5MP(TC)"
       },
       "calcFingerprint": "269c1f1437569756"
     },
@@ -2158,8 +2158,8 @@
       "notation": {
         "nameJa": "スナップバックコンボ",
         "nameEn": "Snapback Combo",
-        "srk": "MP>MP>MP>MP",
-        "numeric": "MP>MP>MP>MP"
+        "srk": "st.MP~st.MP~st.MP~st.MP (TC)",
+        "numeric": "5MP~5MP~5MP~5MP(TC)"
       },
       "calcFingerprint": "b666fe8bf424f4fd"
     },

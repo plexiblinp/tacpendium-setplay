@@ -5,6 +5,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/plexiblinp/tacpendium-setplay/internal/model"
 	"github.com/plexiblinp/tacpendium-setplay/internal/moveindex"
 	"github.com/plexiblinp/tacpendium-setplay/internal/sanumber"
 )
@@ -41,6 +42,9 @@ type aliasLayer string
 
 const (
 	// LayerA は command(moveindex 正規化キー)が表記を決めた行。
+	//
+	// ★M43-05 以降(FormatCurrent)、表記は正規化キーそのままとは限らない——ターゲットコンボは正規化キーを段に
+	// 分けて `5MP~5HP(TC)` の形へ写し、空中の技は `j.` 等を前に付ける(generate_m4305.go)。
 	LayerA aliasLayer = "A"
 	// LayerB は move_code の構造(3 接頭辞 + 強度 + ボタン)が表記を決めた行。
 	LayerB aliasLayer = "B"
@@ -94,6 +98,12 @@ const (
 	ReasonRushNoOriginal unfilledReason = "rush-no-original"
 	// ReasonRushOriginalUnfilled は元技側の表記が無く合成できなかった rush 行。
 	ReasonRushOriginalUnfilled unfilledReason = "rush-original-unfilled"
+	// ReasonTargetComboUnrenderable はターゲットコンボの command を段の表記へ写せなかった行(M43-05)。
+	//
+	// ★実データでは 0 件である(TestM4305_GenerationMeasurements が固定する)。語彙外のトークン
+	// (方向 ・ボタン ・hold 以外)が段に現れたら出る。旧い `>` の形で投入すると新旧の表記が混ざるため、
+	// 投入せずに報告へ出す。
+	ReasonTargetComboUnrenderable unfilledReason = "target-combo-unrenderable"
 	// ReasonCollision は同一キャラ内で表記が衝突したため投入しない行。
 	//
 	// ★FormatCurrent(M48-08 以降)では衝突した組のうち優先の 1 つだけが残り、本理由は
@@ -182,6 +192,8 @@ type AliasPresetRule struct {
 	StandingPrefix  string
 	CrouchingPrefix string
 	JumpingPrefix   string
+	// TargetComboSuffix はターゲットコンボの末尾(M43-05。開発者の逐語 numeric `(TC)` ／ srk ` (TC)`)。
+	TargetComboSuffix string
 	// Movement は移動系 9 code の表(§4.6)。key = move_code。
 	Movement map[string]movementAlias
 }
@@ -203,6 +215,8 @@ var NumericRule = AliasPresetRule{
 	StandingPrefix:  "5",
 	CrouchingPrefix: "2",
 	JumpingPrefix:   "j.",
+	// ★numeric は `(TC)` の前に空白を置かない(開発者の逐語 `5MP~5HP(TC)`)。
+	TargetComboSuffix: "(TC)",
 	Movement: map[string]movementAlias{
 		"forward":      {text: "6"},
 		"back":         {text: "4"},
@@ -231,6 +245,8 @@ var SRKRule = AliasPresetRule{
 	StandingPrefix:  "st.",
 	CrouchingPrefix: "cr.",
 	JumpingPrefix:   "j.",
+	// ★srk は `(TC)` の前に空白を置く(開発者の逐語 `st.MP~st.HP (TC)`。SA 注記 ` (SA1)` と同じ書式)。
+	TargetComboSuffix: " (TC)",
 	Movement: map[string]movementAlias{
 		"forward":       {text: "f"},
 		"back":          {text: "b"},
@@ -298,6 +314,14 @@ var noInputDerivedTargets = map[string]map[string]bool{
 	},
 	// akuma: notes_tool の逐語「弱中強百鬼襲から派生」/「OD百鬼襲から派生」。
 	"akuma": {"demon_low_slash": true, "demon_low_slash_od": true},
+
+	// ── アルジュン(2026-10-17 開発者判断「4 行とも足す」)───────────────────────
+	// arjun: notes_tool の逐語「<強度> Justice Beyondから派生。空振りでも出る」(親＝同じ強度の cruel_shoulder_*)。
+	// ★M43-08 の投入マイグレの後に行が入るため、p34Targets(migrate_m2006_test.go)へは M43-08 が足す。
+	"arjun": {
+		"justice_beyond_light": true, "justice_beyond_medium": true,
+		"justice_beyond_heavy": true, "justice_beyond_od": true,
+	},
 }
 
 // isNoInputDerivedTarget は当該行が層 C-3 の投入対象かを返す。
@@ -532,6 +556,8 @@ func GenerateAliases(rule AliasPresetRule, charOrder []string, rowsByChar map[st
 //
 // 手順:
 //  1. 層 B / 層 A で基底の表記を作る(rush_variant は対象外。派生技は旧規則でだけ対象外)。
+//     FormatCurrent では、ここでターゲットコンボを `~`/`(TC)` の形へ写し、空中の技に `j.` を付ける
+//     (M43-05。★衝突判定より前に当てる——新しい表記どうしで被りを判定するため)。
 //  2. 移動系 9 code を衝突判定の母数へ入れる(投入は別経路だが、同一キャラ内で
 //     ぶつかれば逆引きが壊れるため判定には含める)。
 //  3. 同一キャラ内で表記が衝突した組を解く。FormatCurrent では優先の 1 つだけ残し
@@ -559,6 +585,7 @@ func resolveCharacterWith(rule AliasPresetRule, charCode string, rows []MoveRow,
 
 	noInput := format.includesNoInputDerived()
 	priority := format.resolvesDerivedWithPriority()
+	notate := format.notatesTargetComboAndAerial()
 	var unfilled []UnfilledRow
 	var discarded []DiscardedLayerAValue
 	var saNoAnnotation []UnfilledRow
@@ -598,6 +625,10 @@ func resolveCharacterWith(rule AliasPresetRule, charCode string, rows []MoveRow,
 
 		// ── 層 B(move_code の構造が表記を決める行) ───────────────────────
 		if text, ok := layerB(rule, r.MoveCode); ok {
+			// ★層 B の `jumping_*` は既に `j.` で始まるため、空中の接頭辞は二重に付かない(M43-05)。
+			if notate {
+				text = aerialNotation(r, text)
+			}
 			base[r.MoveCode] = AliasRow{CharCode: charCode, MoveCode: r.MoveCode, AliasText: text, Layer: LayerB}
 			// ★捨てた層 A の値を記録する(D-2 (b)「黙って捨てない」)。
 			if a, has := tokenOf[r.MoveCode]; has && a != text {
@@ -653,9 +684,24 @@ func resolveCharacterWith(rule AliasPresetRule, charCode string, rows []MoveRow,
 			saNoAnnotation = append(saNoAnnotation, mkUnfilled(r, "sa-no-annotation",
 				"move_code から SA/CA 番号を抽出できない"))
 		}
+		text += ann
+		if notate {
+			// ── M43-05: ターゲットコンボの `~`/`(TC)` ・空中の技の `j.` ──────────────
+			if r.Category == model.MoveCategoryTargetCombo {
+				tc, ok := renderTargetCombo(rule, r, text)
+				if !ok {
+					// ★旧い `>` の形のまま黙って投入しない(新旧の表記が混ざる)。穴として報告する。
+					unfilled = append(unfilled, mkUnfilled(r, ReasonTargetComboUnrenderable, r.Command))
+					continue
+				}
+				text = tc
+			} else {
+				text = aerialNotation(r, text)
+			}
+		}
 		base[r.MoveCode] = AliasRow{
 			CharCode: charCode, MoveCode: r.MoveCode,
-			AliasText: text + ann, Layer: LayerA,
+			AliasText: text, Layer: LayerA,
 		}
 	}
 

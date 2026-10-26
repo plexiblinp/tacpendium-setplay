@@ -9,20 +9,20 @@
     "scripts/wasm"
   ],
   "trees": {
-    "internal": "a32ea84722a6cc0f79cba84199e69fbba178d04930c3a4653f5bbdb8c5d9df30",
-    "engine": "20a06385b573e36a3248796c31c15da1f9200f0cfa941469da8555a2fa666028",
+    "internal": "a8863d8c73c1da56d2fd4278c79d13f1c92008221941f1f72cd78ee1432f929d",
+    "engine": "536fb246b93ef1a84fb6c84bbef9da98363bbe87f3c1cba87d1bcb7375012531",
     "cmd": "610740a69aae39b89a544e73593478fa28f8da2078c0485d339f99bea434eb88",
     "go.mod": "2b5bc18aa04c8afe2887fb20c7ec67fdf94ec275ba884c65626bb498a318f63e",
-    "upstream/tacpendium.lock": "7da1bc2f107a4fc4d38e5d9887c2424f1b2c30f287b0b4992698970900d43efc",
+    "upstream/tacpendium.lock": "3ce1c350e8d3267555e2b06d6b3dd189de91dcb51d53b04ff66e34a72bf91993",
     "scripts/wasm": "4ed68029b1a31954960d131bdeefec0543ecaabfcf87bfa6f445333f66bfbf82"
   },
   "kinds": {
     "oracle": {
-      "version": 1,
+      "version": 2,
       "chars": {}
     },
     "wasm": {
-      "version": 1,
+      "version": 2,
       "chars": {}
     }
   },
@@ -170,6 +170,31 @@
         "go.mod"
       ],
       "reason": "go の行を 1.26.4→1.26.10 に上げた(GO-2026-6809 の修正版より古い Go でビルドできないように。toolchain の行は go の行と同じになり go mod tidy で消えた)。計算のコードは変えていない。手元の go1.26.10 で go test -count=1 ./... EXIT=0・PASS 359・FAIL 0・本家との突き合わせ 5208 条件・不一致 0、govulncheck 違反 0 件を確認したため CI で全キャラを回し直さない"
+    },
+    {
+      "at": "2026-10-25T14:47:19Z",
+      "decision": "all",
+      "kinds": [
+        "oracle",
+        "wasm"
+      ],
+      "chars": [],
+      "changed": [
+        "internal",
+        "engine",
+        "upstream/tacpendium.lock"
+      ],
+      "reason": "公開版 v0.3.0(5840f6e)の取り込み: seedgen の表記の規則(TC・j.)、setplay の関数分け(SuggestForKnockdown へ移植)、arjun の接近技、internal/migrationpin の追加、moves DB の再生成(32 キャラ)。計算に効く変更を含むので全部回す"
+    },
+    {
+      "at": "2026-10-25T17:14:05Z",
+      "decision": "none",
+      "kinds": [],
+      "chars": [],
+      "changed": [
+        "upstream/tacpendium.lock"
+      ],
+      "reason": "公開版のコミットのメールの書き換えで lock を 5840f6e → ebd2768 に(tree は同じ d96e7978。本家の正解は作り直して cmp で比べる)"
     }
   ]
 }

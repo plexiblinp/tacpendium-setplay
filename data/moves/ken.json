@@ -2139,8 +2139,8 @@
       "notation": {
         "nameJa": "顎撥二連",
         "nameEn": "Chin Buster",
-        "srk": "MP>HP",
-        "numeric": "MP>HP"
+        "srk": "st.MP~st.HP (TC)",
+        "numeric": "5MP~5HP(TC)"
       },
       "calcFingerprint": "4e5419a5bc917d1a"
     },
@@ -2167,8 +2167,8 @@
       "notation": {
         "nameJa": "閃光連脚(2発止め)",
         "nameEn": "Triple Flash Kicks (2 hits)",
-        "srk": "MK>MK",
-        "numeric": "MK>MK"
+        "srk": "st.MK~st.MK (TC)",
+        "numeric": "5MK~5MK(TC)"
       },
       "calcFingerprint": "ac40a91373d3e2f2"
     },
@@ -2195,8 +2195,8 @@
       "notation": {
         "nameJa": "閃光連脚",
         "nameEn": "Triple Flash Kicks",
-        "srk": "MK>MK>HK",
-        "numeric": "MK>MK>HK"
+        "srk": "st.MK~st.MK~st.HK (TC)",
+        "numeric": "5MK~5MK~5HK(TC)"
       },
       "calcFingerprint": "222185099a0cf711"
     },

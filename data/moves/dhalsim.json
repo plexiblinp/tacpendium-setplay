@@ -482,7 +482,7 @@
         "nameJa": "しゃがみ弱P",
         "nameEn": "Crouching Light Punch",
         "srk": "cr.LP",
-        "numeric": "2LP (しゃがみ弱P)"
+        "numeric": "2LP"
       },
       "calcFingerprint": "f54b3bdb0485f322"
     },
@@ -510,7 +510,7 @@
         "nameJa": "しゃがみ弱K",
         "nameEn": "Crouching Light Kick",
         "srk": "cr.LK",
-        "numeric": "2LK (しゃがみ弱K)"
+        "numeric": "2LK"
       },
       "calcFingerprint": "eea002df8af5396b"
     },
@@ -566,7 +566,7 @@
         "nameJa": "しゃがみ中K",
         "nameEn": "Crouching Medium Kick",
         "srk": "cr.MK",
-        "numeric": "2MK (しゃがみ中K)"
+        "numeric": "2MK"
       },
       "calcFingerprint": "57534a20decdd316"
     },
@@ -622,7 +622,7 @@
         "nameJa": "しゃがみ強K",
         "nameEn": "Crouching Heavy Kick",
         "srk": "cr.HK",
-        "numeric": "2HK (しゃがみ強K)"
+        "numeric": "2HK"
       },
       "calcFingerprint": "f5d83619db1015ea"
     },
@@ -1185,8 +1185,8 @@
       "notation": {
         "nameJa": "ドリル頭突き",
         "nameEn": "Yoga Mummy",
-        "srk": "2LP",
-        "numeric": "2LP (ドリル頭突き)"
+        "srk": "j.2LP",
+        "numeric": "j.2LP"
       },
       "calcFingerprint": "0d08a12493e9801e"
     },
@@ -1217,8 +1217,8 @@
       "notation": {
         "nameJa": "弱ドリルキック",
         "nameEn": "Drill Kick",
-        "srk": "2LK",
-        "numeric": "2LK (弱ドリルキック)"
+        "srk": "j.2LK",
+        "numeric": "j.2LK"
       },
       "calcFingerprint": "630c6d0d9d18c41a"
     },
@@ -1249,8 +1249,8 @@
       "notation": {
         "nameJa": "中ドリルキック",
         "nameEn": "Medium Drill Kick",
-        "srk": "2MK",
-        "numeric": "2MK (中ドリルキック)"
+        "srk": "j.2MK",
+        "numeric": "j.2MK"
       },
       "calcFingerprint": "bfd6f0abd94d97c6"
     },
@@ -1281,8 +1281,8 @@
       "notation": {
         "nameJa": "強ドリルキック",
         "nameEn": "Heavy Drill Kick",
-        "srk": "2HK",
-        "numeric": "2HK (強ドリルキック)"
+        "srk": "j.2HK",
+        "numeric": "j.2HK"
       },
       "calcFingerprint": "1db0c4b7c2618322"
     },
@@ -1617,8 +1617,8 @@
       "notation": {
         "nameJa": "弱ヨガフレイム",
         "nameEn": "Light Yoga Flame",
-        "srk": "63214LP (flame)",
-        "numeric": "63214LP (弱ヨガフレイム)"
+        "srk": "63214LP",
+        "numeric": "63214LP"
       },
       "calcFingerprint": "424416b65d6164cc"
     },
@@ -1645,8 +1645,8 @@
       "notation": {
         "nameJa": "中ヨガフレイム",
         "nameEn": "Medium Yoga Flame",
-        "srk": "63214MP (flame)",
-        "numeric": "63214MP (中ヨガフレイム)"
+        "srk": "63214MP",
+        "numeric": "63214MP"
       },
       "calcFingerprint": "c176bf96089e129f"
     },
@@ -1673,8 +1673,8 @@
       "notation": {
         "nameJa": "強ヨガフレイム",
         "nameEn": "Heavy Yoga Flame",
-        "srk": "63214HP (flame)",
-        "numeric": "63214HP (強ヨガフレイム)"
+        "srk": "63214HP",
+        "numeric": "63214HP"
       },
       "calcFingerprint": "b9abaa9885e264a9"
     },
@@ -1701,8 +1701,8 @@
       "notation": {
         "nameJa": "ODヨガフレイム",
         "nameEn": "OD Yoga Flame",
-        "srk": "63214P+P (flame)",
-        "numeric": "63214P+P (ODヨガフレイム)"
+        "srk": "63214P+P",
+        "numeric": "63214P+P"
       },
       "calcFingerprint": "dde9dac88f96cd35"
     },
@@ -1845,8 +1845,8 @@
       "notation": {
         "nameJa": "弱ヨガコメット",
         "nameEn": "Light Yoga Comet",
-        "srk": "63214LP (comet)",
-        "numeric": "63214LP (弱ヨガコメット)"
+        "srk": "j.63214LP",
+        "numeric": "j.63214LP"
       },
       "calcFingerprint": "10036829d757f2c9"
     },
@@ -1877,8 +1877,8 @@
       "notation": {
         "nameJa": "中ヨガコメット",
         "nameEn": "Medium Yoga Comet",
-        "srk": "63214MP (comet)",
-        "numeric": "63214MP (中ヨガコメット)"
+        "srk": "j.63214MP",
+        "numeric": "j.63214MP"
       },
       "calcFingerprint": "1e9476d546980642"
     },
@@ -1909,8 +1909,8 @@
       "notation": {
         "nameJa": "強ヨガコメット",
         "nameEn": "Heavy Yoga Comet",
-        "srk": "63214HP (comet)",
-        "numeric": "63214HP (強ヨガコメット)"
+        "srk": "j.63214HP",
+        "numeric": "j.63214HP"
       },
       "calcFingerprint": "1b970b6e3ffbd044"
     },
@@ -1941,8 +1941,8 @@
       "notation": {
         "nameJa": "ODヨガコメット",
         "nameEn": "OD Yoga Comet",
-        "srk": "63214P+P (comet)",
-        "numeric": "63214P+P (ODヨガコメット)"
+        "srk": "j.63214P+P",
+        "numeric": "j.63214P+P"
       },
       "calcFingerprint": "523a7fb6508961ac"
     },

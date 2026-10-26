@@ -817,8 +817,8 @@
       "notation": {
         "nameJa": "垂直ジャンプ強P",
         "nameEn": "Heavy Neutral Jumping Punch",
-        "srk": "HP",
-        "numeric": "HP"
+        "srk": "nj.HP",
+        "numeric": "nj.HP"
       },
       "calcFingerprint": "de83e3f0149d227d"
     },

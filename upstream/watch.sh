@@ -20,6 +20,7 @@ WATCH=(
   internal/moveindex
   internal/sanumber
   internal/gameversion
+  internal/migrationpin
   web/src/features/setplay
   web/src/locales
   character_data

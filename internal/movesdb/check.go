@@ -10,8 +10,8 @@ import (
 
 // 検査(HANDOVER §4.3)。違反は文字列の一覧で返す(空なら合格)。
 
-// ExpectedCharacterCount は moves DB のキャラ数(本家 characters の行数。キャラが増えたら直す)。
-const ExpectedCharacterCount = 31
+// ExpectedCharacterCount は moves DB のキャラ数(本家 characters の行数。キャラが増えたら直す。2026-10 のアルジュンで 32)。
+const ExpectedCharacterCount = 32
 
 // notationKinds は 4 表記の名前と取り出し方。
 var notationKinds = []struct {

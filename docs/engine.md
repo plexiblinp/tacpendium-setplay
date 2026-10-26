@@ -76,7 +76,7 @@ KA の上限（サイト 100 = HANDOVER D10）はエンジンでは掛けない�
 |---|---|
 | 票（第一キー・limit の前・票なしは不変） | `engine/votes_test.go`・`internal/service/setplay/votes_test.go` |
 | 本家のテスト（golden を含む） | `internal/service/setplay/*_test.go`（本文は本家と同じ） |
-| 本家の実装との一致（全 31 キャラ × KA 8 通り × クエリ 21 通り。クエリの `{safe_jump.true}`・`{safe_jump.f5}`・`{safe_jump.f6}` はキャラごとの安全飛びの値に置き換える） | `engine/conformance_test.go` が `engine/testdata/upstream_oracle.json` と突き合わせる。正解は `scripts/upstream-oracle/run.sh` が本家のハンドラ・サービス・SQL を本物の DB で回して作る |
+| 本家の実装との一致（全 32 キャラ × KA 8 通り × クエリ 21 通り。クエリの `{safe_jump.true}`・`{safe_jump.f5}`・`{safe_jump.f6}` はキャラごとの安全飛びの値に置き換える） | `engine/conformance_test.go` が `engine/testdata/upstream_oracle.json` と突き合わせる。正解は `scripts/upstream-oracle/run.sh` が本家のハンドラ・サービス・SQL を本物の DB で回して作る |
 | 読み口の一致（moves DB の候補行・親子関係 = 本家 DB の候補行・親子関係） | `engine` の `TestConformance_CandidatesMatchUpstreamRepository` |
 | 実データの golden（GC-1〜5） | `engine/golden_test.go` |
 | 本家の canary（接近技の辞書・連打版の命名） | `engine/canary_test.go` |

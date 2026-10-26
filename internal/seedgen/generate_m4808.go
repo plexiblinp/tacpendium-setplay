@@ -17,7 +17,11 @@ import (
 // ★旧規則の行はすべて新しい規則でも同じ表記で残る(優先＝派生でない技 → 派生技 の帰結)。
 // それが崩れたら生成を止める——崩れたまま出すと、足すだけの差分では既存の行の変化を表せない。
 
-// GenerateAliasDelta は 1 プリセット分の差分(FormatCurrent − FormatPreM4808)の SQL を作る。
+// GenerateAliasDelta は 1 プリセット分の差分(FormatPreM4305 − FormatPreM4808)の SQL を作る。
+//
+// ★【M43-05】000012 は適用済みである。⇒ 新しい側は FormatCurrent ではなく
+// M48-08 の規則を凍結した FormatPreM4305 である(M43-05 の差分は GenerateAliasRewrite ＝000014)。
+// ★【M43-07】000012 は固定済み(internal/migrationpin)であり、生成物テストは今の CSV で作り直して照らさない。
 //
 // ★移動系 9 code は出さない(規則を変えても変わらず、000008 が投入済み)。
 // ★up は既存の行を書き換えない(NOT EXISTS)。down は差分の行だけを当該プリセットの中で消す
@@ -35,7 +39,7 @@ func GenerateAliasDelta(rule AliasPresetRule, charOrder []string, rowsByChar map
 	for _, charCode := range charOrder {
 		rows := rowsByChar[charCode]
 		oldRows, _, _, _, _ := resolveCharacter(rule, charCode, rows, FormatPreM4808)
-		newRows, unfilled, discarded, saNoAnn, collisions := resolveCharacter(rule, charCode, rows, FormatCurrent)
+		newRows, unfilled, discarded, saNoAnn, collisions := resolveCharacter(rule, charCode, rows, FormatPreM4305)
 		res.Unfilled = append(res.Unfilled, unfilled...)
 		res.DiscardedLayerA = append(res.DiscardedLayerA, discarded...)
 		res.SAWithoutAnnotation = append(res.SAWithoutAnnotation, saNoAnn...)
@@ -65,7 +69,7 @@ func GenerateAliasDelta(rule AliasPresetRule, charOrder []string, rowsByChar map
 		if len(emit) == 0 {
 			continue
 		}
-		writeCharAliasInsert(&up, rule, charCode, emit, FormatCurrent)
+		writeCharAliasInsert(&up, rule, charCode, emit, FormatPreM4305)
 		downBlocks = append(downBlocks, buildCharAliasDeltaDown(rule, charCode, emit))
 	}
 	for i := len(downBlocks) - 1; i >= 0; i-- {

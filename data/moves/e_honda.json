@@ -552,7 +552,7 @@
         "nameJa": "しゃがみ中K",
         "nameEn": "Crouching Medium Kick",
         "srk": "cr.MK",
-        "numeric": "2MK (しゃがみ中K)"
+        "numeric": "2MK"
       },
       "calcFingerprint": "188cb864b29b327c"
     },
@@ -775,8 +775,8 @@
       "notation": {
         "nameJa": "垂直ジャンプ強P",
         "nameEn": "Heavy Neutral Jumping Punch",
-        "srk": "HP",
-        "numeric": "HP"
+        "srk": "nj.HP",
+        "numeric": "nj.HP"
       },
       "calcFingerprint": "523e155ded01388d"
     },
@@ -999,8 +999,8 @@
       "notation": {
         "nameJa": "フライングスモウプレス",
         "nameEn": "Flying Sumo Press",
-        "srk": "2MK",
-        "numeric": "2MK (フライングスモウプレス)"
+        "srk": "j.2MK",
+        "numeric": "j.2MK"
       },
       "calcFingerprint": "20a28bfd89daf4fa"
     },
@@ -1991,8 +1991,8 @@
       "notation": {
         "nameJa": "連ね張り手",
         "nameEn": "Double Slaps",
-        "srk": "LP>MP",
-        "numeric": "LP>MP"
+        "srk": "st.LP~st.MP (TC)",
+        "numeric": "5LP~5MP(TC)"
       },
       "calcFingerprint": "bac146a88aa1f8e2"
     },
@@ -2019,8 +2019,8 @@
       "notation": {
         "nameJa": "地鎮",
         "nameEn": "Toko Shizume",
-        "srk": "MP>3HK",
-        "numeric": "MP>3HK"
+        "srk": "st.MP~3HK (TC)",
+        "numeric": "5MP~3HK(TC)"
       },
       "calcFingerprint": "32418f0eac45a7db"
     },
@@ -2047,8 +2047,8 @@
       "notation": {
         "nameJa": "地鎮(肩屋入り)",
         "nameEn": "Toko Shizume Sumo Spirit",
-        "srk": "MP>3HK>2HK",
-        "numeric": "MP>3HK>2HK"
+        "srk": "st.MP~3HK~cr.HK (TC)",
+        "numeric": "5MP~3HK~2HK(TC)"
       },
       "calcFingerprint": "650668cfd4ab9c4b"
     },
@@ -2328,7 +2328,7 @@
         "nameJa": "しゃがみ中K(ラッシュ)",
         "nameEn": "Drive Rush Crouching Medium Kick",
         "srk": "DR > cr.MK",
-        "numeric": "DR > 2MK (しゃがみ中K(ラッシュ))"
+        "numeric": "DR > 2MK"
       },
       "calcFingerprint": "544f64e96e845279"
     },
@@ -2467,8 +2467,8 @@
       "notation": {
         "nameJa": "フライングスモウプレス(ラッシュ)",
         "nameEn": "Drive Rush Flying Sumo Press",
-        "srk": "DR > 2MK",
-        "numeric": "DR > 2MK (フライングスモウプレス(ラッシュ))"
+        "srk": "DR > j.2MK",
+        "numeric": "DR > j.2MK"
       },
       "calcFingerprint": "93f67ba868dfdf63"
     },

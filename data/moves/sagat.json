@@ -1019,8 +1019,8 @@
       "notation": {
         "nameJa": "ステップミドルキック",
         "nameEn": "Middle Step Kick",
-        "srk": "MK>HK",
-        "numeric": "MK>HK"
+        "srk": "st.MK~st.HK (TC)",
+        "numeric": "5MK~5HK(TC)"
       },
       "calcFingerprint": "650828ead871ae62"
     },
@@ -1047,8 +1047,8 @@
       "notation": {
         "nameJa": "タイガースティング",
         "nameEn": "Tiger Sting",
-        "srk": "HP>HK",
-        "numeric": "HP>HK"
+        "srk": "st.HP~st.HK (TC)",
+        "numeric": "5HP~5HK(TC)"
       },
       "calcFingerprint": "c6b5a7785c8860ee"
     },
@@ -1075,8 +1075,8 @@
       "notation": {
         "nameJa": "タイガースラッシュ",
         "nameEn": "Tiger Slash",
-        "srk": "2MP>HP",
-        "numeric": "2MP>HP"
+        "srk": "cr.MP~st.HP (TC)",
+        "numeric": "2MP~5HP(TC)"
       },
       "calcFingerprint": "f0a4abc8bc4d3e2f"
     },
@@ -1103,8 +1103,8 @@
       "notation": {
         "nameJa": "タイガーライズ",
         "nameEn": "Tiger Rise",
-        "srk": "2MP>HK",
-        "numeric": "2MP>HK"
+        "srk": "cr.MP~st.HK (TC)",
+        "numeric": "2MP~5HK(TC)"
       },
       "calcFingerprint": "b1e9ae0620623050"
     },

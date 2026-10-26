@@ -580,7 +580,7 @@
         "nameJa": "しゃがみ強P",
         "nameEn": "Crouching Heavy Punch",
         "srk": "cr.HP",
-        "numeric": "2HP (しゃがみ強P)"
+        "numeric": "2HP"
       },
       "calcFingerprint": "2d683f46b0f0896c"
     },
@@ -1279,8 +1279,8 @@
       "notation": {
         "nameJa": "ブリッツストライク",
         "nameEn": "Blitz Strike",
-        "srk": "2HP",
-        "numeric": "2HP (ブリッツストライク)"
+        "srk": "j.2HP",
+        "numeric": "j.2HP"
       },
       "calcFingerprint": "bfcb5ce0e9ec44a6"
     },
@@ -1307,8 +1307,8 @@
       "notation": {
         "nameJa": "エリアルシュート",
         "nameEn": "Aerial Shot",
-        "srk": "8HK",
-        "numeric": "8HK"
+        "srk": "j.8HK",
+        "numeric": "j.8HK"
       },
       "calcFingerprint": "5d4437f3b627a82b"
     },
@@ -1645,8 +1645,8 @@
       "notation": {
         "nameJa": "弱イーグル・スパイク",
         "nameEn": "Light Eagle Spike",
-        "srk": "214LK (eagle spike)",
-        "numeric": "214LK (弱イーグル・スパイク)"
+        "srk": "214LK",
+        "numeric": "214LK"
       },
       "calcFingerprint": "ced1734672581bcb"
     },
@@ -1673,7 +1673,7 @@
       "notation": {
         "nameJa": "【強化】弱イーグル・スパイク",
         "nameEn": "Light Buffed Eagle Spike",
-        "srk": "214LK (buffed eagle spike)",
+        "srk": "214LK (buffed)",
         "numeric": "[強化] 214LK"
       },
       "calcFingerprint": "6efb786ddb9ce3d9"
@@ -1701,8 +1701,8 @@
       "notation": {
         "nameJa": "中イーグル・スパイク",
         "nameEn": "Medium Eagle Spike",
-        "srk": "214MK (eagle spike)",
-        "numeric": "214MK (中イーグル・スパイク)"
+        "srk": "214MK",
+        "numeric": "214MK"
       },
       "calcFingerprint": "d7a880ce893c5d6e"
     },
@@ -1729,7 +1729,7 @@
       "notation": {
         "nameJa": "【強化】中イーグル・スパイク",
         "nameEn": "Medium Buffed Eagle Spike",
-        "srk": "214MK (buffed eagle spike)",
+        "srk": "214MK (buffed)",
         "numeric": "[強化] 214MK"
       },
       "calcFingerprint": "17bbb1c09a743c03"
@@ -1757,8 +1757,8 @@
       "notation": {
         "nameJa": "強イーグル・スパイク",
         "nameEn": "Heavy Eagle Spike",
-        "srk": "214HK (eagle spike)",
-        "numeric": "214HK (強イーグル・スパイク)"
+        "srk": "214HK",
+        "numeric": "214HK"
       },
       "calcFingerprint": "3297ffe553fa5c02"
     },
@@ -1785,7 +1785,7 @@
       "notation": {
         "nameJa": "【強化】強イーグル・スパイク",
         "nameEn": "Heavy Buffed Eagle Spike",
-        "srk": "214HK (buffed eagle spike)",
+        "srk": "214HK (buffed)",
         "numeric": "[強化] 214HK"
       },
       "calcFingerprint": "8021480b24c6294c"
@@ -1813,8 +1813,8 @@
       "notation": {
         "nameJa": "ODイーグル・スパイク",
         "nameEn": "OD Eagle Spike",
-        "srk": "214K+K (eagle spike)",
-        "numeric": "214K+K (ODイーグル・スパイク)"
+        "srk": "214K+K",
+        "numeric": "214K+K"
       },
       "calcFingerprint": "cb7fdee423dee3f6"
     },
@@ -1841,7 +1841,7 @@
       "notation": {
         "nameJa": "【強化】ODイーグル・スパイク",
         "nameEn": "OD Buffed Eagle Spike",
-        "srk": "214K+K (buffed eagle spike)",
+        "srk": "214K+K (buffed)",
         "numeric": "[強化] 214K+K"
       },
       "calcFingerprint": "d1cefda44a5f60a0"
@@ -2375,8 +2375,8 @@
       "notation": {
         "nameJa": "弱アラビアン・スカイハイ",
         "nameEn": "Light Arabian Skyhigh",
-        "srk": "214LK (arabian skyhigh)",
-        "numeric": "214LK (弱アラビアン・スカイハイ)"
+        "srk": "j.214LK",
+        "numeric": "j.214LK"
       },
       "calcFingerprint": "e99460ac522ed9e3"
     },
@@ -2405,8 +2405,8 @@
       "notation": {
         "nameJa": "中アラビアン・スカイハイ",
         "nameEn": "Medium Arabian Skyhigh",
-        "srk": "214MK (arabian skyhigh)",
-        "numeric": "214MK (中アラビアン・スカイハイ)"
+        "srk": "j.214MK",
+        "numeric": "j.214MK"
       },
       "calcFingerprint": "37802124d92b9ea1"
     },
@@ -2435,8 +2435,8 @@
       "notation": {
         "nameJa": "強アラビアン・スカイハイ",
         "nameEn": "Heavy Arabian Skyhigh",
-        "srk": "214HK (arabian skyhigh)",
-        "numeric": "214HK (強アラビアン・スカイハイ)"
+        "srk": "j.214HK",
+        "numeric": "j.214HK"
       },
       "calcFingerprint": "00a97dfb84b6b80c"
     },
@@ -2465,8 +2465,8 @@
       "notation": {
         "nameJa": "ODアラビアン・スカイハイ",
         "nameEn": "OD Arabian Skyhigh",
-        "srk": "214K+K (arabian skyhigh)",
-        "numeric": "214K+K (ODアラビアン・スカイハイ)"
+        "srk": "j.214K+K",
+        "numeric": "j.214K+K"
       },
       "calcFingerprint": "b4cb1ba005438ac8"
     },
@@ -2605,8 +2605,8 @@
       "notation": {
         "nameJa": "ライジング・キック",
         "nameEn": "Rising Kick",
-        "srk": "MP>HK",
-        "numeric": "MP>HK"
+        "srk": "st.MP~st.HK (TC)",
+        "numeric": "5MP~5HK(TC)"
       },
       "calcFingerprint": "b68c1f80f53443c0"
     },

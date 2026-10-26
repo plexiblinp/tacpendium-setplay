@@ -628,7 +628,7 @@
         "nameJa": "しゃがみ強P",
         "nameEn": "Crouching Heavy Punch",
         "srk": "cr.HP",
-        "numeric": "2HP (しゃがみ強P)"
+        "numeric": "2HP"
       },
       "calcFingerprint": "7adeee37710d9c0e"
     },
@@ -1553,8 +1553,8 @@
       "notation": {
         "nameJa": "フライングクロスチョップ",
         "nameEn": "Flying Cross Chop",
-        "srk": "2HP",
-        "numeric": "2HP (フライングクロスチョップ)"
+        "srk": "j.2HP",
+        "numeric": "j.2HP"
       },
       "calcFingerprint": "cf31eae7a374cd20"
     },
@@ -1581,8 +1581,8 @@
       "notation": {
         "nameJa": "パームストライク",
         "nameEn": "Palm Strikes",
-        "srk": "MP>HP",
-        "numeric": "MP>HP"
+        "srk": "st.MP~st.HP (TC)",
+        "numeric": "5MP~5HP(TC)"
       },
       "calcFingerprint": "62f2008f4f952d19"
     },
@@ -1609,8 +1609,8 @@
       "notation": {
         "nameJa": "ツイストドロップ",
         "nameEn": "Twisted Drop",
-        "srk": "2LK>2HK",
-        "numeric": "2LK>2HK"
+        "srk": "cr.LK~cr.HK (TC)",
+        "numeric": "2LK~2HK(TC)"
       },
       "calcFingerprint": "1937db31de7c8dde"
     },

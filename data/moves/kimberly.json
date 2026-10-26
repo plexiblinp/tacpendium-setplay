@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "dataVersion": "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
+  "dataVersion": "ebd2768d6f19287e36ab68f3f1b8e64f806ec1bf",
   "character": {
     "code": "kimberly",
     "name": {
@@ -29,7 +29,7 @@
     "f5": 42,
     "f6": 41
   },
-  "calcFingerprint": "16ecdf0119d1e18e391b0656d44cd09c43eebd2af68644e838aaf9aebaa745b9",
+  "calcFingerprint": "e9d74a445b19b68f814e274b5cdbc45857c8d0f2151c456c5d3692db0a774c57",
   "moves": [
     {
       "code": "forward",
@@ -531,7 +531,7 @@
         "nameJa": "しゃがみ中P",
         "nameEn": "Crouching Medium Punch",
         "srk": "cr.MP",
-        "numeric": "2MP (しゃがみ中P)"
+        "numeric": "2MP"
       },
       "calcFingerprint": "48f2da918cee06ab"
     },
@@ -1098,8 +1098,8 @@
       "notation": {
         "nameJa": "肘落とし",
         "nameEn": "Elbow Drop",
-        "srk": "2MP",
-        "numeric": "2MP (肘落とし)"
+        "srk": "j.2MP",
+        "numeric": "j.2MP"
       },
       "calcFingerprint": "adc60386077ebb41"
     },
@@ -1270,8 +1270,8 @@
       "notation": {
         "nameJa": "空中武神旋風脚",
         "nameEn": "Aerial Bushin Senpukyaku",
-        "srk": "214K",
-        "numeric": "214K"
+        "srk": "j.214K",
+        "numeric": "j.214K"
       },
       "calcFingerprint": "b706052a353a724c"
     },
@@ -1349,7 +1349,9 @@
       "chainCancelTotal": null,
       "fastestUnreachable": false,
       "originalMove": null,
-      "parents": [],
+      "parents": [
+        "sprint_od"
+      ],
       "state": null,
       "notation": {
         "nameJa": "OD急停止",
@@ -1357,7 +1359,7 @@
         "srk": "P (OD) (emergency stop)",
         "numeric": "P (OD) (OD急停止)"
       },
-      "calcFingerprint": "77dbad8d1f7b6129"
+      "calcFingerprint": "65f0450bca5fb852"
     },
     {
       "code": "emergency_stop",
@@ -1377,7 +1379,9 @@
       "chainCancelTotal": null,
       "fastestUnreachable": false,
       "originalMove": null,
-      "parents": [],
+      "parents": [
+        "sprint"
+      ],
       "state": null,
       "notation": {
         "nameJa": "急停止",
@@ -1385,7 +1389,7 @@
         "srk": "P (emergency stop)",
         "numeric": "P (急停止)"
       },
-      "calcFingerprint": "bfaa70bef2fb0d4d"
+      "calcFingerprint": "d957d67159b1868f"
     },
     {
       "code": "torso_cleaver_od",
@@ -1405,7 +1409,9 @@
       "chainCancelTotal": null,
       "fastestUnreachable": false,
       "originalMove": null,
-      "parents": [],
+      "parents": [
+        "sprint_od"
+      ],
       "state": null,
       "notation": {
         "nameJa": "OD胴刎ね",
@@ -1413,7 +1419,7 @@
         "srk": "LK (OD)",
         "numeric": "LK (OD)"
       },
-      "calcFingerprint": "31e35d58a4d0cab4"
+      "calcFingerprint": "611e66d4eb078033"
     },
     {
       "code": "torso_cleaver",
@@ -1433,7 +1439,9 @@
       "chainCancelTotal": null,
       "fastestUnreachable": false,
       "originalMove": null,
-      "parents": [],
+      "parents": [
+        "sprint"
+      ],
       "state": null,
       "notation": {
         "nameJa": "胴刎ね",
@@ -1441,7 +1449,7 @@
         "srk": "LK",
         "numeric": "LK"
       },
-      "calcFingerprint": "84cd00395fa59a98"
+      "calcFingerprint": "95d7be3751e865b5"
     },
     {
       "code": "shadow_slide_od",
@@ -1461,7 +1469,9 @@
       "chainCancelTotal": null,
       "fastestUnreachable": false,
       "originalMove": null,
-      "parents": [],
+      "parents": [
+        "sprint_od"
+      ],
       "state": null,
       "notation": {
         "nameJa": "OD影すくい",
@@ -1469,7 +1479,7 @@
         "srk": "MK (OD)",
         "numeric": "MK (OD)"
       },
-      "calcFingerprint": "318a31f08479d6d1"
+      "calcFingerprint": "ebcd842d544f02ed"
     },
     {
       "code": "shadow_slide",
@@ -1489,7 +1499,9 @@
       "chainCancelTotal": null,
       "fastestUnreachable": false,
       "originalMove": null,
-      "parents": [],
+      "parents": [
+        "sprint"
+      ],
       "state": null,
       "notation": {
         "nameJa": "影すくい",
@@ -1497,7 +1509,7 @@
         "srk": "MK",
         "numeric": "MK"
       },
-      "calcFingerprint": "811a1d3a7e6c16cc"
+      "calcFingerprint": "98d084c487716c9c"
     },
     {
       "code": "neck_hunter_od",
@@ -1517,7 +1529,9 @@
       "chainCancelTotal": null,
       "fastestUnreachable": false,
       "originalMove": null,
-      "parents": [],
+      "parents": [
+        "sprint_od"
+      ],
       "state": null,
       "notation": {
         "nameJa": "OD首狩り",
@@ -1525,7 +1539,7 @@
         "srk": "HK (OD)",
         "numeric": "HK (OD)"
       },
-      "calcFingerprint": "89c24966c8ed42eb"
+      "calcFingerprint": "bb973c42e54336b4"
     },
     {
       "code": "neck_hunter",
@@ -1545,7 +1559,9 @@
       "chainCancelTotal": null,
       "fastestUnreachable": false,
       "originalMove": null,
-      "parents": [],
+      "parents": [
+        "sprint"
+      ],
       "state": null,
       "notation": {
         "nameJa": "首狩り",
@@ -1553,7 +1569,7 @@
         "srk": "HK",
         "numeric": "HK"
       },
-      "calcFingerprint": "879b7ca557b9f849"
+      "calcFingerprint": "7ae35eb3b01f8fd8"
     },
     {
       "code": "arc_step_od",
@@ -2251,7 +2267,7 @@
         "nameJa": "SA2 武神天翔亢竜",
         "nameEn": "SA2 Bushin Scramble",
         "srk": "214214P (SA2)",
-        "numeric": "214214P (SA2) (SA2 武神天翔亢竜)"
+        "numeric": "214214P (SA2)"
       },
       "calcFingerprint": "c3dd30b753ddc612"
     },
@@ -2280,8 +2296,8 @@
       "notation": {
         "nameJa": "SA2 空中武神天翔亢竜",
         "nameEn": "SA2 Soaring Bushin Scramble",
-        "srk": "214214P (SA2) (soaring)",
-        "numeric": "214214P (SA2) (SA2 空中武神天翔亢竜)"
+        "srk": "j.214214P (SA2)",
+        "numeric": "j.214214P (SA2)"
       },
       "calcFingerprint": "f808c2ceb58ebd17"
     },
@@ -2364,8 +2380,8 @@
       "notation": {
         "nameJa": "武神虎連牙",
         "nameEn": "Bushin Tiger Fangs",
-        "srk": "MP>HP",
-        "numeric": "MP>HP"
+        "srk": "st.MP~st.HP (TC)",
+        "numeric": "5MP~5HP(TC)"
       },
       "calcFingerprint": "068f7666d997f9cb"
     },
@@ -2392,8 +2408,8 @@
       "notation": {
         "nameJa": "武神天架拳(2発止め)",
         "nameEn": "Bushin Prism Strikes (2 hits)",
-        "srk": "LP>MP",
-        "numeric": "LP>MP"
+        "srk": "st.LP~st.MP (TC)",
+        "numeric": "5LP~5MP(TC)"
       },
       "calcFingerprint": "968334563f8ad79e"
     },
@@ -2420,8 +2436,8 @@
       "notation": {
         "nameJa": "武神天架拳(3発止め)",
         "nameEn": "Bushin Prism Strikes (3 hits)",
-        "srk": "LP>MP>HP",
-        "numeric": "LP>MP>HP"
+        "srk": "st.LP~st.MP~st.HP (TC)",
+        "numeric": "5LP~5MP~5HP(TC)"
       },
       "calcFingerprint": "97b79fd7586d3683"
     },
@@ -2448,8 +2464,8 @@
       "notation": {
         "nameJa": "武神天架拳",
         "nameEn": "Bushin Prism Strikes",
-        "srk": "LP>MP>HP>HK",
-        "numeric": "LP>MP>HP>HK"
+        "srk": "st.LP~st.MP~st.HP~st.HK (TC)",
+        "numeric": "5LP~5MP~5HP~5HK(TC)"
       },
       "calcFingerprint": "31a31447e63a44bc"
     },
@@ -2476,8 +2492,8 @@
       "notation": {
         "nameJa": "武神獄鎖拳(3発止め)",
         "nameEn": "Bushin Hellchain (3 hits)",
-        "srk": "LP>MP>2HP",
-        "numeric": "LP>MP>2HP"
+        "srk": "st.LP~st.MP~cr.HP (TC)",
+        "numeric": "5LP~5MP~2HP(TC)"
       },
       "calcFingerprint": "f9b2b2a1847081e4"
     },
@@ -2504,8 +2520,8 @@
       "notation": {
         "nameJa": "武神獄鎖拳",
         "nameEn": "Bushin Hellchain",
-        "srk": "LP>MP>2HP>HK",
-        "numeric": "LP>MP>2HP>HK"
+        "srk": "st.LP~st.MP~cr.HP~st.HK (TC)",
+        "numeric": "5LP~5MP~2HP~5HK(TC)"
       },
       "calcFingerprint": "5b13dab72163f81b"
     },
@@ -2532,8 +2548,8 @@
       "notation": {
         "nameJa": "武神獄鎖投げ",
         "nameEn": "Bushin Hellchain Throw",
-        "srk": "LP>MP>2HP>2HK",
-        "numeric": "LP>MP>2HP>2HK"
+        "srk": "st.LP~st.MP~cr.HP~cr.HK (TC)",
+        "numeric": "5LP~5MP~2HP~2HK(TC)"
       },
       "calcFingerprint": "f3c4f0e3990423b2"
     },

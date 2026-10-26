@@ -985,8 +985,8 @@
       "notation": {
         "nameJa": "エアリートス",
         "nameEn": "Pretty Heel Kick",
-        "srk": "MP>MK",
-        "numeric": "MP>MK"
+        "srk": "st.MP~st.MK (TC)",
+        "numeric": "5MP~5MK(TC)"
       },
       "calcFingerprint": "002f6867f2585a5f"
     },
@@ -1041,8 +1041,8 @@
       "notation": {
         "nameJa": "グロータッチ",
         "nameEn": "Glowing Touch",
-        "srk": "4MK>HP",
-        "numeric": "4MK>HP"
+        "srk": "4MK~st.HP (TC)",
+        "numeric": "4MK~5HP(TC)"
       },
       "calcFingerprint": "1be0e1f584dcd8c3"
     },
@@ -1097,8 +1097,8 @@
       "notation": {
         "nameJa": "ルミナスアッパー",
         "nameEn": "Luminous Uppercut",
-        "srk": "4HP>HP",
-        "numeric": "4HP>HP"
+        "srk": "4HP~st.HP (TC)",
+        "numeric": "4HP~5HP(TC)"
       },
       "calcFingerprint": "86160b6ba4b83ed1"
     },
@@ -1125,8 +1125,8 @@
       "notation": {
         "nameJa": "サテライトリープ",
         "nameEn": "Satelite Leap",
-        "srk": "HK>HK",
-        "numeric": "HK>HK"
+        "srk": "st.HK~st.HK (TC)",
+        "numeric": "5HK~5HK(TC)"
       },
       "calcFingerprint": "222cb9be44db0120"
     },
@@ -1349,7 +1349,7 @@
       "notation": {
         "nameJa": "弱サンフレア",
         "nameEn": "Light Sun Flare",
-        "srk": "214LP (sun flare)",
+        "srk": "214LP",
         "numeric": "214LP"
       },
       "calcFingerprint": "94d160b9ee3d1d5e"
@@ -1377,7 +1377,7 @@
       "notation": {
         "nameJa": "サンフレア(Lv1)",
         "nameEn": "Sun Flare Lv1",
-        "srk": "214MP|214HP (sun flare)",
+        "srk": "214MP|214HP",
         "numeric": "214MP|214HP"
       },
       "calcFingerprint": "cda92a31f76cf4a2"
@@ -1405,7 +1405,7 @@
       "notation": {
         "nameJa": "サンフレア(Lv2)",
         "nameEn": "Sun Flare Lv2",
-        "srk": "214HP (sun flare Lv2)",
+        "srk": "214HP (Lv2)",
         "numeric": "214HP (Lv2)"
       },
       "calcFingerprint": "d01f6dd3dffd2c69"
@@ -1433,7 +1433,7 @@
       "notation": {
         "nameJa": "サンフレア(Lv3)",
         "nameEn": "Sun Flare Lv3",
-        "srk": "214HP (sun flare Lv3)",
+        "srk": "214HP (Lv3)",
         "numeric": "214HP (Lv3)"
       },
       "calcFingerprint": "ef939aa2c80f6e16"
@@ -1461,7 +1461,7 @@
       "notation": {
         "nameJa": "ODサンフレア(Lv1)",
         "nameEn": "OD Sun Flare Lv1",
-        "srk": "214P+P (sun flare Lv1)",
+        "srk": "214P+P (Lv1)",
         "numeric": "214P+P (Lv1)"
       },
       "calcFingerprint": "895fe89d8c2127f4"
@@ -1489,7 +1489,7 @@
       "notation": {
         "nameJa": "ODサンフレア(Lv2)",
         "nameEn": "OD Sun Flare Lv2",
-        "srk": "214P+P (sun flare Lv2)",
+        "srk": "214P+P (Lv2)",
         "numeric": "214P+P (Lv2)"
       },
       "calcFingerprint": "92a3e6d0ddd2165d"
@@ -1517,7 +1517,7 @@
       "notation": {
         "nameJa": "ODサンフレア(Lv3)",
         "nameEn": "OD Sun Flare Lv3",
-        "srk": "214P+P (sun flare Lv3)",
+        "srk": "214P+P (Lv3)",
         "numeric": "214P+P (Lv3)"
       },
       "calcFingerprint": "5745406d2f388641"
@@ -1547,8 +1547,8 @@
       "notation": {
         "nameJa": "ODソーラーフレア(Lv1)（垂直）",
         "nameEn": "OD Solar Burst Lv1 Neutral",
-        "srk": "214P+P (solar burst Lv1 neutral)",
-        "numeric": "214P+P (Lv1) (垂直)"
+        "srk": "j.214P+P (Lv1 neutral)",
+        "numeric": "j.214P+P (Lv1) (垂直)"
       },
       "calcFingerprint": "eeb21e44848a95ec"
     },
@@ -1577,8 +1577,8 @@
       "notation": {
         "nameJa": "ODソーラーフレア(Lv1)（前方）",
         "nameEn": "OD Solar Burst Lv1 Forward",
-        "srk": "214P+P (solar burst Lv1 forward)",
-        "numeric": "214P+P (Lv1) (前方)"
+        "srk": "j.214P+P (Lv1 forward)",
+        "numeric": "j.214P+P (Lv1) (前方)"
       },
       "calcFingerprint": "edf0d72074467193"
     },
@@ -1607,8 +1607,8 @@
       "notation": {
         "nameJa": "ODソーラーフレア(Lv2)（垂直）",
         "nameEn": "OD Solar Burst Lv2 Neutral",
-        "srk": "214P+P (solar burst Lv2 neutral)",
-        "numeric": "214P+P (Lv2) (垂直)"
+        "srk": "j.214P+P (Lv2 neutral)",
+        "numeric": "j.214P+P (Lv2) (垂直)"
       },
       "calcFingerprint": "cf88cd9659213355"
     },
@@ -1637,8 +1637,8 @@
       "notation": {
         "nameJa": "ODソーラーフレア(Lv2)（前方）",
         "nameEn": "OD Solar Burst Lv2 Forward",
-        "srk": "214P+P (solar burst Lv2 forward)",
-        "numeric": "214P+P (Lv2) (前方)"
+        "srk": "j.214P+P (Lv2 forward)",
+        "numeric": "j.214P+P (Lv2) (前方)"
       },
       "calcFingerprint": "bc84357d580bf66b"
     },
@@ -1667,8 +1667,8 @@
       "notation": {
         "nameJa": "ODソーラーフレア(Lv3)（垂直）",
         "nameEn": "OD Solar Burst Lv3 Neutral",
-        "srk": "214P+P (solar burst Lv3 neutral)",
-        "numeric": "214P+P (Lv3) (垂直)"
+        "srk": "j.214P+P (Lv3 neutral)",
+        "numeric": "j.214P+P (Lv3) (垂直)"
       },
       "calcFingerprint": "44b78c1ae01935d6"
     },
@@ -1697,8 +1697,8 @@
       "notation": {
         "nameJa": "ODソーラーフレア(Lv3)（前方）",
         "nameEn": "OD Solar Burst Lv3 Forward",
-        "srk": "214P+P (solar burst Lv3 forward)",
-        "numeric": "214P+P (Lv3) (前方)"
+        "srk": "j.214P+P (Lv3 forward)",
+        "numeric": "j.214P+P (Lv3) (前方)"
       },
       "calcFingerprint": "53de873aad4bc7a0"
     },
@@ -1727,8 +1727,8 @@
       "notation": {
         "nameJa": "弱ソーラーフレア（垂直）",
         "nameEn": "Light Solar Burst Neutral",
-        "srk": "214LP (solar burst neutral)",
-        "numeric": "214LP (垂直)"
+        "srk": "j.214LP (neutral)",
+        "numeric": "j.214LP (垂直)"
       },
       "calcFingerprint": "aeca8308f5d26492"
     },
@@ -1757,8 +1757,8 @@
       "notation": {
         "nameJa": "弱ソーラーフレア（前方）",
         "nameEn": "Light Solar Burst Forward",
-        "srk": "214LP (solar burst forward)",
-        "numeric": "214LP (前方)"
+        "srk": "j.214LP (forward)",
+        "numeric": "j.214LP (前方)"
       },
       "calcFingerprint": "aab495de63b1fb16"
     },
@@ -1787,8 +1787,8 @@
       "notation": {
         "nameJa": "ソーラーフレア(Lv1)（垂直）",
         "nameEn": "Solar Burst Lv1 Neutral",
-        "srk": "214MP|214HP (solar burst neutral)",
-        "numeric": "214MP|214HP (垂直)"
+        "srk": "j.214MP|214HP (neutral)",
+        "numeric": "j.214MP|214HP (垂直)"
       },
       "calcFingerprint": "99d7663ef650fc7b"
     },
@@ -1817,8 +1817,8 @@
       "notation": {
         "nameJa": "ソーラーフレア(Lv1)（前方）",
         "nameEn": "Solar Burst Lv1 Forward",
-        "srk": "214MP|214HP (solar burst forward)",
-        "numeric": "214MP|214HP (前方)"
+        "srk": "j.214MP|214HP (forward)",
+        "numeric": "j.214MP|214HP (前方)"
       },
       "calcFingerprint": "73f5c993ec97bb25"
     },
@@ -1847,8 +1847,8 @@
       "notation": {
         "nameJa": "ソーラーフレア(Lv2)（垂直）",
         "nameEn": "Solar Burst Lv2 Neutral",
-        "srk": "214HP (solar burst Lv2 neutral)",
-        "numeric": "214HP (Lv2) (垂直)"
+        "srk": "j.214HP (Lv2 neutral)",
+        "numeric": "j.214HP (Lv2) (垂直)"
       },
       "calcFingerprint": "8c26758d080ffe3c"
     },
@@ -1877,8 +1877,8 @@
       "notation": {
         "nameJa": "ソーラーフレア(Lv2)（前方）",
         "nameEn": "Solar Burst Lv2 Forward",
-        "srk": "214HP (solar burst Lv2 forward)",
-        "numeric": "214HP (Lv2) (前方)"
+        "srk": "j.214HP (Lv2 forward)",
+        "numeric": "j.214HP (Lv2) (前方)"
       },
       "calcFingerprint": "4772346aeff58836"
     },
@@ -1907,8 +1907,8 @@
       "notation": {
         "nameJa": "ソーラーフレア(Lv3)（垂直）",
         "nameEn": "Solar Burst Lv3 Neutral",
-        "srk": "214HP (solar burst Lv3 neutral)",
-        "numeric": "214HP (Lv3) (垂直)"
+        "srk": "j.214HP (Lv3 neutral)",
+        "numeric": "j.214HP (Lv3) (垂直)"
       },
       "calcFingerprint": "f654aa09094c0f61"
     },
@@ -1937,8 +1937,8 @@
       "notation": {
         "nameJa": "ソーラーフレア(Lv3)（前方）",
         "nameEn": "Solar Burst Lv3 Forward",
-        "srk": "214HP (solar burst Lv3 forward)",
-        "numeric": "214HP (Lv3) (前方)"
+        "srk": "j.214HP (Lv3 forward)",
+        "numeric": "j.214HP (Lv3) (前方)"
       },
       "calcFingerprint": "dbcbe1427c2989cc"
     },

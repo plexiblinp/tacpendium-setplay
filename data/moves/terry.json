@@ -1663,8 +1663,8 @@
       "notation": {
         "nameJa": "パワードライブ",
         "nameEn": "Power Drive",
-        "srk": "MP>HP",
-        "numeric": "MP>HP"
+        "srk": "st.MP~st.HP (TC)",
+        "numeric": "5MP~5HP(TC)"
       },
       "calcFingerprint": "e6c932206883492a"
     },
@@ -1691,8 +1691,8 @@
       "notation": {
         "nameJa": "パワーシュート",
         "nameEn": "Power Shoot",
-        "srk": "MP>HK",
-        "numeric": "MP>HK"
+        "srk": "st.MP~st.HK (TC)",
+        "numeric": "5MP~5HK(TC)"
       },
       "calcFingerprint": "7ba0fb9cbb3eb5f9"
     },
@@ -1719,8 +1719,8 @@
       "notation": {
         "nameJa": "パワーダンク",
         "nameEn": "Power Dunk",
-        "srk": "MP>HK>HK",
-        "numeric": "MP>HK>HK"
+        "srk": "st.MP~st.HK~st.HK (TC)",
+        "numeric": "5MP~5HK~5HK(TC)"
       },
       "calcFingerprint": "a648c80eb37cd213"
     },
@@ -1747,8 +1747,8 @@
       "notation": {
         "nameJa": "パッシングスウェー",
         "nameEn": "Passing Sway",
-        "srk": "MP>MK",
-        "numeric": "MP>MK"
+        "srk": "st.MP~st.MK (TC)",
+        "numeric": "5MP~5MK(TC)"
       },
       "calcFingerprint": "9df7773de2bf625e"
     },
@@ -1775,8 +1775,8 @@
       "notation": {
         "nameJa": "ジャンプラリアットパンチ",
         "nameEn": "Jumping Lariat",
-        "srk": "MP>MK>MP",
-        "numeric": "MP>MK>MP"
+        "srk": "st.MP~st.MK~st.MP (TC)",
+        "numeric": "5MP~5MK~5MP(TC)"
       },
       "calcFingerprint": "65d5238643ea67a1"
     },
@@ -1803,8 +1803,8 @@
       "notation": {
         "nameJa": "ジャンプニーアタック",
         "nameEn": "Jumping Knee",
-        "srk": "MP>MK>MK",
-        "numeric": "MP>MK>MK"
+        "srk": "st.MP~st.MK~st.MK (TC)",
+        "numeric": "5MP~5MK~5MK(TC)"
       },
       "calcFingerprint": "540767d2c2964e9a"
     },
@@ -1831,8 +1831,8 @@
       "notation": {
         "nameJa": "ファイヤーキック",
         "nameEn": "Fire Kick",
-        "srk": "2MK>2HK",
-        "numeric": "2MK>2HK"
+        "srk": "cr.MK~cr.HK (TC)",
+        "numeric": "2MK~2HK(TC)"
       },
       "calcFingerprint": "e7f153b8f1a56822"
     },

@@ -580,7 +580,7 @@
         "nameJa": "しゃがみ強P",
         "nameEn": "Crouching Heavy Punch",
         "srk": "cr.HP",
-        "numeric": "2HP (しゃがみ強P)"
+        "numeric": "2HP"
       },
       "calcFingerprint": "dd417d8164ad599b"
     },
@@ -999,8 +999,8 @@
       "notation": {
         "nameJa": "蚣蝮",
         "nameEn": "Gong Fu",
-        "srk": "2HP",
-        "numeric": "2HP (蚣蝮)"
+        "srk": "j.2HP",
+        "numeric": "j.2HP"
       },
       "calcFingerprint": "a0fee2d3a99f3f50"
     },
@@ -1851,8 +1851,8 @@
       "notation": {
         "nameJa": "渾沌",
         "nameEn": "Hun Dun",
-        "srk": "LP>LP",
-        "numeric": "LP>LP"
+        "srk": "st.LP~st.LP (TC)",
+        "numeric": "5LP~5LP(TC)"
       },
       "calcFingerprint": "23535f5ac4f26457"
     },
@@ -1879,8 +1879,8 @@
       "notation": {
         "nameJa": "窮奇",
         "nameEn": "Qiong Qi",
-        "srk": "HP>HP",
-        "numeric": "HP>HP"
+        "srk": "st.HP~st.HP (TC)",
+        "numeric": "5HP~5HP(TC)"
       },
       "calcFingerprint": "334d8d05b9d4185d"
     },

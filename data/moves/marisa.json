@@ -628,7 +628,7 @@
         "nameJa": "しゃがみ強P",
         "nameEn": "Crouching Heavy Punch",
         "srk": "cr.HP",
-        "numeric": "2HP (しゃがみ強P)"
+        "numeric": "2HP"
       },
       "calcFingerprint": "f7c2c1f9b1113f2f"
     },
@@ -655,8 +655,8 @@
       "notation": {
         "nameJa": "【ホールド】しゃがみ強P",
         "nameEn": "Crouching Heavy Punch (Hold)",
-        "srk": "2HP(hold) (crouching heavy punch)",
-        "numeric": "2HP(hold) (【ホールド】しゃがみ強P)"
+        "srk": "2HP(hold)",
+        "numeric": "2HP(hold)"
       },
       "calcFingerprint": "65625ad3535677f4"
     },
@@ -1075,8 +1075,8 @@
       "notation": {
         "nameJa": "カエルムアーク",
         "nameEn": "Caelum Arc",
-        "srk": "2HP",
-        "numeric": "2HP (カエルムアーク)"
+        "srk": "j.2HP",
+        "numeric": "j.2HP"
       },
       "calcFingerprint": "85ae4dd248dc3204"
     },
@@ -1103,8 +1103,8 @@
       "notation": {
         "nameJa": "【ホールド】カエルムアーク",
         "nameEn": "Caelum Arc (Hold)",
-        "srk": "2HP(hold) (caelum arc)",
-        "numeric": "2HP(hold) (【ホールド】カエルムアーク)"
+        "srk": "j.2HP(hold)",
+        "numeric": "j.2HP(hold)"
       },
       "calcFingerprint": "87c017655bc3cb26"
     },
@@ -1271,8 +1271,8 @@
       "notation": {
         "nameJa": "マレウスビート",
         "nameEn": "Malleus Breaker",
-        "srk": "3HP>3HP",
-        "numeric": "3HP>3HP"
+        "srk": "3HP~3HP (TC)",
+        "numeric": "3HP~3HP(TC)"
       },
       "calcFingerprint": "9eec6b1dc301ce73"
     },
@@ -1355,8 +1355,8 @@
       "notation": {
         "nameJa": "ファルクスクラッシュ",
         "nameEn": "Falx Crusher",
-        "srk": "6HK>6HK",
-        "numeric": "6HK>6HK"
+        "srk": "6HK~6HK (TC)",
+        "numeric": "6HK~6HK(TC)"
       },
       "calcFingerprint": "16f230b17fd8ec3d"
     },
@@ -2627,8 +2627,8 @@
       "notation": {
         "nameJa": "ライトワンツー",
         "nameEn": "Light Two Hitter",
-        "srk": "LP>LP",
-        "numeric": "LP>LP"
+        "srk": "st.LP~st.LP (TC)",
+        "numeric": "5LP~5LP(TC)"
       },
       "calcFingerprint": "f91b98e18598cdd6"
     },
@@ -2655,8 +2655,8 @@
       "notation": {
         "nameJa": "ミドルワンツー",
         "nameEn": "Medium Two Hitter",
-        "srk": "MP>MP (medium two hitter)",
-        "numeric": "MP>MP (ミドルワンツー)"
+        "srk": "st.MP~st.MP (TC) (medium two hitter)",
+        "numeric": "5MP~5MP(TC) (ミドルワンツー)"
       },
       "calcFingerprint": "b11ef0d23708dbff"
     },
@@ -2683,8 +2683,8 @@
       "notation": {
         "nameJa": "ヘビィーワンツー",
         "nameEn": "Heavy Two Hitter",
-        "srk": "HP>HP",
-        "numeric": "HP>HP"
+        "srk": "st.HP~st.HP (TC)",
+        "numeric": "5HP~5HP(TC)"
       },
       "calcFingerprint": "ef45fc930f505567"
     },
@@ -2711,8 +2711,8 @@
       "notation": {
         "nameJa": "ヴォラーレコンボ",
         "nameEn": "Volare Combo",
-        "srk": "MP>MP (volare combo)",
-        "numeric": "MP>MP (ヴォラーレコンボ)"
+        "srk": "st.MP~st.MP (TC) (volare combo)",
+        "numeric": "5MP~5MP(TC) (ヴォラーレコンボ)"
       },
       "calcFingerprint": "9d8472cc6234a5a0"
     },
@@ -2739,8 +2739,8 @@
       "notation": {
         "nameJa": "ノバキュラスワイプ",
         "nameEn": "Novacula Swipe",
-        "srk": "6MP>HP",
-        "numeric": "6MP>HP"
+        "srk": "6MP~st.HP (TC)",
+        "numeric": "6MP~5HP(TC)"
       },
       "calcFingerprint": "ff20ad10082c182d"
     },
@@ -2767,8 +2767,8 @@
       "notation": {
         "nameJa": "ノバキュラシュート",
         "nameEn": "Novacula Thrust",
-        "srk": "6MP>HK",
-        "numeric": "6MP>HK"
+        "srk": "6MP~st.HK (TC)",
+        "numeric": "6MP~5HK(TC)"
       },
       "calcFingerprint": "716fc520c4041368"
     },

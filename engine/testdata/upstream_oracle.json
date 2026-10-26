@@ -52,8 +52,8 @@
     {
       "character": "kimberly",
       "moves": 105,
-      "derivations": 7,
-      "sha256": "96f16b081d5c2879645a6aa3fba92a2d7f284389f99393d74ff5f5bc0dd76f20"
+      "derivations": 15,
+      "sha256": "7fa7de04ea3553b10f96b17fe50ea53e6ab3ec9d2c1029717c0ec13bc4b5171e"
     },
     {
       "character": "juri",
@@ -186,6 +186,12 @@
       "moves": 94,
       "derivations": 32,
       "sha256": "f6b798e124408c003122bc8a902c4cce040a7f84c51227f4eb60b4a2cfa2a21b"
+    },
+    {
+      "character": "arjun",
+      "moves": 94,
+      "derivations": 13,
+      "sha256": "29322ff829d4f0b24f59b81853cc54a8358977add54860ca5fdbda06178d3ce6"
     }
   ],
   "cells": [
@@ -14973,7 +14979,7 @@
       "totalFound": 27,
       "truncated": false,
       "items": 27,
-      "sha256": "bcd39cef3f2275f32d01ba1ed82add57a0625eca1c9f2090493da14be6c4887a"
+      "sha256": "8f03a40e6d732339294b9dca657a1e328a83238fd83bd4c81b06657376ff7b48"
     },
     {
       "character": "kimberly",
@@ -14983,7 +14989,7 @@
       "totalFound": 116,
       "truncated": false,
       "items": 116,
-      "sha256": "0a7dae3b3d794540deafcc8b1cf81ee5ee156e10f6043604179d864c65c8cec3"
+      "sha256": "b231b0f81d2061dcc64fbd80a4e0f401e4c79f6568d8cba457408b91ded9cac8"
     },
     {
       "character": "kimberly",
@@ -14993,7 +14999,7 @@
       "totalFound": 14,
       "truncated": false,
       "items": 14,
-      "sha256": "0cc5dcd68f4ad76f3de8665d2173bdbf2f481de26d4e1002d74275a066b44961"
+      "sha256": "8c7159be8b334cd0fc444b752ec936ac2664de56a60c5b8b94a343d51511ac5d"
     },
     {
       "character": "kimberly",
@@ -15003,7 +15009,7 @@
       "totalFound": 35,
       "truncated": false,
       "items": 35,
-      "sha256": "7a8ccee34f16ca5777fc093b8c7791f2b7820ce99fb71998460221f60072ba01"
+      "sha256": "4ee1ff91b0a5a2e1457a9ddf9c74a1bf2660352e4b6aefa847c90de62ffad980"
     },
     {
       "character": "kimberly",
@@ -15076,7 +15082,7 @@
       "totalFound": 6,
       "truncated": false,
       "items": 6,
-      "sha256": "fb2303e00ec42802a62f2b40f3b30339c651dadc8f6b469ee4a2d2e829aa8944"
+      "sha256": "bd1c2521a52cbbe08bbbe8f40777d3fe3a23a537fd313937c8343c64ea957f32"
     },
     {
       "character": "kimberly",
@@ -15096,7 +15102,7 @@
       "totalFound": 3,
       "truncated": false,
       "items": 3,
-      "sha256": "e11429aa9bba2482942bc7dc6d0116c63e6f84e23f751951e271f908d5a18f7f"
+      "sha256": "94f10994466caeecfadf5e30b9c92a7c049dfde5435da929cd53c9dfb5acdfa2"
     },
     {
       "character": "kimberly",
@@ -15106,7 +15112,7 @@
       "totalFound": 27,
       "truncated": false,
       "items": 7,
-      "sha256": "fa13f638ce9e67e4eb646b314d2e889a5079d5c0afd448b4d31d015bd950f434"
+      "sha256": "ecb2c6226012b8a163edd573e3f5ea1aa1bc380ec1237fb1077d73e345657341"
     },
     {
       "character": "kimberly",
@@ -15193,7 +15199,7 @@
       "totalFound": 330,
       "truncated": false,
       "items": 200,
-      "sha256": "5b2e9dc03b4009cce6b3cb1612dee3b992a3fb3fa15ad79e6bd9248fd300f163"
+      "sha256": "4adde3e410f26804cdd958e93a193354d36ca60f55e18ec4a08a8215f4de5152"
     },
     {
       "character": "kimberly",
@@ -15203,7 +15209,7 @@
       "totalFound": 1506,
       "truncated": false,
       "items": 1506,
-      "sha256": "8451cbb080a1c4ac020d72609db37c634d1d6d1a2f273885e2b7c6e202218931"
+      "sha256": "9758875fa94c4a0c9ab915c27febc78f9f4343727944446851aec0b86b5255c6"
     },
     {
       "character": "kimberly",
@@ -15213,7 +15219,7 @@
       "totalFound": 176,
       "truncated": false,
       "items": 176,
-      "sha256": "4d1fa8b3005ea30f1c7e92df19aed81e376cd8e1133d8cc2dc469785368b6ec9"
+      "sha256": "597c196e6b612ef9c0575a6e2b91a0f2ee663936e6add06d3b263b2a50d5cad4"
     },
     {
       "character": "kimberly",
@@ -15223,7 +15229,7 @@
       "totalFound": 601,
       "truncated": false,
       "items": 601,
-      "sha256": "d9ffdbf7a0828805e78f99aa7a6631e42748968b808e76467b56b756b937f009"
+      "sha256": "47149fa43f6950e1f53aac982a73235de8acb9fb2531419e09b007c5783256e4"
     },
     {
       "character": "kimberly",
@@ -15233,7 +15239,7 @@
       "totalFound": 288,
       "truncated": false,
       "items": 288,
-      "sha256": "9ef7ce0731bd4ecef3fa8b2ff953e959d01da04a81aa3835c353ac3914f62c2e"
+      "sha256": "780b2c2e1f11e22911314b9c7a8086f73c2d81b5c81e781a1ff3d0c6177af68d"
     },
     {
       "character": "kimberly",
@@ -15243,7 +15249,7 @@
       "totalFound": 32,
       "truncated": false,
       "items": 32,
-      "sha256": "eda39edaf62afc3a71d4de96c7d2850b569459be3f0f6b3e2476e3a425d44819"
+      "sha256": "c52c4b9ec3e7cfadaaef0933d6cdefc79a092db3bdf41ae9c1b6fa01573a1db4"
     },
     {
       "character": "kimberly",
@@ -15294,7 +15300,7 @@
       "totalFound": 56,
       "truncated": false,
       "items": 56,
-      "sha256": "b3198856468dc172de90d644c9e8023fd1d4efaf329292b48e01741c61f224c0"
+      "sha256": "338a0cbbb2329230a428b1e8a4dfd175e9b4f587c3caa344c24a49ee2f2dfb7d"
     },
     {
       "character": "kimberly",
@@ -15314,7 +15320,7 @@
       "totalFound": 23,
       "truncated": false,
       "items": 23,
-      "sha256": "e262346df97fe3b01839a086a10aa3d68640af006a1437a0d6a668a66bee167a"
+      "sha256": "f0f4ca8cb217f1b00dbc90e5f1a2cea1f571c95927e7614c430b3d9c91bdc4d0"
     },
     {
       "character": "kimberly",
@@ -15411,7 +15417,7 @@
       "totalFound": 4625,
       "truncated": false,
       "items": 200,
-      "sha256": "639226a055e1e1e338ee0ea219ffc96590ade6f773e6fb7f22df412694864c3f"
+      "sha256": "212ff857c68a718948085a7ed10b5763cff73b53e1300493ffbb6562f72aab19"
     },
     {
       "character": "kimberly",
@@ -15421,7 +15427,7 @@
       "totalFound": 19253,
       "truncated": false,
       "items": 3000,
-      "sha256": "6b6c6f45b8de1c7ad8aaafb0e5a748e264dce89738f29914b2fc6c92c7314835"
+      "sha256": "972ddea661cac6de1ccb96e8d0158dca3a0f8b7c9a9a66300dab1b5a0f78e42e"
     },
     {
       "character": "kimberly",
@@ -15431,7 +15437,7 @@
       "totalFound": 2686,
       "truncated": false,
       "items": 2686,
-      "sha256": "17fa2a417e6a692212f58955b9d6f25f437c3406744f4c639f07cd4f56af9812"
+      "sha256": "04b39402bd0964b39809aed8c5545fdfe2c4f1463a934a5f76061f3ed990d46b"
     },
     {
       "character": "kimberly",
@@ -15441,7 +15447,7 @@
       "totalFound": 7530,
       "truncated": false,
       "items": 3000,
-      "sha256": "61052742b8ca3a2df8b69d4b54df072dc740485263c65ece81386d248fa1213a"
+      "sha256": "f593a776e83769951d68e6b6b0571f3e659cc0a1ae1f291a7233f6b9dbdcadf1"
     },
     {
       "character": "kimberly",
@@ -15451,7 +15457,7 @@
       "totalFound": 3367,
       "truncated": false,
       "items": 3000,
-      "sha256": "6f794b97d454a4edb29e002e64b55260d9d9ffeee0a31134e471b45785e8589a"
+      "sha256": "3cdea1e2b79b5a9cf02190d699505e90b440c9eaacc387d3c4f3b8b87df051b7"
     },
     {
       "character": "kimberly",
@@ -15461,7 +15467,7 @@
       "totalFound": 435,
       "truncated": false,
       "items": 435,
-      "sha256": "1c8779c2c56a02272e525612fe2796fa37e8eea4e2f893bcea711858ac16af93"
+      "sha256": "7753bc83c2c745524734e4d0f7d50a15ffac4c13c4bc408a55122a7982ecf2f0"
     },
     {
       "character": "kimberly",
@@ -15471,7 +15477,7 @@
       "totalFound": 135,
       "truncated": false,
       "items": 135,
-      "sha256": "481982e5729139f6f6c5cfe225557a817167bf14c7325cf43a5f462482a25936"
+      "sha256": "c890bcd7392968cb15e144c26b62a9fd030001b801bb4ee48f46d1044a38db35"
     },
     {
       "character": "kimberly",
@@ -15491,7 +15497,7 @@
       "totalFound": 1,
       "truncated": false,
       "items": 1,
-      "sha256": "6f668e4ea5ec50469aa46bd9022881bf3e38f6bc2ab131e4f04330f883bb14cb"
+      "sha256": "d68f84193c021cbbf83284326e6f5beaa06fb9010b848ac0ce42a9a1409be2af"
     },
     {
       "character": "kimberly",
@@ -15511,7 +15517,7 @@
       "totalFound": 816,
       "truncated": false,
       "items": 816,
-      "sha256": "8acde0ccaebb21424bccb2dcdd854b05735b49f251394c774bb0f3c2fb58741b"
+      "sha256": "364d6348baf300f29911c1f74d0a2bd273c332b915d48f08007a4a3996639e92"
     },
     {
       "character": "kimberly",
@@ -15521,7 +15527,7 @@
       "totalFound": 4516,
       "truncated": false,
       "items": 3000,
-      "sha256": "ff3ae0c1c840238865550a83cfc2e5df2ae97d99bd2dd81bcf38893fa1867310"
+      "sha256": "276d7aadd74bf241555a18f5821d63ebfbf2ecf358475551d9bf1bdf2bf02c63"
     },
     {
       "character": "kimberly",
@@ -15531,7 +15537,7 @@
       "totalFound": 332,
       "truncated": false,
       "items": 332,
-      "sha256": "c0d6be2a58eacb5c6c51194bb0f1a6e02ec472c27532150744725befcef38116"
+      "sha256": "617608288ac711e78e8b1f324739ce79f4e71a7c8cb1648dec00a894291423a6"
     },
     {
       "character": "kimberly",
@@ -15628,7 +15634,7 @@
       "totalFound": 35763,
       "truncated": true,
       "items": 200,
-      "sha256": "c06e48394f3da6fd7800cac641121c0904ac57b7a08097e2e66f47833096e7c8"
+      "sha256": "5a58c48075d1bea4cee0382032d54623ae09e31d50ca2db22916147d161b0c04"
     },
     {
       "character": "kimberly",
@@ -15638,7 +15644,7 @@
       "totalFound": 96624,
       "truncated": true,
       "items": 3000,
-      "sha256": "704e44f7b4ed871dbeab1e1573abc3dc013fdde011436ea3eea534039aa0d458"
+      "sha256": "8e0459a0253e4ebbb33005ca18d618e50c1c61cfcc41fb93b78c909fd4930921"
     },
     {
       "character": "kimberly",
@@ -15648,7 +15654,7 @@
       "totalFound": 28553,
       "truncated": true,
       "items": 3000,
-      "sha256": "126e311c6742297aeccb62feee115c55af6865b56c1fc13ff8a5364872dcc655"
+      "sha256": "ef61d4de0894fba5e8872afbf55d2aeb663fe9f680099f3fc6ef9b0f31463c04"
     },
     {
       "character": "kimberly",
@@ -15658,7 +15664,7 @@
       "totalFound": 45237,
       "truncated": true,
       "items": 3000,
-      "sha256": "067a9ef84032e9130ea99ef9e9860a9b9c2192173815eebc2293382cd97b7f34"
+      "sha256": "c4b5714baf8d087488f9f094f94ec8844d65289a3de2821d3822f52cd744fef6"
     },
     {
       "character": "kimberly",
@@ -15668,7 +15674,7 @@
       "totalFound": 32534,
       "truncated": true,
       "items": 3000,
-      "sha256": "eb32311d3310c590ee38a8f88a365431efaa261d5f2d869273d9c4552412f887"
+      "sha256": "797c913a0851db5e7122b90dde7cee7b6a394909247c02238add804837de6c8e"
     },
     {
       "character": "kimberly",
@@ -15678,7 +15684,7 @@
       "totalFound": 3184,
       "truncated": true,
       "items": 3000,
-      "sha256": "e0569726c6d04990a0807e1ee41d1bb3e581703c20ebf355f29a55527c411ad1"
+      "sha256": "c07c506e2adb92293cae1a96ddbe7d4b49802d0badfb7404fc21bb66ffbef8cb"
     },
     {
       "character": "kimberly",
@@ -15688,7 +15694,7 @@
       "totalFound": 1738,
       "truncated": true,
       "items": 1738,
-      "sha256": "b3ab730aaee9517f57dab3b2cce2c63596e1b5a24e28e2646c6f93b0c89e36a0"
+      "sha256": "266f518f2a535b398e54ff1a5c0caed38737a2330dcc7c0d4e092ab277aa67ac"
     },
     {
       "character": "kimberly",
@@ -15698,7 +15704,7 @@
       "totalFound": 9,
       "truncated": true,
       "items": 9,
-      "sha256": "552aefc43a38fc0ca470402e3e47be2a6a35c771bfa0c6a6e381aea934b80ecd"
+      "sha256": "fb70d8a3f027a969a782dc19b14ff35f3b3d87bcbc746b76ba970cb8a2ac30ba"
     },
     {
       "character": "kimberly",
@@ -15708,7 +15714,7 @@
       "totalFound": 8,
       "truncated": true,
       "items": 8,
-      "sha256": "5582fee6f7d45cb57568a921bce68be568c57f914314a1b6e0c63d2539ee88fa"
+      "sha256": "5ef3a385ea755d2c6b18fd2d572e2bc61b71a94ab9e205a660c6c822401a79b0"
     },
     {
       "character": "kimberly",
@@ -15718,7 +15724,7 @@
       "totalFound": 6,
       "truncated": true,
       "items": 6,
-      "sha256": "9fa81eec8977249a9eaf931bc2c031d25a3c17d6ac63340725972493bc8f66ee"
+      "sha256": "499d9675586b08a97888181257b7453aa9733729b4c207d485ba7ba59a29f086"
     },
     {
       "character": "kimberly",
@@ -15728,7 +15734,7 @@
       "totalFound": 6625,
       "truncated": true,
       "items": 3000,
-      "sha256": "f1b9e1fa4f35798172d4de7bc7764083ba2a12c26c1b59ddfd7c96dc07d8bbec"
+      "sha256": "92863b3134e721ec6189f6b9618f5d266d64eccec57b49310bd5181cc03ef8c7"
     },
     {
       "character": "kimberly",
@@ -15738,7 +15744,7 @@
       "totalFound": 36684,
       "truncated": true,
       "items": 3000,
-      "sha256": "c1c869b03b85c035a4b1e22d8bd8988b7c2b183fce4d427eea067dacdec489b9"
+      "sha256": "ebe31c9b16bc55da9c2e4412c4d0a92de88f89c80d604a207947f8f89a68a0d5"
     },
     {
       "character": "kimberly",
@@ -15748,7 +15754,7 @@
       "totalFound": 1752,
       "truncated": true,
       "items": 1752,
-      "sha256": "de798272994c285e91740ec9142dc5a5e2e931506a058677484548af64c1e9cb"
+      "sha256": "5d9ddeffcbf852511e8d3e394a915e7bb2caa77d592446afdbdad159bd45f1ee"
     },
     {
       "character": "kimberly",
@@ -15758,7 +15764,7 @@
       "totalFound": 35763,
       "truncated": true,
       "items": 7,
-      "sha256": "45202e9f802107c211f6a4c35ab0ed31c9fbaab8626ea23ec142313a04f427eb"
+      "sha256": "b419bd7db58b8f3ac3ebc81a8cf3b415631497ddd826cdc4e6609dbca0c52168"
     },
     {
       "character": "kimberly",
@@ -15845,7 +15851,7 @@
       "totalFound": 45211,
       "truncated": true,
       "items": 200,
-      "sha256": "c6d914adc533e9cd7327b3bc3661c0bf31ea8f58ed8a3e32d4d11a1826b01a70"
+      "sha256": "389a0094914c0d134bac10d90f13d330280c2ff246d273dc355ea9b1732ca624"
     },
     {
       "character": "kimberly",
@@ -15855,7 +15861,7 @@
       "totalFound": 139191,
       "truncated": true,
       "items": 3000,
-      "sha256": "35634a98c998e56c78b463106c69433781a6fb847e72254fd90473d9f52337d5"
+      "sha256": "746e3a5610ab21997d872e37d785bac0c053d5dab1e01f264de2773c3bf3afb5"
     },
     {
       "character": "kimberly",
@@ -15865,7 +15871,7 @@
       "totalFound": 48786,
       "truncated": true,
       "items": 3000,
-      "sha256": "65600bc4af5754811e9c4782a6ea3823c799244a2a03521bfa61e2bceb3c9699"
+      "sha256": "9c5fadf7cbf860f033302156213e534f7bdeab2ab4772c2126321b03010b45ae"
     },
     {
       "character": "kimberly",
@@ -15875,7 +15881,7 @@
       "totalFound": 54186,
       "truncated": true,
       "items": 3000,
-      "sha256": "b8159f857fb02328896987ce448e7093bd0ce4df291f565056e05c7a31f4efda"
+      "sha256": "fb3ef3a727ed3e3ee1461ce89c5dc1f92d0076f4a3faa61fe60d998df1d9ab63"
     },
     {
       "character": "kimberly",
@@ -15885,7 +15891,7 @@
       "totalFound": 59053,
       "truncated": true,
       "items": 3000,
-      "sha256": "93b08899f78b1dec73baa29506ce30c8ccc4a548980a9d1968885f8fe9e5e09a"
+      "sha256": "1083e94220277d7fd58d4f47db7a7e953173587e284544f9bbedd5e1d75b646c"
     },
     {
       "character": "kimberly",
@@ -15905,7 +15911,7 @@
       "totalFound": 3946,
       "truncated": true,
       "items": 3000,
-      "sha256": "2e84aa38af3d5debc521bbc1929af39b9b1829dd2299fd50355e9086199eb6e7"
+      "sha256": "5116d033a042596f329b645c2998b864b54242f574db2f8b91bbc132f5e79f69"
     },
     {
       "character": "kimberly",
@@ -15915,7 +15921,7 @@
       "totalFound": 135,
       "truncated": true,
       "items": 135,
-      "sha256": "028d25d3f206acdad4fb9d36cc04f8b1915988339a4647849d8a3e88da0b2bd3"
+      "sha256": "5b4196dca0b3c3face9abd3e17285cadf1f1529af350c5817e6706e378dfd789"
     },
     {
       "character": "kimberly",
@@ -15925,7 +15931,7 @@
       "totalFound": 186,
       "truncated": true,
       "items": 186,
-      "sha256": "ba6a732c0350dd975b29543d9e9887083003fb4c1291428047be80966ad2ead8"
+      "sha256": "182ab3b0f819371b8205729954dac3b1eda954a0ff698ac707e9cc7c286eefbc"
     },
     {
       "character": "kimberly",
@@ -15935,7 +15941,7 @@
       "totalFound": 353,
       "truncated": true,
       "items": 353,
-      "sha256": "38e8874d22067726e65e3856ae838384b04e9aad7cfba5325654409bc36fb62f"
+      "sha256": "684f1976e3b22b33c206ec7440d561179e44feee0cb3eff8c791632cac1d6e31"
     },
     {
       "character": "kimberly",
@@ -15945,7 +15951,7 @@
       "totalFound": 10022,
       "truncated": true,
       "items": 3000,
-      "sha256": "e42b39236bafabea7297a7e99a832b18ab2ab6859a796cfedc07cdf971c48aa4"
+      "sha256": "375500b529c411fa7baa1f075d17406891e6ecc37ad6b4a77f0549c27f2e072d"
     },
     {
       "character": "kimberly",
@@ -15955,7 +15961,7 @@
       "totalFound": 50057,
       "truncated": true,
       "items": 3000,
-      "sha256": "2d699dc76ff5565fa6bda360d07d3cfcef16a5bc6a4c515ab6f0b6d97d8b1dbe"
+      "sha256": "6096579921def60ff8e507598d907ef499a394c4578349a848fa09cae265ba32"
     },
     {
       "character": "kimberly",
@@ -15965,7 +15971,7 @@
       "totalFound": 2200,
       "truncated": true,
       "items": 2200,
-      "sha256": "bc328e3ac01480cd62671cb466276ca407ad771c5eeaf390376a9bfc0c9d98d9"
+      "sha256": "be021fd1d6f2614b2a8472438bccb29018c366faf683baaaa8179d01f8c5f1d1"
     },
     {
       "character": "kimberly",
@@ -15975,7 +15981,7 @@
       "totalFound": 45211,
       "truncated": true,
       "items": 7,
-      "sha256": "0a177ac50b4ef9cc26a8d6424c748e8ff969fd3a218e649033647d7fedc8509b"
+      "sha256": "41b10265a33413cc24403ccd75559a71956dda4663e1c5822d16d38fd6e8d17a"
     },
     {
       "character": "kimberly",
@@ -54814,6 +54820,1768 @@
     },
     {
       "character": "yasmine",
+      "ka": 100,
+      "query": "approach_only=maybe",
+      "status": 400,
+      "error": "invalid_query_parameter: approach_only は真偽値",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "knockdown_advantage_negative",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "limit=3000\u0026target_types=normal,unique,special,special_projectile,throw,normal_rush,unique_rush\u0026include_zero_damage=true",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "knockdown_advantage_negative",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "sort=target\u0026n_min=2\u0026n_max=4\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "knockdown_advantage_negative",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "mode=gap\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "knockdown_advantage_negative",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "mode=gap\u0026g_min=2\u0026g_max=5\u0026sort=target\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "knockdown_advantage_negative",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "mode=filler\u0026remain=0\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "knockdown_advantage_negative",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "mode=filler\u0026remain=4\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "knockdown_advantage_negative",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "mode=filler\u0026remain={safe_jump.true}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "knockdown_advantage_negative",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "mode=filler\u0026remain={safe_jump.f5}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "knockdown_advantage_negative",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "mode=filler\u0026remain={safe_jump.f6}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "knockdown_advantage_negative",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "approach_only=true\u0026block_safe_only=true\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "knockdown_advantage_negative",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "mode=gap\u0026chain_cancel_only=true\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "knockdown_advantage_negative",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "target_move=standing_medium_punch\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "knockdown_advantage_negative",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "mode=meaty\u0026limit=7\u0026n_min=0\u0026g_min=99",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "knockdown_advantage_negative",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "mode=xxx",
+      "status": 400,
+      "error": "invalid_query_parameter: mode は meaty / gap / filler のいずれか",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "mode=filler",
+      "status": 400,
+      "error": "invalid_query_parameter: remain は 0 以上の整数(mode=filler のとき必須)",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "mode=filler\u0026remain=-1",
+      "status": 400,
+      "error": "invalid_query_parameter: remain は 0 以上の整数(mode=filler のとき必須)",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "n_min=abc",
+      "status": 400,
+      "error": "invalid_query_parameter: n_min は整数",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "sort=zzz",
+      "status": 400,
+      "error": "invalid_query_parameter: sort は n または target",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "limit=1.5",
+      "status": 400,
+      "error": "invalid_query_parameter: limit は整数",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": -1,
+      "query": "approach_only=maybe",
+      "status": 400,
+      "error": "invalid_query_parameter: approach_only は真偽値",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "limit=3000\u0026target_types=normal,unique,special,special_projectile,throw,normal_rush,unique_rush\u0026include_zero_damage=true",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "sort=target\u0026n_min=2\u0026n_max=4\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "mode=gap\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "mode=gap\u0026g_min=2\u0026g_max=5\u0026sort=target\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "mode=filler\u0026remain=0\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "remain_not_below_knockdown",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "mode=filler\u0026remain=4\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "remain_not_below_knockdown",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "mode=filler\u0026remain={safe_jump.true}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "remain_not_below_knockdown",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "mode=filler\u0026remain={safe_jump.f5}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "remain_not_below_knockdown",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "mode=filler\u0026remain={safe_jump.f6}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "remain_not_below_knockdown",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "approach_only=true\u0026block_safe_only=true\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "mode=gap\u0026chain_cancel_only=true\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "target_move=standing_medium_punch\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "mode=meaty\u0026limit=7\u0026n_min=0\u0026g_min=99",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "mode=xxx",
+      "status": 400,
+      "error": "invalid_query_parameter: mode は meaty / gap / filler のいずれか",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "mode=filler",
+      "status": 400,
+      "error": "invalid_query_parameter: remain は 0 以上の整数(mode=filler のとき必須)",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "mode=filler\u0026remain=-1",
+      "status": 400,
+      "error": "invalid_query_parameter: remain は 0 以上の整数(mode=filler のとき必須)",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "n_min=abc",
+      "status": 400,
+      "error": "invalid_query_parameter: n_min は整数",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "sort=zzz",
+      "status": 400,
+      "error": "invalid_query_parameter: sort は n または target",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "limit=1.5",
+      "status": 400,
+      "error": "invalid_query_parameter: limit は整数",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 0,
+      "query": "approach_only=maybe",
+      "status": 400,
+      "error": "invalid_query_parameter: approach_only は真偽値",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "",
+      "status": 200,
+      "totalFound": 3,
+      "truncated": false,
+      "items": 3,
+      "sha256": "eff2941c82b674a330778d7505d60f5d27c2dafa93e310b07023132617dac125"
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "limit=3000\u0026target_types=normal,unique,special,special_projectile,throw,normal_rush,unique_rush\u0026include_zero_damage=true",
+      "status": 200,
+      "totalFound": 5,
+      "truncated": false,
+      "items": 5,
+      "sha256": "2ae3ca57eca5ad05a012596b134400ac6314cf52b0c60b0c357395eaeed0d7d3"
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "sort=target\u0026n_min=2\u0026n_max=4\u0026limit=3000",
+      "status": 200,
+      "totalFound": 2,
+      "truncated": false,
+      "items": 2,
+      "sha256": "91d22a9642a63eda969c09979e44ee645453cdc90f22fbca044e472f9f8ffebe"
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "mode=gap\u0026limit=3000",
+      "status": 200,
+      "totalFound": 3,
+      "truncated": false,
+      "items": 3,
+      "sha256": "61fbcf14e63a10ee21330d93b4b5a4b7c0281e6f7acde1c7251ce263f0b2dbb9"
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "mode=gap\u0026g_min=2\u0026g_max=5\u0026sort=target\u0026limit=3000",
+      "status": 200,
+      "totalFound": 1,
+      "truncated": false,
+      "items": 1,
+      "sha256": "8bfd5ddb86dd040c36fc64d9bd8d813f73b4d0077aef7b014f82d0d0595167e0"
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "mode=filler\u0026remain=0\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "mode=filler\u0026remain=4\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "mode=filler\u0026remain={safe_jump.true}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "remain_not_below_knockdown",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "mode=filler\u0026remain={safe_jump.f5}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "remain_not_below_knockdown",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "mode=filler\u0026remain={safe_jump.f6}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "remain_not_below_knockdown",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "approach_only=true\u0026block_safe_only=true\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "mode=gap\u0026chain_cancel_only=true\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "target_move=standing_medium_punch\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "mode=meaty\u0026limit=7\u0026n_min=0\u0026g_min=99",
+      "status": 200,
+      "totalFound": 3,
+      "truncated": false,
+      "items": 3,
+      "sha256": "eff2941c82b674a330778d7505d60f5d27c2dafa93e310b07023132617dac125"
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "mode=xxx",
+      "status": 400,
+      "error": "invalid_query_parameter: mode は meaty / gap / filler のいずれか",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "mode=filler",
+      "status": 400,
+      "error": "invalid_query_parameter: remain は 0 以上の整数(mode=filler のとき必須)",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "mode=filler\u0026remain=-1",
+      "status": 400,
+      "error": "invalid_query_parameter: remain は 0 以上の整数(mode=filler のとき必須)",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "n_min=abc",
+      "status": 400,
+      "error": "invalid_query_parameter: n_min は整数",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "sort=zzz",
+      "status": 400,
+      "error": "invalid_query_parameter: sort は n または target",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "limit=1.5",
+      "status": 400,
+      "error": "invalid_query_parameter: limit は整数",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 7,
+      "query": "approach_only=maybe",
+      "status": 400,
+      "error": "invalid_query_parameter: approach_only は真偽値",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "",
+      "status": 200,
+      "totalFound": 15,
+      "truncated": false,
+      "items": 15,
+      "sha256": "bd148fa2e69c7750a515afaae81cb3c0a73dddbfe939940ec3c3a77e535cb8ec"
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "limit=3000\u0026target_types=normal,unique,special,special_projectile,throw,normal_rush,unique_rush\u0026include_zero_damage=true",
+      "status": 200,
+      "totalFound": 40,
+      "truncated": false,
+      "items": 40,
+      "sha256": "f69a9169dd0e0673b56dbe14b5405dce4c6620df51d8c7169cf2f61f02de8f74"
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "sort=target\u0026n_min=2\u0026n_max=4\u0026limit=3000",
+      "status": 200,
+      "totalFound": 7,
+      "truncated": false,
+      "items": 7,
+      "sha256": "a2303bae338025322e6908b09b4b6cb3850a9b14cdd9b85908845c904e8c1807"
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "mode=gap\u0026limit=3000",
+      "status": 200,
+      "totalFound": 17,
+      "truncated": false,
+      "items": 17,
+      "sha256": "04083a8d780db738c7d32fb2e3c4239e6f76ac45aef1fb978c07fa2662981ae7"
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "mode=gap\u0026g_min=2\u0026g_max=5\u0026sort=target\u0026limit=3000",
+      "status": 200,
+      "totalFound": 9,
+      "truncated": false,
+      "items": 9,
+      "sha256": "cbd5f256eee976cc9c3f06f9eefbde0da042f632a782cfa65558d2e2104adc08"
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "mode=filler\u0026remain=0\u0026limit=3000",
+      "status": 200,
+      "totalFound": 1,
+      "truncated": false,
+      "items": 1,
+      "sha256": "1c7d80e43093ac5774cbeb8861a312f2d5797e917d0aeefa93c7fbd4d123a901"
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "mode=filler\u0026remain=4\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "mode=filler\u0026remain={safe_jump.true}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "remain_not_below_knockdown",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "mode=filler\u0026remain={safe_jump.f5}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "remain_not_below_knockdown",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "mode=filler\u0026remain={safe_jump.f6}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "remain_not_below_knockdown",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "approach_only=true\u0026block_safe_only=true\u0026limit=3000",
+      "status": 200,
+      "totalFound": 1,
+      "truncated": false,
+      "items": 1,
+      "sha256": "1e3103d330c7a31f7b6f519128e9a2755a09da31c765504d110de1120a8cec0d"
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "mode=gap\u0026chain_cancel_only=true\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "target_move=standing_medium_punch\u0026limit=3000",
+      "status": 200,
+      "totalFound": 1,
+      "truncated": false,
+      "items": 1,
+      "sha256": "84eb5b19e1908972c5ad6227fcf642bcdf3d780dfbf1b9e2cfff0cd87906351e"
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "mode=meaty\u0026limit=7\u0026n_min=0\u0026g_min=99",
+      "status": 200,
+      "totalFound": 15,
+      "truncated": false,
+      "items": 7,
+      "sha256": "a26c472c3941009e9be35d93b2b5c168fa1092eeb47dab960130ae2f07e5cc1c"
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "mode=xxx",
+      "status": 400,
+      "error": "invalid_query_parameter: mode は meaty / gap / filler のいずれか",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "mode=filler",
+      "status": 400,
+      "error": "invalid_query_parameter: remain は 0 以上の整数(mode=filler のとき必須)",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "mode=filler\u0026remain=-1",
+      "status": 400,
+      "error": "invalid_query_parameter: remain は 0 以上の整数(mode=filler のとき必須)",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "n_min=abc",
+      "status": 400,
+      "error": "invalid_query_parameter: n_min は整数",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "sort=zzz",
+      "status": 400,
+      "error": "invalid_query_parameter: sort は n または target",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "limit=1.5",
+      "status": 400,
+      "error": "invalid_query_parameter: limit は整数",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 25,
+      "query": "approach_only=maybe",
+      "status": 400,
+      "error": "invalid_query_parameter: approach_only は真偽値",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "",
+      "status": 200,
+      "totalFound": 138,
+      "truncated": false,
+      "items": 138,
+      "sha256": "d05afcf4035acc3050508aeec155fc56f682f2b1fa62d52e6ca56442f9b5b2b5"
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "limit=3000\u0026target_types=normal,unique,special,special_projectile,throw,normal_rush,unique_rush\u0026include_zero_damage=true",
+      "status": 200,
+      "totalFound": 328,
+      "truncated": false,
+      "items": 328,
+      "sha256": "65963b1b6558de9d16d813f8c0469355cf31d76faa856a80bb60d654447b8da0"
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "sort=target\u0026n_min=2\u0026n_max=4\u0026limit=3000",
+      "status": 200,
+      "totalFound": 76,
+      "truncated": false,
+      "items": 76,
+      "sha256": "8e9d4ceabf5e6227d48e62703d0cad8a2456da8fd3ca67ec78dc9bf77f12c3f0"
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "mode=gap\u0026limit=3000",
+      "status": 200,
+      "totalFound": 208,
+      "truncated": false,
+      "items": 208,
+      "sha256": "9e6d70c4436dbf019d0cacc489dcde02caf4912b1e1baee2476f39b4d03606b7"
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "mode=gap\u0026g_min=2\u0026g_max=5\u0026sort=target\u0026limit=3000",
+      "status": 200,
+      "totalFound": 83,
+      "truncated": false,
+      "items": 83,
+      "sha256": "9b8738f12f317135c60a884d995edc7b0856755bf5c8bdeb130de4813a2428db"
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "mode=filler\u0026remain=0\u0026limit=3000",
+      "status": 200,
+      "totalFound": 14,
+      "truncated": false,
+      "items": 14,
+      "sha256": "d5d8d20ee025a034e7b143a54daf5e8582fd556a75ee938799cf97d95d46cc20"
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "mode=filler\u0026remain=4\u0026limit=3000",
+      "status": 200,
+      "totalFound": 4,
+      "truncated": false,
+      "items": 4,
+      "sha256": "afbc2dd77d958e157a412bb00850a6d6f11969b14502e62de281bf5ebc0cb42d"
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "mode=filler\u0026remain={safe_jump.true}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "reason": "remain_not_below_knockdown",
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "mode=filler\u0026remain={safe_jump.f5}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "mode=filler\u0026remain={safe_jump.f6}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "approach_only=true\u0026block_safe_only=true\u0026limit=3000",
+      "status": 200,
+      "totalFound": 14,
+      "truncated": false,
+      "items": 14,
+      "sha256": "1abb3310ac608cc30b721b9c2929549fa93f5fe1123199285b11f34864530f37"
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "mode=gap\u0026chain_cancel_only=true\u0026limit=3000",
+      "status": 200,
+      "totalFound": 44,
+      "truncated": false,
+      "items": 44,
+      "sha256": "c04cf14614728367074673256151875100fc810e4738efdb83debc25ead576a3"
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "target_move=standing_medium_punch\u0026limit=3000",
+      "status": 200,
+      "totalFound": 9,
+      "truncated": false,
+      "items": 9,
+      "sha256": "50e896a63ad5e8e6ba98d9eaac762943ec257ded8c40eaead225bb746b7b05fa"
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "mode=meaty\u0026limit=7\u0026n_min=0\u0026g_min=99",
+      "status": 200,
+      "totalFound": 138,
+      "truncated": false,
+      "items": 7,
+      "sha256": "d9e0269626ce2cab6f3662e58feb04d10d2de7c7cfdb3c8adc557d0b61d0530d"
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "mode=xxx",
+      "status": 400,
+      "error": "invalid_query_parameter: mode は meaty / gap / filler のいずれか",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "mode=filler",
+      "status": 400,
+      "error": "invalid_query_parameter: remain は 0 以上の整数(mode=filler のとき必須)",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "mode=filler\u0026remain=-1",
+      "status": 400,
+      "error": "invalid_query_parameter: remain は 0 以上の整数(mode=filler のとき必須)",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "n_min=abc",
+      "status": 400,
+      "error": "invalid_query_parameter: n_min は整数",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "sort=zzz",
+      "status": 400,
+      "error": "invalid_query_parameter: sort は n または target",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "limit=1.5",
+      "status": 400,
+      "error": "invalid_query_parameter: limit は整数",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 43,
+      "query": "approach_only=maybe",
+      "status": 400,
+      "error": "invalid_query_parameter: approach_only は真偽値",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "",
+      "status": 200,
+      "totalFound": 1165,
+      "truncated": false,
+      "items": 200,
+      "sha256": "acff0f308350cd383a21b78b8c75480e063e32224fb0d86c10183515a92907bc"
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "limit=3000\u0026target_types=normal,unique,special,special_projectile,throw,normal_rush,unique_rush\u0026include_zero_damage=true",
+      "status": 200,
+      "totalFound": 2794,
+      "truncated": false,
+      "items": 2794,
+      "sha256": "05e49396221b0f858c13b2e6e3880fdf233c27b4d8145196783a69bb60e5d0ae"
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "sort=target\u0026n_min=2\u0026n_max=4\u0026limit=3000",
+      "status": 200,
+      "totalFound": 635,
+      "truncated": false,
+      "items": 635,
+      "sha256": "2c8dfcdaaf7d9cbfc0a056e24b7d8ed106d4a52fff2360d9f89edbc527f1e44a"
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "mode=gap\u0026limit=3000",
+      "status": 200,
+      "totalFound": 1619,
+      "truncated": false,
+      "items": 1619,
+      "sha256": "e5b0217a0552b7d8ea73745d30e01bbc831858b7623833979321337805e9f1c0"
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "mode=gap\u0026g_min=2\u0026g_max=5\u0026sort=target\u0026limit=3000",
+      "status": 200,
+      "totalFound": 614,
+      "truncated": false,
+      "items": 614,
+      "sha256": "c8f7361aff07eae1bea40aa66cf3af379254b0192b06ad9a94cb26a9ce4bd511"
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "mode=filler\u0026remain=0\u0026limit=3000",
+      "status": 200,
+      "totalFound": 54,
+      "truncated": false,
+      "items": 54,
+      "sha256": "8b6f9c348d44d3649079185b4b2d6c796fe2d7eef31f46568592ae3d0ad872bb"
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "mode=filler\u0026remain=4\u0026limit=3000",
+      "status": 200,
+      "totalFound": 45,
+      "truncated": false,
+      "items": 45,
+      "sha256": "94a880cee9fdba5401dfa98347cd34d73ba1ef1b8d24e505ecd0d1ad51ec432c"
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "mode=filler\u0026remain={safe_jump.true}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "mode=filler\u0026remain={safe_jump.f5}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 1,
+      "truncated": false,
+      "items": 1,
+      "sha256": "75ea7b1c64c0565c2f6f2b80b39d9749d6e12046f4466b7f3b77f4b9e93a8d8b"
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "mode=filler\u0026remain={safe_jump.f6}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "approach_only=true\u0026block_safe_only=true\u0026limit=3000",
+      "status": 200,
+      "totalFound": 139,
+      "truncated": false,
+      "items": 139,
+      "sha256": "25450ef24c8cbedad4abfd06848d20f5ca29d1744ffff019a5a6fc0b84ca20c5"
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "mode=gap\u0026chain_cancel_only=true\u0026limit=3000",
+      "status": 200,
+      "totalFound": 490,
+      "truncated": false,
+      "items": 490,
+      "sha256": "52e25c021b8dff26771d27c6c3b5c6a0a7ea78aeb5ef2045aec32a9b152e4915"
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "target_move=standing_medium_punch\u0026limit=3000",
+      "status": 200,
+      "totalFound": 35,
+      "truncated": false,
+      "items": 35,
+      "sha256": "227279db9cd32023a349aeb23d783c40aa29034745d1292ecdda291a00bf55d1"
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "mode=meaty\u0026limit=7\u0026n_min=0\u0026g_min=99",
+      "status": 200,
+      "totalFound": 1165,
+      "truncated": false,
+      "items": 7,
+      "sha256": "a0eb5f3e9d4f1eeda702ebe7aa610a6dd81698adf469e3270f77ac73776528f2"
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "mode=xxx",
+      "status": 400,
+      "error": "invalid_query_parameter: mode は meaty / gap / filler のいずれか",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "mode=filler",
+      "status": 400,
+      "error": "invalid_query_parameter: remain は 0 以上の整数(mode=filler のとき必須)",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "mode=filler\u0026remain=-1",
+      "status": 400,
+      "error": "invalid_query_parameter: remain は 0 以上の整数(mode=filler のとき必須)",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "n_min=abc",
+      "status": 400,
+      "error": "invalid_query_parameter: n_min は整数",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "sort=zzz",
+      "status": 400,
+      "error": "invalid_query_parameter: sort は n または target",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "limit=1.5",
+      "status": 400,
+      "error": "invalid_query_parameter: limit は整数",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 61,
+      "query": "approach_only=maybe",
+      "status": 400,
+      "error": "invalid_query_parameter: approach_only は真偽値",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "",
+      "status": 200,
+      "totalFound": 8257,
+      "truncated": false,
+      "items": 200,
+      "sha256": "d5d0debd130f2678c579bbe347372cbb53f9244a350b82cdacdb741fb0f2b593"
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "limit=3000\u0026target_types=normal,unique,special,special_projectile,throw,normal_rush,unique_rush\u0026include_zero_damage=true",
+      "status": 200,
+      "totalFound": 19652,
+      "truncated": false,
+      "items": 3000,
+      "sha256": "9e374e56658ce8e398a4a9e7b610ebff14734211a23c6b8121f6c87c8f56766f"
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "sort=target\u0026n_min=2\u0026n_max=4\u0026limit=3000",
+      "status": 200,
+      "totalFound": 4522,
+      "truncated": false,
+      "items": 3000,
+      "sha256": "7b9303c0c6acc8f15c150ff98832ddaa02810776338296f97bc74fab21c20794"
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "mode=gap\u0026limit=3000",
+      "status": 200,
+      "totalFound": 11910,
+      "truncated": false,
+      "items": 3000,
+      "sha256": "28e8d7c155312bde9488d0ac1db25ccb7b508f06db7080c21b397cc3b93c3c4f"
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "mode=gap\u0026g_min=2\u0026g_max=5\u0026sort=target\u0026limit=3000",
+      "status": 200,
+      "totalFound": 5183,
+      "truncated": false,
+      "items": 3000,
+      "sha256": "fc2ef130e0f3db1d3303a31ec4dfb21ab3980e7d2da8e0472d7b0046619f0f23"
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "mode=filler\u0026remain=0\u0026limit=3000",
+      "status": 200,
+      "totalFound": 415,
+      "truncated": false,
+      "items": 415,
+      "sha256": "ae78bbb68a3b659801d68eb8ea9538cc338d475ca6f5e2cf1651774293fe66d3"
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "mode=filler\u0026remain=4\u0026limit=3000",
+      "status": 200,
+      "totalFound": 254,
+      "truncated": false,
+      "items": 254,
+      "sha256": "41af711010fa654931f97611e71d5686f1f1025a700c2aefa416b57c72b4a9b4"
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "mode=filler\u0026remain={safe_jump.true}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "mode=filler\u0026remain={safe_jump.f5}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 2,
+      "truncated": false,
+      "items": 2,
+      "sha256": "7b1c4346e07e213b2cd79d35788e303333c19de127acdf8963e7641e88f0e870"
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "mode=filler\u0026remain={safe_jump.f6}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 7,
+      "truncated": false,
+      "items": 7,
+      "sha256": "7bd0331f8a2324eb90c39500bef00756ead4cf407d67b7805d460e67628a40d0"
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "approach_only=true\u0026block_safe_only=true\u0026limit=3000",
+      "status": 200,
+      "totalFound": 1102,
+      "truncated": false,
+      "items": 1102,
+      "sha256": "30a2a5744810ad9fd8a8eddb7b17177701d2564a06a0849b63569a0febd51786"
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "mode=gap\u0026chain_cancel_only=true\u0026limit=3000",
+      "status": 200,
+      "totalFound": 5721,
+      "truncated": false,
+      "items": 3000,
+      "sha256": "bbf16f1c4884d3fa008d3887b89ebc0d18a067a650d1c6686d0303425a342ec5"
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "target_move=standing_medium_punch\u0026limit=3000",
+      "status": 200,
+      "totalFound": 451,
+      "truncated": false,
+      "items": 451,
+      "sha256": "7595f62575547b38b95b4e6075eee886141481c4ebf1542a961935a81d19fb4e"
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "mode=meaty\u0026limit=7\u0026n_min=0\u0026g_min=99",
+      "status": 200,
+      "totalFound": 8257,
+      "truncated": false,
+      "items": 7,
+      "sha256": "235470af4e5874629ced0919ab1e705945f447ea27b1c2b83b1c85538c63a2f3"
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "mode=xxx",
+      "status": 400,
+      "error": "invalid_query_parameter: mode は meaty / gap / filler のいずれか",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "mode=filler",
+      "status": 400,
+      "error": "invalid_query_parameter: remain は 0 以上の整数(mode=filler のとき必須)",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "mode=filler\u0026remain=-1",
+      "status": 400,
+      "error": "invalid_query_parameter: remain は 0 以上の整数(mode=filler のとき必須)",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "n_min=abc",
+      "status": 400,
+      "error": "invalid_query_parameter: n_min は整数",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "sort=zzz",
+      "status": 400,
+      "error": "invalid_query_parameter: sort は n または target",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "limit=1.5",
+      "status": 400,
+      "error": "invalid_query_parameter: limit は整数",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 79,
+      "query": "approach_only=maybe",
+      "status": 400,
+      "error": "invalid_query_parameter: approach_only は真偽値",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 100,
+      "query": "",
+      "status": 200,
+      "totalFound": 55096,
+      "truncated": true,
+      "items": 200,
+      "sha256": "8318e88b457570151dc3b2bac4951665e57eb302e3aab582f25c2b8fc5a7aedc"
+    },
+    {
+      "character": "arjun",
+      "ka": 100,
+      "query": "limit=3000\u0026target_types=normal,unique,special,special_projectile,throw,normal_rush,unique_rush\u0026include_zero_damage=true",
+      "status": 200,
+      "totalFound": 130200,
+      "truncated": true,
+      "items": 3000,
+      "sha256": "573de96b094a0661cac8cc73fa918a09e17caff3ef64c885bd78576efecb40f0"
+    },
+    {
+      "character": "arjun",
+      "ka": 100,
+      "query": "sort=target\u0026n_min=2\u0026n_max=4\u0026limit=3000",
+      "status": 200,
+      "totalFound": 38390,
+      "truncated": true,
+      "items": 3000,
+      "sha256": "32d75e84518da0c15d1fa8cd1c7af039f830e7492be01b6797a017c3348579e8"
+    },
+    {
+      "character": "arjun",
+      "ka": 100,
+      "query": "mode=gap\u0026limit=3000",
+      "status": 200,
+      "totalFound": 54586,
+      "truncated": true,
+      "items": 3000,
+      "sha256": "f8f98e2a9b6274f7bb006f2f5fc60ad35bb1bac1167fc19f98890a3eb6bcdd2f"
+    },
+    {
+      "character": "arjun",
+      "ka": 100,
+      "query": "mode=gap\u0026g_min=2\u0026g_max=5\u0026sort=target\u0026limit=3000",
+      "status": 200,
+      "totalFound": 41638,
+      "truncated": true,
+      "items": 3000,
+      "sha256": "a6a028d47740f70899de4cf383042cd2749e156a88ae2a477ba553104fb4b26e"
+    },
+    {
+      "character": "arjun",
+      "ka": 100,
+      "query": "mode=filler\u0026remain=0\u0026limit=3000",
+      "status": 200,
+      "totalFound": 3824,
+      "truncated": true,
+      "items": 3000,
+      "sha256": "70b37938358c6ec3117fa62607f98764a8ce15b93fb38cbd20af2de66d67595b"
+    },
+    {
+      "character": "arjun",
+      "ka": 100,
+      "query": "mode=filler\u0026remain=4\u0026limit=3000",
+      "status": 200,
+      "totalFound": 2488,
+      "truncated": true,
+      "items": 2488,
+      "sha256": "14cf1b9b13f05c338a2bceac48d57b771ecb4723a565bcc4bb988da842a600fd"
+    },
+    {
+      "character": "arjun",
+      "ka": 100,
+      "query": "mode=filler\u0026remain={safe_jump.true}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 45,
+      "truncated": true,
+      "items": 45,
+      "sha256": "ea5a3006fde42dbd5b7a73133209944e6ba7f6c784f3fa59ecfa6fe97135bf5e"
+    },
+    {
+      "character": "arjun",
+      "ka": 100,
+      "query": "mode=filler\u0026remain={safe_jump.f5}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 51,
+      "truncated": true,
+      "items": 51,
+      "sha256": "9f56dc6086e8ff9925c2e4b70c3c8a300c85322e47408c65190bf7dadeffb402"
+    },
+    {
+      "character": "arjun",
+      "ka": 100,
+      "query": "mode=filler\u0026remain={safe_jump.f6}\u0026limit=3000",
+      "status": 200,
+      "totalFound": 51,
+      "truncated": true,
+      "items": 51,
+      "sha256": "985ce6d014558551b002340c6a88ead646fc777b03acad79b328bec9a2af9893"
+    },
+    {
+      "character": "arjun",
+      "ka": 100,
+      "query": "approach_only=true\u0026block_safe_only=true\u0026limit=3000",
+      "status": 200,
+      "totalFound": 6825,
+      "truncated": true,
+      "items": 3000,
+      "sha256": "8d948bcfe90ed53026108b8f874406b6f2f0e8c1c5ef7dfc84e297319979b988"
+    },
+    {
+      "character": "arjun",
+      "ka": 100,
+      "query": "mode=gap\u0026chain_cancel_only=true\u0026limit=3000",
+      "status": 200,
+      "totalFound": 40630,
+      "truncated": true,
+      "items": 3000,
+      "sha256": "bf236c67279fb26e8e95580cc59a162e6fd2c1faadc73cf5cde599a67f36fa28"
+    },
+    {
+      "character": "arjun",
+      "ka": 100,
+      "query": "target_move=standing_medium_punch\u0026limit=3000",
+      "status": 200,
+      "totalFound": 3451,
+      "truncated": true,
+      "items": 3000,
+      "sha256": "e88c3e1478cc878dbaa26d0f77767d960bcb7626938fd18ae5d192515f9a0e20"
+    },
+    {
+      "character": "arjun",
+      "ka": 100,
+      "query": "mode=meaty\u0026limit=7\u0026n_min=0\u0026g_min=99",
+      "status": 200,
+      "totalFound": 55096,
+      "truncated": true,
+      "items": 7,
+      "sha256": "d8a89ac566981053c03f2c96b3ffe468d9a2d42d8fe954ff7302f3b0be9bbfea"
+    },
+    {
+      "character": "arjun",
+      "ka": 100,
+      "query": "mode=xxx",
+      "status": 400,
+      "error": "invalid_query_parameter: mode は meaty / gap / filler のいずれか",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 100,
+      "query": "mode=filler",
+      "status": 400,
+      "error": "invalid_query_parameter: remain は 0 以上の整数(mode=filler のとき必須)",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 100,
+      "query": "mode=filler\u0026remain=-1",
+      "status": 400,
+      "error": "invalid_query_parameter: remain は 0 以上の整数(mode=filler のとき必須)",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 100,
+      "query": "n_min=abc",
+      "status": 400,
+      "error": "invalid_query_parameter: n_min は整数",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 100,
+      "query": "sort=zzz",
+      "status": 400,
+      "error": "invalid_query_parameter: sort は n または target",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
+      "ka": 100,
+      "query": "limit=1.5",
+      "status": 400,
+      "error": "invalid_query_parameter: limit は整数",
+      "totalFound": 0,
+      "truncated": false,
+      "items": 0,
+      "sha256": ""
+    },
+    {
+      "character": "arjun",
       "ka": 100,
       "query": "approach_only=maybe",
       "status": 400,

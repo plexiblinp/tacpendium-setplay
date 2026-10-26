@@ -831,8 +831,8 @@
       "notation": {
         "nameJa": "リコイルキャノン",
         "nameEn": "Recoil Cannon",
-        "srk": "MP>4HP",
-        "numeric": "MP>4HP"
+        "srk": "st.MP~4HP (TC)",
+        "numeric": "5MP~4HP(TC)"
       },
       "calcFingerprint": "79832b57eb41e492"
     },
@@ -859,8 +859,8 @@
       "notation": {
         "nameJa": "ダブルバレット",
         "nameEn": "Double Shot",
-        "srk": "2MP>2MP",
-        "numeric": "2MP>2MP"
+        "srk": "cr.MP~cr.MP (TC)",
+        "numeric": "2MP~2MP(TC)"
       },
       "calcFingerprint": "0509e178f2130ab4"
     },
@@ -887,8 +887,8 @@
       "notation": {
         "nameJa": "ドレイクファング",
         "nameEn": "Drake Fang",
-        "srk": "2MK>6MP",
-        "numeric": "2MK>6MP"
+        "srk": "cr.MK~6MP (TC)",
+        "numeric": "2MK~6MP(TC)"
       },
       "calcFingerprint": "cd0334a1ad91f627"
     },
@@ -915,8 +915,8 @@
       "notation": {
         "nameJa": "ファントムカッター",
         "nameEn": "Phantom Cutter",
-        "srk": "2HK>3HK",
-        "numeric": "2HK>3HK"
+        "srk": "cr.HK~3HK (TC)",
+        "numeric": "2HK~3HK(TC)"
       },
       "calcFingerprint": "ed3157effc311ce1"
     },

@@ -991,8 +991,8 @@
       "notation": {
         "nameJa": "スターリングビーク",
         "nameEn": "Starling Beak",
-        "srk": "MP>MP",
-        "numeric": "MP>MP"
+        "srk": "st.MP~st.MP (TC)",
+        "numeric": "5MP~5MP(TC)"
       },
       "calcFingerprint": "965166194e216d71"
     },
@@ -1019,8 +1019,8 @@
       "notation": {
         "nameJa": "ハンドスタンドウィップ",
         "nameEn": "Handstand Whip",
-        "srk": "6MK>MK",
-        "numeric": "6MK>MK"
+        "srk": "6MK~st.MK (TC)",
+        "numeric": "6MK~5MK(TC)"
       },
       "calcFingerprint": "c58504e6b37f602a"
     },
@@ -1047,8 +1047,8 @@
       "notation": {
         "nameJa": "ハインドキック",
         "nameEn": "Hind Kick",
-        "srk": "MK>HK",
-        "numeric": "MK>HK"
+        "srk": "st.MK~st.HK (TC)",
+        "numeric": "5MK~5HK(TC)"
       },
       "calcFingerprint": "026c62070502cb2c"
     },
@@ -1075,8 +1075,8 @@
       "notation": {
         "nameJa": "ラークフラッター",
         "nameEn": "Fluttering Lark",
-        "srk": "2MK>HK",
-        "numeric": "2MK>HK"
+        "srk": "cr.MK~st.HK (TC)",
+        "numeric": "2MK~5HK(TC)"
       },
       "calcFingerprint": "1d55589b83d80bb3"
     },
@@ -1103,8 +1103,8 @@
       "notation": {
         "nameJa": "ターニングテイル",
         "nameEn": "Turning Tail",
-        "srk": "HP>HP",
-        "numeric": "HP>HP"
+        "srk": "st.HP~st.HP (TC)",
+        "numeric": "5HP~5HP(TC)"
       },
       "calcFingerprint": "eaa9cce83afe4148"
     },
@@ -1159,8 +1159,8 @@
       "notation": {
         "nameJa": "トランクスラップ(2発止め)",
         "nameEn": "Trunk Slap (2 hits)",
-        "srk": "6HP>HP",
-        "numeric": "6HP>HP"
+        "srk": "6HP~st.HP (TC)",
+        "numeric": "6HP~5HP(TC)"
       },
       "calcFingerprint": "2286cfbffa3531cb"
     },
@@ -1187,8 +1187,8 @@
       "notation": {
         "nameJa": "トランクスラップ",
         "nameEn": "Trunk Slap",
-        "srk": "6HP>HP>HP",
-        "numeric": "6HP>HP>HP"
+        "srk": "6HP~st.HP~st.HP (TC)",
+        "numeric": "6HP~5HP~5HP(TC)"
       },
       "calcFingerprint": "21b433179a0f6459"
     },
@@ -1215,8 +1215,8 @@
       "notation": {
         "nameJa": "ソアーレイド",
         "nameEn": "Soaring Raid",
-        "srk": "LP>MK",
-        "numeric": "LP>MK"
+        "srk": "j.LP~j.MK (TC)",
+        "numeric": "j.LP~j.MK(TC)"
       },
       "calcFingerprint": "846d272b7e3f21f9"
     },
@@ -1243,8 +1243,8 @@
       "notation": {
         "nameJa": "ラプターレンジ",
         "nameEn": "Raptor Range",
-        "srk": "MP>HP",
-        "numeric": "MP>HP"
+        "srk": "j.MP~j.HP (TC)",
+        "numeric": "j.MP~j.HP(TC)"
       },
       "calcFingerprint": "f9012dc02bfdf659"
     },

@@ -985,8 +985,8 @@
       "notation": {
         "nameJa": "飛燕連脚(2発止め)",
         "nameEn": "Hien Ren Kyaku (2 hits)",
-        "srk": "LK>LK",
-        "numeric": "LK>LK"
+        "srk": "st.LK~st.LK (TC)",
+        "numeric": "5LK~5LK(TC)"
       },
       "calcFingerprint": "2df27699fd5e87c5"
     },
@@ -1013,8 +1013,8 @@
       "notation": {
         "nameJa": "飛燕連脚",
         "nameEn": "Hien Ren Kyaku",
-        "srk": "LK>LK>LK",
-        "numeric": "LK>LK>LK"
+        "srk": "st.LK~st.LK~st.LK (TC)",
+        "numeric": "5LK~5LK~5LK(TC)"
       },
       "calcFingerprint": "ea2216dd9adc9d0c"
     },
@@ -1069,8 +1069,8 @@
       "notation": {
         "nameJa": "星孔雀",
         "nameEn": "Hoshi Kujaku",
-        "srk": "4HK>HK",
-        "numeric": "4HK>HK"
+        "srk": "4HK~st.HK (TC)",
+        "numeric": "4HK~5HK(TC)"
       },
       "calcFingerprint": "c146e2d9171be470"
     },
