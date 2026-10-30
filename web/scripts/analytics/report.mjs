@@ -34,7 +34,10 @@ const W = () => `_sample_interval / ${col("sampleRate")}`;
 /** 分位点の重み(quantileExactWeighted は整数の重みを取るので丸める。件数と同じく抽出率でも割り戻す。レビュー低-5)。 */
 const WI = () => `toUInt32(round(${W()}))`;
 
-/** 集計の問い合わせの一覧。dataset は英数字と _ だけ(SQL に埋め込むため検査する)。 */
+/**
+ * 集計の問い合わせの一覧。dataset は英数字と _ だけ(SQL に埋め込むため検査する)。
+ * 条件つきの和は sumIf で書く。if(条件, 重み, 0) は本物の SQL API で HTTP 422 になる(if の 2・3 番目の型が Double と Integer で揃わない。2026-10-30)。
+ */
 export function buildQueries(dataset, days) {
   if (!/^[A-Za-z0-9_]+$/.test(dataset)) throw new Error(`dataset の名前が不正: ${dataset}`);
   if (!Number.isInteger(days) || days < 1 || days > MAX_DAYS) throw new Error(`日数は 1〜${MAX_DAYS}: ${days}`);
@@ -48,7 +51,7 @@ export function buildQueries(dataset, days) {
     },
     {
       title: `KA ${HEAVY_KA} 以上の実行の割合`,
-      sql: `SELECT round(SUM(if(${col("ka")} >= ${HEAVY_KA}, ${W()}, 0))) AS heavyRuns, round(SUM(${W()})) AS runs, round(100 * SUM(if(${col("ka")} >= ${HEAVY_KA}, ${W()}, 0)) / SUM(${W()}), 1) AS heavyPercent FROM ${from}`,
+      sql: `SELECT round(sumIf(${W()}, ${col("ka")} >= ${HEAVY_KA})) AS heavyRuns, round(SUM(${W()})) AS runs, round(100 * sumIf(${W()}, ${col("ka")} >= ${HEAVY_KA}) / SUM(${W()}), 1) AS heavyPercent FROM ${from}`,
     },
     {
       title: "KA の帯(10 ごと)の実行数",
@@ -76,7 +79,7 @@ export function buildQueries(dataset, days) {
     },
     {
       title: "結果が 0 件だった実行の割合",
-      sql: `SELECT round(100 * SUM(if(${col("resultCount")} = 0, ${W()}, 0)) / SUM(${W()}), 1) AS zeroPercent, round(SUM(${W()})) AS resultRuns FROM ${from} AND ${col("outcome")} = 'result'`,
+      sql: `SELECT round(100 * sumIf(${W()}, ${col("resultCount")} = 0) / SUM(${W()}), 1) AS zeroPercent, round(SUM(${W()})) AS resultRuns FROM ${from} AND ${col("outcome")} = 'result'`,
     },
     {
       title: "票の読み込み(ok / none / unavailable)",
@@ -108,27 +111,50 @@ export function toMarkdown(title, rows) {
   return `### ${title}\n\n${lines.join("\n")}\n`;
 }
 
+/** 失敗した表の本文。誤りの文は query が先頭 300 字に切ったもの(トークンは入らない)。 */
+export function failureMarkdown(title, message) {
+  return `### ${title}\n\n失敗: ${message}\n`;
+}
+
+/** すべての表を問い合わせる。1 つが失敗しても残りの表は出し、失敗した数を返す。 */
 export async function report(fetchFn, accountId, token, dataset, days) {
   const parts = [`## 実行計測の集計(直近 ${days} 日・dataset ${dataset})\n`];
-  for (const q of buildQueries(dataset, days)) parts.push(toMarkdown(q.title, await query(fetchFn, accountId, token, q.sql)));
-  return parts.join("\n");
+  let failures = 0;
+  for (const q of buildQueries(dataset, days)) {
+    try {
+      parts.push(toMarkdown(q.title, await query(fetchFn, accountId, token, q.sql)));
+    } catch (e) {
+      failures++;
+      parts.push(failureMarkdown(q.title, e instanceof Error ? e.message : String(e)));
+    }
+  }
+  return { markdown: parts.join("\n"), failures };
 }
 
-async function main() {
-  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID ?? "";
-  const token = process.env.CLOUDFLARE_API_TOKEN ?? "";
-  const dataset = process.env.ANALYTICS_DATASET || DEFAULT_DATASET;
-  const days = Number(process.argv[2] ?? DEFAULT_DAYS);
+/** コマンドの本体。終了コード(0 成功・1 失敗した表がある・2 使い方の誤り)を返す。 */
+export async function run(env, argv, fetchFn, out, err) {
+  const accountId = env.CLOUDFLARE_ACCOUNT_ID ?? "";
+  const token = env.CLOUDFLARE_API_TOKEN ?? "";
+  const dataset = env.ANALYTICS_DATASET || DEFAULT_DATASET;
+  const days = Number(argv[0] ?? DEFAULT_DAYS);
   if (accountId === "" || token === "") {
-    console.error("CLOUDFLARE_ACCOUNT_ID と CLOUDFLARE_API_TOKEN が要る(docs/telemetry.md)");
-    process.exit(2);
+    err("CLOUDFLARE_ACCOUNT_ID と CLOUDFLARE_API_TOKEN が要る(docs/telemetry.md)");
+    return 2;
   }
   try {
-    console.log(await report(fetch, accountId, token, dataset, days));
+    const { markdown, failures } = await report(fetchFn, accountId, token, dataset, days);
+    out(markdown);
+    if (failures > 0) {
+      err(`失敗した表: ${failures} 件(表の「失敗:」を見る)`);
+      return 1;
+    }
+    return 0;
   } catch (e) {
-    console.error(e instanceof Error ? e.message : String(e));
-    process.exit(1);
+    err(e instanceof Error ? e.message : String(e));
+    return 1;
   }
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) await main();
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  process.exitCode = await run(process.env, process.argv.slice(2), fetch, console.log, console.error);
+}
