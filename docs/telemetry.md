@@ -78,6 +78,18 @@ CLOUDFLARE_ACCOUNT_ID=… CLOUDFLARE_API_TOKEN=… node scripts/analytics/report
 
 トークンをコマンドの文字列に書くと shell の履歴に残る。打ち込んで見えない形で読む（例 bash `read -rs CLOUDFLARE_API_TOKEN && export CLOUDFLARE_API_TOKEN`、PowerShell 7 `$env:CLOUDFLARE_API_TOKEN = Read-Host -MaskInput`）。依存は Node の組み込みだけなので、`pnpm install` は要らない。
 
+Windows（PowerShell 7）の例:
+
+```powershell
+cd web
+$env:CLOUDFLARE_ACCOUNT_ID = Read-Host
+$env:CLOUDFLARE_API_TOKEN = Read-Host -MaskInput
+node scripts/analytics/report.mjs 7
+Remove-Item Env:CLOUDFLARE_API_TOKEN
+```
+
+表は問い合わせごとに出す。1 つが失敗しても残りの表は出し、失敗した表には「失敗: SQL API: HTTP 422: …」（応答の先頭 300 字。トークンは出さない）と書く。終了コードは 0（全部の表が出た）・1（失敗した表がある、または日数の誤り）・2（環境変数が無い）。集計の結果はリポジトリ・Issues・Actions のログなど公開の場所に載せない（「手元でだけ回す」の理由と同じ）。
+
 出す表: 日ごとの実行数と推定利用者数／**KA 80 以上の実行の割合**（S5 後の開発者決定 1: D を作るかの判断材料）／KA の帯ごとの実行数と待ち時間（中央値・95%・最大）／キャラ別／モード別／言語・表記別／結果と誤りの code／0 件の割合／票の読み込み。
 
 ## デプロイの手順（開発者が行う。S9）
@@ -114,7 +126,10 @@ CLOUDFLARE_ACCOUNT_ID=… CLOUDFLARE_API_TOKEN=… node scripts/analytics/report
 
 ### 集計用の API トークンの扱い
 
-**作り方**: Cloudflare の画面の Account API tokens → Create Token → Custom。権限は **Account → Account Analytics → Read の 1 つだけ**、対象のアカウントを 1 つに絞り、有効期限を付ける。デプロイ用とは別のトークンにする。
+**作り方**: 権限は **Account → Account Analytics → Read の 1 つだけ**（読み取りのみ）。有効期限を付ける。デプロイ用とは別のトークンにする。作る画面で範囲の選び方が違う。
+
+- **Manage Account → Account API Tokens**（アカウント所有のトークン。推奨）→ Create Token → Custom。トークン自体がそのアカウントのものなので、範囲は **Entire Account** でよい（ほかのアカウントには効かない）。
+- **My Profile → API Tokens**（利用者所有のトークン）で作る場合は、**Account Resources: Include → 対象のアカウント**を選ぶ（All accounts にしない）。
 
 **置き場所**: 開発者の手元だけ（S9 で集計を手元に移した。GitHub には置かない）。使うときに環境変数で渡し（上の「集計」）、ファイル・チャット・コマンドの文字列には書かない。
 
@@ -141,7 +156,9 @@ CLOUDFLARE_ACCOUNT_ID=… CLOUDFLARE_API_TOKEN=… node scripts/analytics/report
 
 ## 限界
 
-- **本物の Cloudflare では動かしていない**（アカウントが無い）。D1 は `node:sqlite`、Analytics Engine はメモリの偽物で、D1 の制限・遅延・無料枠、Analytics Engine の SQL の方言は再現しない。集計の SQL は docs（cloudflare-docs の SQL reference）の関数だけを使ったが、実アカウントで流していない。
+- **試験は本物の Cloudflare では回していない**。D1 は `node:sqlite`、Analytics Engine はメモリの偽物で、D1 の制限・遅延・無料枠、Analytics Engine の SQL の方言（型の厳しさを含む）は再現しない。サイトは S9 のデプロイ（2026-10-25）から本物の Cloudflare で動いている。
+  - 集計の SQL は 2026-10-30 に初めて実アカウントで流し、`if(条件, 重み, 0)` が HTTP 422（`if` の 2・3 番目の型が Double と Integer で揃わない）で止まった。条件つきの和を `sumIf` に直した（`docs/progress/2026-10-30-ux-analytics-sql-report.md`）。直した後の問い合わせが実アカウントで通るかは、開発者が手元で確かめるまで**未確認**。使う関数は cloudflare-docs の SQL reference（2026-10-30 版）に載っていることを確かめた。
+  - 試験（`report.test.mjs`）が守るのは「`if(` を使わない」形と、1 つの表が失敗しても残りを出して終了コード 1 にすることまで。型の誤りそのもの（ほかの関数の引数の型）は偽物では見つからない。
 - 回数制限（1 分）は isolate の中だけ（拠点・時間で別の isolate になる）。厳密な上限ではない。1 日の上限（利用者 200・回線 1,000）は D1 で数えるので isolate をまたいで効く。
 - 回線ごとの上限は、多くの人が 1 つの IP を共有する回線（大きな CGNAT・会社の出口）では、正当な利用者どうしで上限を分け合う。逆に、多数の IP を持つ相手（ボットネット・IPv6 の /64 を多数持つ相手）は回線の数だけ上限を得る。どちらも「水増しを 1 回線分に抑える」以上の保証ではない。
 - 同じ人の同時の投票が重なると数がずれうる（読んでから書く 2 段。排他はしない。開発者注: 正確さは要らない）。
