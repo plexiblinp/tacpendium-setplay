@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { forgetVoteCounts, isPlainLeftClick, myVoteKey, NO_RESULT_METRICS, resultMetrics, withSharedSafeJump } from "../lib/appRun";
 import { cacheKey, conditionsToSearch, parseSearch, toEngineQuery, type Conditions } from "../lib/conditions";
 import { APP_NAME, kaMaxFor, RESULT_CACHE_ENTRIES } from "../lib/constants";
 import { resolveDataUrl, type MovesDb, type NotationKind } from "../lib/data";
@@ -9,11 +10,11 @@ import { FLAVOR, type Flavor } from "../lib/flavor";
 import type { SuggestOutcome } from "../lib/engineClient";
 import { formFromConditions, initialForm, type FormState } from "../lib/formState";
 import { detectLang, type Lang } from "../lib/i18n";
-import { loadManifest, loadMoves, type FetchFn, type LoadedManifest } from "../lib/loader";
+import { loadMoves, type FetchFn } from "../lib/loader";
 import { LruCache } from "../lib/lru";
 import { characterDisplayName, shareModeKey, shareText, shareUrl, siteUrl } from "../lib/share";
 import { defaultNotation, indexMoves } from "../lib/notation";
-import { DEFAULT_SAMPLE_RATE, loadConfig, sendRun, type BeaconSender, type RunRecord } from "../lib/telemetry";
+import { sendRun, type BeaconSender, type RunRecord } from "../lib/telemetry";
 import { fetchVotes, postVote, scoresForEngine, type LoadedVotes } from "../lib/votes";
 import type { VoteValue } from "../shared/api";
 import type { SuggestRequest } from "../worker/protocol";
@@ -25,6 +26,7 @@ import { PrivacyPolicy, PRIVACY_HASH } from "./PrivacyPolicy";
 import { Results, type MyVote, type RunState } from "./Results";
 import { Share } from "./Share";
 import { SettingsBar } from "./SettingsBar";
+import { useManifest, useSampleRate } from "./useAppData";
 
 /** 計算の窓口(EngineClient。試験では差し替える)。 */
 export interface SuggestEngine {
@@ -70,8 +72,6 @@ interface Pending {
   votesApplied: number;
 }
 
-type ManifestState = { status: "loading" } | { status: "error"; message: string } | { status: "ready"; data: LoadedManifest };
-
 export function App({
   engine,
   fetchFn,
@@ -91,14 +91,14 @@ export function App({
   const [notationChoice, setNotationChoice] = useState<NotationKind | null>(null);
   const notation = notationChoice ?? defaultNotation(lang);
 
-  const [manifest, setManifest] = useState<ManifestState>({ status: "loading" });
+  const manifest = useManifest(fetchFn, location.href);
   const [form, setForm] = useState<FormState>(initialForm);
   const [moves, setMoves] = useState<Record<string, MovesDb>>({});
   const [run, setRun] = useState<RunState>({ status: "idle" });
   const [urlRejected, setUrlRejected] = useState<string[]>([]);
   const cache = useRef(new LruCache<string, CachedRun>(RESULT_CACHE_ENTRIES));
   const autoRunDone = useRef(false);
-  const [sampleRate, setSampleRate] = useState(DEFAULT_SAMPLE_RATE);
+  const sampleRate = useSampleRate(online, fetchFn, location.href);
   const pending = useRef<Pending | null>(null);
   const runToken = useRef(0);
   // 自分の票(キャラ|KA|鍵 → 票と数)。メモリだけ(§7.3)。
@@ -111,26 +111,6 @@ export function App({
     document.title = `${APP_NAME} | ${t("app.title")}`;
     onLangChange(lang);
   }, [lang, i18n, t, onLangChange]);
-
-  useEffect(() => {
-    if (!online) return;
-    let alive = true;
-    void loadConfig(fetchFn, location.href).then((c) => alive && setSampleRate(c.beaconSampleRate));
-    return () => {
-      alive = false;
-    };
-  }, [online, fetchFn, location.href]);
-
-  useEffect(() => {
-    let alive = true;
-    loadManifest(fetchFn, location.href).then(
-      (data) => alive && setManifest({ status: "ready", data }),
-      (e: unknown) => alive && setManifest({ status: "error", message: e instanceof Error ? e.message : String(e) }),
-    );
-    return () => {
-      alive = false;
-    };
-  }, [fetchFn, location.href]);
 
   const characters = manifest.status === "ready" ? manifest.data.manifest.characters : [];
   const character = characters.find((c) => c.code === form.character) ?? null;
@@ -175,9 +155,7 @@ export function App({
           conditions: c,
           outcome: "result",
           errorCode: null,
-          totalFound: hit.outcome.result.totalFound,
-          items: hit.outcome.result.items.length,
-          truncated: hit.outcome.result.truncated,
+          ...resultMetrics(hit.outcome.result),
           cacheHit: true,
           wallMs: now() - started,
           computeMs: null,
@@ -193,14 +171,8 @@ export function App({
       // ローカル版は票を使わない(通信しない。並びは本家の順)。
       const votes = online ? await fetchVotes(fetchFn, location.href, c.character, c.ka) : null;
       if (runToken.current !== token) return; // 票を待つ間に中断された
-      // 読み直した票の数を表示に使う(投票の時点の数を残さない。押した状態 value は残す。レビュー低-1)。
-      const prefix = `${c.character}|${c.ka}|`;
-      // 票を読めなかったときは、押した時点の数を残す(0/0 に見せない。再レビュー低-1)。
-      if (votes != null && votes.status !== "unavailable") setMyVotes((m) => {
-        const next: Record<string, MyVote> = {};
-        for (const [k, v] of Object.entries(m)) next[k] = k.startsWith(prefix) ? { ...v, good: null, bad: null } : v;
-        return next;
-      });
+      // 読み直した票の数を表示に使う。票を読めなかったときは、押した時点の数を残す(0/0 に見せない。再レビュー低-1)。
+      if (votes != null && votes.status !== "unavailable") setMyVotes((m) => forgetVoteCounts(m, c.character, c.ka));
       const scores = scoresForEngine(votes?.counts ?? {});
       const votesApplied = Object.keys(scores).length;
       pending.current = { token, conditions: c, started, votes, votesApplied };
@@ -221,14 +193,12 @@ export function App({
           ...base,
           outcome: "result",
           errorCode: null,
-          totalFound: outcome.result.totalFound,
-          items: outcome.result.items.length,
-          truncated: outcome.result.truncated,
+          ...resultMetrics(outcome.result),
           computeMs: outcome.timings.compute,
         });
       } else {
         setRun({ status: "error", conditions: c, code: outcome.error.code });
-        report({ ...base, outcome: "error", errorCode: outcome.error.code, totalFound: null, items: null, truncated: null, computeMs: null });
+        report({ ...base, outcome: "error", errorCode: outcome.error.code, ...NO_RESULT_METRICS, computeMs: null });
       }
     },
     [manifest, engine, replaceSearch, fetchFn, location.href, now, report],
@@ -245,9 +215,7 @@ export function App({
         conditions: p.conditions,
         outcome: "canceled",
         errorCode: null,
-        totalFound: null,
-        items: null,
-        truncated: null,
+        ...NO_RESULT_METRICS,
         cacheHit: false,
         wallMs: now() - p.started,
         computeMs: null,
@@ -261,7 +229,7 @@ export function App({
   /** グッド/バッド(D17)。同じ票をもう一度押すと取り消す。並びは次の検索から変わる(押した行を動かさない)。 */
   const vote = useCallback(
     async (c: Conditions, recipe: string, value: VoteValue) => {
-      const k = `${c.character}|${c.ka}|${recipe}`;
+      const k = myVoteKey(c.character, c.ka, recipe);
       const prev = myVotes[k];
       const next: VoteValue = prev?.value === value ? 0 : value;
       setMyVotes((m) => ({ ...m, [k]: { ...(prev ?? { good: null, bad: null }), value: prev?.value ?? 0, state: "sending" } }));
@@ -283,15 +251,9 @@ export function App({
     const known = new Set(manifest.data.manifest.characters.map((c) => c.code));
     const parsed = parseSearch(location.search, known, kaMaxFor(flavor));
     setUrlRejected(parsed.rejected);
-    const c = parsed.conditions;
-    if (c == null) return;
-    const ch = manifest.data.manifest.characters.find((x) => x.code === c.character);
-    // 安全飛びは種類から値を引き直す(URL の remain は信じない)。値の無いキャラでは安全飛びを外す。
-    if (c.safeJump != null) {
-      const v = ch?.safeJump?.[c.safeJump];
-      if (v == null) c.safeJump = null;
-      else c.remain = v;
-    }
+    if (parsed.conditions == null) return;
+    const ch = manifest.data.manifest.characters.find((x) => x.code === parsed.conditions?.character);
+    const c = withSharedSafeJump(parsed.conditions, ch?.safeJump);
     setForm(formFromConditions(c));
     void execute(c);
   }, [manifest, location.search, execute, flavor]);
@@ -358,7 +320,7 @@ export function App({
               className="home"
               href="./"
               onClick={(e) => {
-                if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+                if (!isPlainLeftClick(e)) return;
                 e.preventDefault();
                 reset();
               }}
