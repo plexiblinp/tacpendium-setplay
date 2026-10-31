@@ -1,11 +1,11 @@
 ---
-description: 公開後の作業を 1 つ進める（security / ux / data。読む → 直す → 検査 → 報告）
-argument-hint: <security|ux|data> <内容（例: "Node の修正版" "結果の表の並びが崩れる Issue #12"）>
+description: 公開後の作業を 1 つ進める（security / ux / data / health。読む → 直す → 検査 → 報告）
+argument-hint: <security|ux|data|health> <内容（例: "Node の修正版" "結果の表の並びが崩れる Issue #12"）>
 ---
 
 公開後の作業 **$ARGUMENTS** を進める。規約は `AGENTS.md`（とくに §3「公開後の進め方」・§8）、手順は `docs/maintenance.md`。
 
-- 引数の先頭の語が種類（`security`・`ux`・`data`）。無い・ほかの語なら、内容から決めて報告に書く。
+- 引数の先頭の語が種類（`security`・`ux`・`data`・`health`）。無い・ほかの語なら、内容から決めて報告に書く。
 - 承認は待たない。**AGENTS §3「止めて開発者に聞くもの」と、利用者に見える仕様の変更のときだけ** AskUserQuestion で止まる（選択肢と推奨を添える）。
 
 ## 1. 読む
@@ -13,6 +13,7 @@ argument-hint: <security|ux|data> <内容（例: "Node の修正版" "結果の�
 - 触る場所の資料は AGENTS §2 の表を目安に読む（エンジン → S3 の行、画面 → S5 の行、データ → S2 の行）。
 - 開始コミットを記録する: `git rev-parse HEAD`。
 - `data` は `/sync_upstream` の手順に従う（報告もそちらの形）。
+- `health` のリファクタリングは、`docs/maintenance.md`「health」の守り（挙動を変えない・上流由来は直さない）に従う。観測だけなら `/audit_scale`。
 
 ## 2. 直す
 - 不具合なら、直す前に赤くなるテストを足して赤を確かめる（AGENTS §8-3）。
