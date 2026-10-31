@@ -3,6 +3,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 import { formatAdvantage, meatyAdvantage } from "../lib/advantage";
+import { myVoteKey } from "../lib/appRun";
 import { hasAppliedFilters, type Conditions } from "../lib/conditions";
 import { PAGE_SIZE, REASON_KNOCKDOWN_NEGATIVE, REASON_REMAIN_NOT_BELOW_KNOCKDOWN } from "../lib/constants";
 import type { NotationKind } from "../lib/data";
@@ -157,7 +158,7 @@ export function Results({ run, onCancel, movesByCode, notation, myVotes, onVote,
           )}
           <ul className="rows">
             {visible.map((it) => {
-              const mine = myVotes[`${c.character}|${c.ka}|${it.recipeKey}`];
+              const mine = myVotes[myVoteKey(c.character, c.ka, it.recipeKey)];
               const counted = votes?.counts[it.recipeKey];
               return (
                 <Row

@@ -56,13 +56,14 @@
 
 ### 公開後の進め方（S9 の後）
 
-HANDOVER §9 の段階は S9（2026-10-25 に一般公開）で終わり。以後は **1 セッション = 1 つの作業**（段階は無い）。作業は 3 種類で、手順は **`docs/maintenance.md`**（運用の手引き）。`/maint <種類> <内容>` で始めてよい。
+HANDOVER §9 の段階は S9（2026-10-25 に一般公開）で終わり。以後は **1 セッション = 1 つの作業**（段階は無い）。作業は 4 種類で、手順は **`docs/maintenance.md`**（運用の手引き）。`/maint <種類> <内容>` で始めてよい（`health` の観測は `/audit_scale`）。
 
 | 種類 | 例 | 主な入口 |
 |---|---|---|
 | `security` | Dependabot・govulncheck・CodeQL の指摘、Node・Go・pnpm 本体の修正版、外部の脆弱性の連絡 | Dependabot の PR・Actions の失敗通知・開発者の連絡 |
 | `ux` | 使いやすさ・表示・文言・翻訳の改善、不具合の修正 | Issues・Google フォーム・開発者の指示 |
 | `data` | SF6 の更新（新キャラ・技の性能の変更・公開版で扱える技が増えた） | `upstream-watch.yml` の失敗通知 → `/sync_upstream` |
+| `health` | 規模・複雑度の定点観測（月 1 回）と、増えた・高いコードのリファクタリング（挙動は変えない） | `/audit_scale` → 系列表 `docs/audits/scale-baseline.md` |
 
 - 作業の前に読むもの: HANDOVER §0・§1、`docs/maintenance.md` の該当の節、直近の報告（`docs/progress/` の新しい順に 1〜2 本）。段階の表（§2）は、触る場所の資料の目安として使う（例: エンジンなら S3 の行）。
 - 作業ブランチはセッションで指定された `claude/...`（§6）。main への反映は PR → 開発者のマージ → 「Cloudflare へ出す」の承認。
