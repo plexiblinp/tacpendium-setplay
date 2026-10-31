@@ -6,3 +6,10 @@ minimumReleaseAge: 10080
 # 解除条件: wrangler が sharp に依存しなくなったら消す(`pnpm why sharp` が空)。
 ignoredOptionalDependencies:
   - "@img/*"
+
+# undici 7.30.1 未満の脆弱性(GHSA-xjj6-f33q-929c ほか 8 件。経路は wrangler → miniflare だけ。2026-10-31)。
+# wrangler 4.153.0 以降は miniflare が undici 7.30.1 を使うが、公開から 7 日(minimumReleaseAge)たつのが 2026-11-02 のため、先に版を固定する。
+# 範囲を 7.30.1 未満に限るので、jsdom の undici 8 系と、7.30.1 以上を持つ将来の miniflare には効かない。
+# 解除条件: wrangler を 4.153.0 以上に上げ、この行を消しても `pnpm why undici` の 7 系が 7.30.1 以上で `pnpm audit` が 0 件。
+overrides:
+  "undici@>=7.0.0 <7.30.1": "7.30.1"
