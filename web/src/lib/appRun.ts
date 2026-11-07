@@ -1,7 +1,8 @@
 // 画面の最上位(App)の、React に依らない部分: 計測に載せる結果の数・自分の票の表・共有 URL の安全飛び・押し方の判定。
 // App の複雑度を下げ、単体で試験できるように切り出した(2026-10-31 の health。docs/audits/scale-baseline.md)。
 import type { MyVote } from "../components/Results";
-import type { Conditions } from "./conditions";
+import { defaultConditions, type Conditions } from "./conditions";
+import { KA_FIGURE_EXAMPLE } from "./constants";
 import type { SafeJump } from "./data";
 import type { SuggestResponse } from "./engineTypes";
 import type { RunRecord } from "./telemetry";
@@ -46,4 +47,9 @@ export function withSharedSafeJump(c: Conditions, table: SafeJump | null | undef
 /** 修飾キーなしの左クリックか(リンクの既定の動き〔新しいタブ等〕を奪わないため)。 */
 export function isPlainLeftClick(e: { button: number; metaKey: boolean; ctrlKey: boolean; shiftKey: boolean; altKey: boolean }): boolean {
   return e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
+}
+
+/** 「例で試す」の条件: 例のキャラ・KA と、重ねる技(例の重ねの当てる技)。ほかは既定。 */
+export function trialConditions(): Conditions {
+  return { ...defaultConditions(KA_FIGURE_EXAMPLE.character, KA_FIGURE_EXAMPLE.ka), targetMove: KA_FIGURE_EXAMPLE.targetMove };
 }

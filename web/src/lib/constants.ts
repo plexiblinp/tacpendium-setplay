@@ -80,3 +80,16 @@ export const WASM_EXEC_PATH = "wasm/wasm_exec.js";
  * 256 MiB は実測で KA 60 以下(最大 97 MiB)では捨てず、KA 80 以上の重い条件の後で捨てる値(S5 報告・開発者決定)。
  */
 export const WASM_MEMORY_RELEASE_BYTES = 256 * 1024 * 1024;
+
+/**
+ * KA の説明の図とお試しの例(開発者 2026-11-07。ゲームで測った値)。
+ * リュウ・画面端で 236HK > 623MP の後は KA 32。重ねは 66 > 5HP(前方ステップ > 立ち強P)。
+ * 技の表記はテンキー(どの言語でも同じ)。SF6 の調整で値が変わったら、開発者が直す。
+ */
+export const KA_FIGURE_EXAMPLE = {
+  character: "ryu",
+  ka: 32,
+  combo: "236HK > 623MP",
+  meaty: "66 > 5HP",
+  targetMove: "standing_heavy_punch",
+} as const;

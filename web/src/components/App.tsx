@@ -2,9 +2,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { forgetVoteCounts, isPlainLeftClick, myVoteKey, NO_RESULT_METRICS, resultMetrics, withSharedSafeJump } from "../lib/appRun";
+import { forgetVoteCounts, isPlainLeftClick, myVoteKey, NO_RESULT_METRICS, resultMetrics, trialConditions, withSharedSafeJump } from "../lib/appRun";
 import { cacheKey, conditionsToSearch, parseSearch, toEngineQuery, type Conditions } from "../lib/conditions";
-import { APP_NAME, kaMaxFor, RESULT_CACHE_ENTRIES } from "../lib/constants";
+import { APP_NAME, KA_FIGURE_EXAMPLE, kaMaxFor, RESULT_CACHE_ENTRIES } from "../lib/constants";
 import { resolveDataUrl, type MovesDb, type NotationKind } from "../lib/data";
 import { FLAVOR, type Flavor } from "../lib/flavor";
 import type { SuggestOutcome } from "../lib/engineClient";
@@ -16,7 +16,7 @@ import { characterDisplayName, shareModeKey, shareText, shareUrl, siteUrl } from
 import { defaultNotation, indexMoves } from "../lib/notation";
 import { sendRun, type BeaconSender, type RunRecord } from "../lib/telemetry";
 import { fetchVotes, postVote, scoresForEngine, type LoadedVotes } from "../lib/votes";
-import type { VoteValue } from "../shared/api";
+import type { RunTrigger, VoteValue } from "../shared/api";
 import type { SuggestRequest } from "../worker/protocol";
 import { Changelog } from "./Changelog";
 import { ConditionsPanel } from "./ConditionsPanel";
@@ -70,6 +70,7 @@ interface Pending {
   /** まだ読んでいない・票を使わない版では null。 */
   votes: LoadedVotes | null;
   votesApplied: number;
+  trigger: RunTrigger;
 }
 
 export function App({
@@ -103,6 +104,8 @@ export function App({
   const runToken = useRef(0);
   // 自分の票(キャラ|KA|鍵 → 票と数)。メモリだけ(§7.3)。
   const [myVotes, setMyVotes] = useState<Record<string, MyVote>>({});
+  // いまの結果がお試し(例の条件)で出したものか(結果の上に案内を出す)。
+  const [trialShown, setTrialShown] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(() => online && new URL(location.href).hash === PRIVACY_HASH);
 
   useEffect(() => {
@@ -141,10 +144,11 @@ export function App({
   );
 
   const execute = useCallback(
-    async (c: Conditions) => {
+    async (c: Conditions, trigger: RunTrigger) => {
       if (manifest.status !== "ready") return;
       const ch = manifest.data.manifest.characters.find((x) => x.code === c.character);
       if (ch == null) return;
+      setTrialShown(trigger === "trial");
       replaceSearch(conditionsToSearch(c));
       const started = now();
       const key = cacheKey(c);
@@ -161,11 +165,12 @@ export function App({
           computeMs: null,
           votes: hit.votes,
           votesApplied: hit.votesApplied,
+          trigger,
         });
         return;
       }
       const token = ++runToken.current;
-      pending.current = { token, conditions: c, started, votes: null, votesApplied: 0 };
+      pending.current = { token, conditions: c, started, votes: null, votesApplied: 0, trigger };
       setRun({ status: "running", conditions: c });
       // 票を先に読む(HANDOVER D17: 票は並べ替えの第一キー)。読めなければ票なし(本家の順)で計算する。
       // ローカル版は票を使わない(通信しない。並びは本家の順)。
@@ -175,7 +180,7 @@ export function App({
       if (votes != null && votes.status !== "unavailable") setMyVotes((m) => forgetVoteCounts(m, c.character, c.ka));
       const scores = scoresForEngine(votes?.counts ?? {});
       const votesApplied = Object.keys(scores).length;
-      pending.current = { token, conditions: c, started, votes, votesApplied };
+      pending.current = { token, conditions: c, started, votes, votesApplied, trigger };
       const outcome = await engine.suggest({
         character: c.character,
         movesUrl: resolveDataUrl(manifest.data.url, ch.moves),
@@ -185,7 +190,7 @@ export function App({
       });
       if (outcome.kind === "canceled") return; // 中断は cancel 側が状態を変え、計測を送る。
       pending.current = null;
-      const base = { conditions: c, cacheHit: false, wallMs: now() - started, votes, votesApplied };
+      const base = { conditions: c, cacheHit: false, wallMs: now() - started, votes, votesApplied, trigger };
       if (outcome.kind === "result") {
         cache.current.set(key, { outcome, votes, votesApplied });
         setRun({ status: "done", conditions: c, outcome, fromCache: false, votes });
@@ -222,6 +227,7 @@ export function App({
         // 票を待つ間の中断は、票を読めていない(unavailable)として送る(S6 からの扱い)。ローカル版は送らない。
         votes: online ? (p.votes ?? { status: "unavailable", counts: {} }) : null,
         votesApplied: p.votesApplied,
+        trigger: p.trigger,
       });
     }
   }, [online, engine, report, now]);
@@ -255,14 +261,25 @@ export function App({
     const ch = manifest.data.manifest.characters.find((x) => x.code === parsed.conditions?.character);
     const c = withSharedSafeJump(parsed.conditions, ch?.safeJump);
     setForm(formFromConditions(c));
-    void execute(c);
+    void execute(c, "share");
   }, [manifest, location.search, execute, flavor]);
+
+  /** 「例で試す」(KA の説明のお試し): 例の条件を欄に入れて計算する。例のキャラが配信に無ければ出さない。 */
+  const trial =
+    manifest.status === "ready" && manifest.data.manifest.characters.some((x) => x.code === KA_FIGURE_EXAMPLE.character)
+      ? () => {
+          const c = trialConditions();
+          setForm(formFromConditions(c));
+          void execute(c, "trial");
+        }
+      : undefined;
 
   /** 条件・結果・URL を最初の状態に戻す(S5 目視の要望)。言語と表記は利用者の設定なので戻さない。 */
   const reset = () => {
     if (run.status === "running") cancel();
     setForm(initialForm());
     setRun({ status: "idle" });
+    setTrialShown(false);
     setUrlRejected([]);
     replaceSearch("");
   };
@@ -360,9 +377,16 @@ export function App({
           notation={notation}
           running={run.status === "running"}
           flavor={flavor}
-          onRun={(c) => void execute(c)}
+          onRun={(c) => void execute(c, "form")}
+          onTrial={trial}
           onReset={reset}
         />
+        {/* お試し(例の条件)で出した結果の上の案内。自分の値に替えるよう促す。 */}
+        {trialShown && run.status !== "idle" && (
+          <p className="notice" role="status" data-testid="trial-notice">
+            {t("kaGuide.trialNotice", { combo: KA_FIGURE_EXAMPLE.combo, ka: KA_FIGURE_EXAMPLE.ka, meaty: KA_FIGURE_EXAMPLE.meaty })}
+          </p>
+        )}
         <Results
           run={run}
           onCancel={cancel}

@@ -228,6 +228,51 @@ test.describe("セットプレイ提案", () => {
     }
   });
 
+  test("KA の「これは何？」: 測り方と図を開き、「この例で試す」で例の条件(リュウ・KA 32・重ねる技 立ち強P)が実データで出る", async ({ page }) => {
+    const errors = watchErrors(page);
+    await page.goto("/");
+    await page.getByTestId("ka-what").click();
+    await expect(page.getByTestId("ka-figure")).toBeVisible();
+    await page.getByTestId("ka-trial").click();
+    await expect(page.getByTestId("trial-notice")).toBeVisible();
+    // 開発者の例(2026-11-07): 画面端 236HK > 623MP の後 KA 32 では、66 > 5HP(前方ステップ > 立ち強P)が重なる。
+    // 票しだいで順位は変わりうるので、含まれることだけを見る。
+    await expect(page.locator('[data-testid="result-row"][data-recipe-key="dash_forward|standing_heavy_punch"]')).toHaveCount(1);
+    await expect(page.getByTestId("ka-input")).toHaveValue("32");
+    await expect(page).toHaveURL(/c=ryu&ka=32/);
+    await expect(page).toHaveURL(/move=standing_heavy_punch/);
+    expect(errors).toEqual([]);
+  });
+
+  test("KA の図: 5 言語で、図の文字が図の枠からはみ出さず、見出しが数字(32F・-32F)と重ならない", async ({ browser }) => {
+    for (const locale of ["ja-JP", "en-US", "zh-CN", "zh-TW", "ko-KR"]) {
+      const ctx = await browser.newContext({ locale, viewport: { width: 360, height: 800 } });
+      const page = await ctx.newPage();
+      await page.goto("/");
+      await page.getByTestId("ka-what").click();
+      const boxes = await page.getByTestId("ka-figure").evaluate((svg) =>
+        [...svg.querySelectorAll("text")].map((el) => {
+          const b = (el as SVGTextElement).getBBox();
+          return { text: el.textContent ?? "", x: b.x, y: b.y, right: b.x + b.width, bottom: b.y + b.height };
+        }),
+      );
+      const W = 800;
+      const H = 480;
+      for (const b of boxes) {
+        expect(b.x, `${locale} ${b.text}`).toBeGreaterThanOrEqual(0);
+        expect(b.right, `${locale} ${b.text}`).toBeLessThanOrEqual(W);
+        expect(b.bottom, `${locale} ${b.text}`).toBeLessThanOrEqual(H);
+      }
+      const value = boxes.find((b) => b.text === "32F")!;
+      const minus = boxes.find((b) => b.text === "-32F")!;
+      // 見出し(上の段・下の段)は、それぞれの数字より左で終わる。
+      const labels = boxes.filter((b) => b.x < value.x && b.text !== "3");
+      expect(labels.length, locale).toBe(2);
+      for (const l of labels) expect(l.right, `${locale} ${l.text}`).toBeLessThan(Math.min(value.x, minus.x));
+      await ctx.close();
+    }
+  });
+
   test("ストレージ・cookie を使わない(HANDOVER §7.3)", async ({ page, context }) => {
     await page.goto("/");
     await choose(page, "ryu", 20);

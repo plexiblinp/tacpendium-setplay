@@ -8,6 +8,7 @@ import {
   beaconSchema,
   type BeaconEvent,
   type Outcome,
+  type RunTrigger,
   type VotesStatus,
 } from "../shared/api";
 import type { Conditions } from "./conditions";
@@ -52,6 +53,8 @@ export interface RunRecord {
   votesStatus: VotesStatus;
   votesApplied: number;
   dataVersion: string;
+  /** 計算の始め方(「提案を出す」・共有の URL・お試し)。 */
+  trigger: RunTrigger;
 }
 
 /** 実行の記録を beacon にする。当てはまらない項目は null(0 と区別する。AGENTS §8-7)。 */
@@ -89,6 +92,7 @@ export function buildBeacon(r: RunRecord, sampleRate: number): BeaconEvent {
     votesApplied: r.votesApplied,
     dataVersion: r.dataVersion,
     sampleRate,
+    trigger: r.trigger,
   };
 }
 

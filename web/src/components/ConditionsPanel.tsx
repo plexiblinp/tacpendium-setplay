@@ -25,6 +25,7 @@ import { parseIntInRange } from "../lib/conditions";
 import { safeJumpConditions, validateForm, type FormError, type FormState } from "../lib/formState";
 import type { Lang } from "../lib/i18n";
 import { CharacterSelect } from "./CharacterSelect";
+import { KaGuide } from "./KaGuide";
 import { TargetPicker } from "./TargetPicker";
 
 interface Props {
@@ -40,6 +41,8 @@ interface Props {
   onReset: () => void;
   /** ビルドの種類(KA の上限と説明が変わる。HANDOVER D10)。 */
   flavor: Flavor;
+  /** KA の説明の「例で試す」(例のキャラが配信に無いときは undefined)。 */
+  onTrial?: () => void;
 }
 
 const MODES: readonly Mode[] = ["meaty", "gap", "filler"];
@@ -63,7 +66,7 @@ function selectAllOnFocus(e: FocusEvent<HTMLInputElement>) {
   e.currentTarget.select();
 }
 
-export function ConditionsPanel({ form, onChange, characters, lang, moves, notation, running, onRun, onReset, flavor }: Props) {
+export function ConditionsPanel({ form, onChange, characters, lang, moves, notation, running, onRun, onReset, flavor, onTrial }: Props) {
   const { t } = useTranslation();
   // 「重ねる技」の選び方(種類で選ぶ／1 つの技を指定)。表示の状態で、条件に効くのは targetMove だけ。
   const [byMove, setByMove] = useState(form.targetMove != null);
@@ -152,6 +155,7 @@ export function ConditionsPanel({ form, onChange, characters, lang, moves, notat
           </a>
         </p>
       )}
+      <KaGuide onTrial={onTrial} running={running} />
 
       <div className="row" role="group" aria-label={t("setplay.modeLabel")} data-testid="mode">
         <span className="label">{t("setplay.modeLabel")}</span>

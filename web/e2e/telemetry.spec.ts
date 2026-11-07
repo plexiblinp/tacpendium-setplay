@@ -32,6 +32,7 @@ test("「提案を出す」1 回ごとに計測が 1 点届く(画面 → beacon
   expect(blob(p, "char")).toBe("ryu");
   expect(blob(p, "outcome")).toBe("result");
   expect(blob(p, "visitor")).toMatch(/^[0-9a-f]{32}$/);
+  expect(blob(p, "trigger")).toBe("form");
   expect(dbl(p, "ka")).toBe(40);
   expect(dbl(p, "resultCount")).toBe(321);
   expect(dbl(p, "cacheHit")).toBe(0);
@@ -69,4 +70,17 @@ test("票が保存され、次の検索で並べ替えの第一キーに効く(�
   await expect(rows.first().getByTestId("good-count")).toHaveText("1");
   // 2 番目は票なしの並びの先頭(票の無い行は本家の順のまま)。
   await expect(rows.nth(1)).toHaveAttribute("data-recipe-key", firstBefore!);
+});
+
+test("「この例で試す」の計算は、始め方 trial で届く(画面 → beacon → Worker → Analytics Engine)", async ({ page }) => {
+  const before = (await points(page)).length;
+  await page.goto("/");
+  await page.getByTestId("ka-what").click();
+  await page.getByTestId("ka-trial").click();
+  await expect(page.getByTestId("trial-notice")).toBeVisible();
+  await expect.poll(async () => (await points(page)).length).toBe(before + 1);
+  const p = (await points(page)).at(-1)!;
+  expect(blob(p, "trigger")).toBe("trial");
+  expect(blob(p, "targetMove")).toBe("standing_heavy_punch");
+  expect(dbl(p, "ka")).toBe(32);
 });

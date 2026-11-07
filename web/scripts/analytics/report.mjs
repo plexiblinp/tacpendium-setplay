@@ -82,6 +82,10 @@ export function buildQueries(dataset, days) {
       sql: `SELECT round(100 * sumIf(${W()}, ${col("resultCount")} = 0) / SUM(${W()}), 1) AS zeroPercent, round(SUM(${W()})) AS resultRuns FROM ${from} AND ${col("outcome")} = 'result'`,
     },
     {
+      title: "始め方(form=提案を出す / share=共有の URL / trial=例で試す。空は未計測＝2026-11 に足す前の画面)",
+      sql: `SELECT ${col("trigger")} AS trigger, round(SUM(${W()})) AS runs FROM ${from} GROUP BY trigger ORDER BY runs DESC`,
+    },
+    {
       title: "票の読み込み(ok / none / unavailable)",
       sql: `SELECT ${col("votesStatus")} AS votesStatus, round(SUM(${W()})) AS runs FROM ${from} GROUP BY votesStatus ORDER BY runs DESC`,
     },

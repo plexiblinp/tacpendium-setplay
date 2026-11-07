@@ -132,3 +132,66 @@ ul.warn { padding-left: 1.2em; }
 .combo-list button:hover, .combo-list button:focus { background: var(--bg); outline: none; }
 .combo-list button[aria-selected="true"] { font-weight: 600; color: var(--accent); }
 
+
+/* KA の測り方の図(KaFigure)。下書きの色: 自分の有利は水色、相手の不利は赤、指す印は緑。 */
+.ka-figure {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  margin: 8px 0;
+  --ka-plus: #1592c7;
+  --ka-mark: #2e9e3e;
+}
+.ka-figure .ka-figure-line {
+  stroke: var(--fg);
+}
+.ka-figure .ka-figure-text {
+  fill: var(--fg);
+}
+.ka-figure .ka-figure-plus {
+  fill: var(--ka-plus);
+}
+.ka-figure .ka-figure-minus {
+  fill: var(--bad);
+}
+.ka-figure .ka-figure-mark {
+  stroke: var(--ka-mark);
+}
+.ka-figure .ka-figure-mark-text {
+  fill: var(--ka-mark);
+}
+@media (prefers-color-scheme: dark) {
+  .ka-figure {
+    --ka-plus: #4fc3f7;
+    --ka-mark: #5fd36f;
+  }
+}
+
+/* KA の欄の「これは何？」(KaGuide)。押すと測り方・図・例を開く。 */
+.ka-guide {
+  margin: 4px 0 8px;
+}
+.ka-what {
+  font-size: 0.85em;
+  padding: 2px 10px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: none;
+  color: var(--accent);
+  cursor: pointer;
+}
+.ka-guide-panel {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+.ka-guide-panel ol {
+  margin: 0 0 4px;
+  padding-left: 1.4em;
+}
+.ka-example {
+  margin: 4px 0 8px;
+}
