@@ -542,6 +542,7 @@ describe("計測(beacon。HANDOVER §7.1)", () => {
       lang: "ja",
       dataVersion: MANIFEST.dataVersion,
       sampleRate: 1,
+      trigger: "form",
     });
     await user.click(screen.getByTestId("generate"));
     await waitFor(() => expect(beacons()).toHaveLength(2));
@@ -671,7 +672,7 @@ describe("プライバシーポリシー(HANDOVER §7.3)", () => {
       />,
     );
     expect(await screen.findByTestId("privacy")).toHaveTextContent("The IP address itself is not stored");
-    expect(screen.getByTestId("privacy-updated")).toHaveTextContent("Last updated: October 22, 2026");
+    expect(screen.getByTestId("privacy-updated")).toHaveTextContent("Last updated: November 8, 2026");
   });
 });
 
@@ -954,5 +955,80 @@ describe("共有の文のモード・このサイトを共有(開発者の要望
     Object.defineProperty(navigator, "share", { value: vi.fn(), configurable: true });
     renderApp();
     expect(await screen.findByTestId("app-share-native")).toHaveClass("primary");
+  });
+});
+
+describe("KA の「これは何？」とお試し(開発者 2026-11-07)", () => {
+  it("押すと測り方・図・例を開き、もう一度押すと閉じる", async () => {
+    const user = userEvent.setup();
+    renderApp();
+    const button = await screen.findByTestId("ka-what");
+    expect(button).toHaveTextContent("これは何？");
+    expect(button).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByTestId("ka-guide")).not.toBeInTheDocument();
+    await user.click(button);
+    expect(button).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByTestId("ka-guide")).toHaveTextContent("フレームメーター");
+    expect(screen.getByTestId("ka-figure")).toHaveAccessibleName(/32F/);
+    expect(screen.getByTestId("ka-figure-value")).toHaveTextContent("32F");
+    expect(screen.getByTestId("ka-example")).toHaveTextContent("236HK > 623MP");
+    expect(screen.getByTestId("ka-example")).toHaveTextContent("66 > 5HP");
+    await user.click(button);
+    expect(screen.queryByTestId("ka-guide")).not.toBeInTheDocument();
+  });
+
+  it("「この例で試す」は例の条件(リュウ・KA 32・重ねる技 5HP)を欄に入れて計算し、計測は trial で送る", async () => {
+    const user = userEvent.setup();
+    const { engine, replaceSearch } = renderApp();
+    await user.click(await screen.findByTestId("ka-what"));
+    await user.click(screen.getByTestId("ka-trial"));
+    await waitFor(() => expect(engine.calls).toHaveLength(1));
+    expect(engine.calls[0]).toMatchObject({ character: "ryu", ka: 32 });
+    expect(engine.calls[0]!.query).toContain("target_move=standing_heavy_punch");
+    expect(screen.getByTestId("ka-input")).toHaveValue(32);
+    expect(replaceSearch).toHaveBeenLastCalledWith(expect.stringContaining("move=standing_heavy_punch"));
+    await engine.finish();
+    expect(await screen.findByTestId("trial-notice")).toHaveTextContent("例の条件で計算しました");
+    await waitFor(() => expect(beacons()).toHaveLength(1));
+    expect(beacons()[0]).toMatchObject({ char: "ryu", ka: 32, targetMove: "standing_heavy_punch", trigger: "trial" });
+    // 自分で「提案を出す」を押したら、案内は消え、計測は form。
+    await user.clear(screen.getByTestId("ka-input"));
+    await user.type(screen.getByTestId("ka-input"), "40");
+    await user.click(screen.getByTestId("generate"));
+    expect(screen.queryByTestId("trial-notice")).not.toBeInTheDocument();
+    await engine.finish();
+    await waitFor(() => expect(beacons()).toHaveLength(2));
+    expect(beacons()[1]).toMatchObject({ ka: 40, trigger: "form" });
+  });
+
+  it("共有 URL の自動の計算は、計測を share で送る", async () => {
+    const { engine } = renderApp("c=ryu&ka=41");
+    await engine.finish();
+    await waitFor(() => expect(beacons()).toHaveLength(1));
+    expect(beacons()[0]).toMatchObject({ ka: 41, trigger: "share" });
+  });
+
+  it("例のキャラが配信に無いときは「この例で試す」を出さない(説明と図は出す)", async () => {
+    const user = userEvent.setup();
+    const noRyu = vi.fn(async (url: string) => {
+      if (new URL(url).pathname.endsWith("manifest.json")) {
+        return new Response(JSON.stringify({ ...MANIFEST, characters: MANIFEST.characters.filter((c) => c.code !== "ryu") }), { status: 200 });
+      }
+      return fetchFn(url);
+    });
+    renderApp("", ["ja"], noRyu);
+    await user.click(await screen.findByTestId("ka-what"));
+    expect(screen.getByTestId("ka-figure")).toBeInTheDocument();
+    expect(screen.queryByTestId("ka-trial")).not.toBeInTheDocument();
+  });
+
+  it("ローカル版でも説明とお試しを出し、計測は送らない", async () => {
+    const user = userEvent.setup();
+    const { engine } = renderApp("", ["ja"], fetchFn, "local");
+    await user.click(await screen.findByTestId("ka-what"));
+    await user.click(screen.getByTestId("ka-trial"));
+    await engine.finish();
+    expect(await screen.findByTestId("trial-notice")).toBeInTheDocument();
+    expect(sendBeacon).not.toHaveBeenCalled();
   });
 });

@@ -38,12 +38,26 @@
     "ruleStance": "Characters with special branches, such as Chun-Li's stance, Elena's spin or Alex's stance, are not supported or only partly supported.",
     "ruleNewCharacters": "New characters are added 2 weeks after their in-game release, to leave players the fun of discovering setplays on their own."
   },
+  "kaGuide": {
+    "button": "What is this?",
+    "step1": "In Training Mode, turn on the frame meter from the menu",
+    "step2": "After your combo knocks down, wait without pressing anything",
+    "step3": "The blue frame advantage on screen (\"Here\" in the figure) is the number to enter",
+    "figureSelf": "Advantage",
+    "figureOpponent": "Disadvantage",
+    "figureHere": "Here",
+    "figureAlt": "Diagram of the Training Mode screen. The upper row of the frame meter shows the frame advantage {{ka}}F in blue",
+    "example": "Example: Ryu in the corner after {{combo}} is {{ka}}F, and {{meaty}} is meaty",
+    "trial": "Try this example",
+    "trialNotice": "Calculated with the example (Ryu in the corner after {{combo}}, {{ka}}F, {{meaty}}). Measure the frame advantage after your own combo and enter it."
+  },
   "changelog": {
     "latest": "Updated {{date}}: {{text}}",
     "title": "Recent updates (last {{n}})",
     "items": {
       "arjun": "Added Arjun. Target combo (5MP~5HP(TC)) and airborne move (j.) notation now matches Tacpendium",
-      "meatyAdvantage": "Meaty suggestions now show frame advantage on block/hit. Click the site name to reset the conditions"
+      "meatyAdvantage": "Meaty suggestions now show frame advantage on block/hit. Click the site name to reset the conditions",
+      "kaGuide": "Added \"What is this?\" to the knockdown advantage field, with a diagram of how to measure it and a button to try an example"
     }
   },
   "settings": {
@@ -215,7 +229,7 @@
     "title": "Privacy policy",
     "intro": "This site (an unofficial fan site) has no accounts and uses no cookies or browser storage.",
     "collectTitle": "What we collect and why",
-    "usageItem": "Usage: the conditions, results, processing time and similar details when you press \"Generate suggestions\". Used to learn which conditions are common and which processing is heavy, and to improve the site.",
+    "usageItem": "Usage: the conditions, results, processing time and similar details when you press \"Generate suggestions\" (including whether the run was the example or opened from a shared link). Used to learn which conditions are common and which processing is heavy, and to improve the site.",
     "votesItem": "Good / Bad: the recipe you rated and your vote. The total of everyone's votes is used to order the results.",
     "hashTitle": "Telling visitors apart",
     "hashBody": "To estimate the number of visitors and prevent duplicate votes, a hash of your IP address and browser type mixed with a random value that changes daily is used. To prevent bursts of requests and vote stuffing, a separate hash of your IP address (for IPv6, its first 64 bits) mixed with the daily random value is used to count requests and daily votes per network. The IP address itself is not stored, and the random value and the per-network vote counts are deleted every day, so the same person normally cannot be linked across days. However, deleted data remains recoverable for 7 days through the hosting provider's (Cloudflare) recovery feature.",

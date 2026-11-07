@@ -19,6 +19,7 @@ const rec = (over: Partial<RunRecord> = {}): RunRecord => ({
   votesStatus: "none",
   votesApplied: 0,
   dataVersion: "ffdb69e",
+  trigger: "form",
   ...over,
 });
 

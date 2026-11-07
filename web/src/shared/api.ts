@@ -36,6 +36,10 @@ export type Outcome = (typeof OUTCOMES)[number];
 export const VOTES_STATUSES = ["ok", "none", "unavailable"] as const;
 export type VotesStatus = (typeof VOTES_STATUSES)[number];
 
+/** 計算の始め方: form は「提案を出す」、share は共有の URL を開いた自動の計算、trial は「例で試す」(KA の説明のお試し)。 */
+export const RUN_TRIGGERS = ["form", "share", "trial"] as const;
+export type RunTrigger = (typeof RUN_TRIGGERS)[number];
+
 const ms = z.number().finite().nonnegative().max(BEACON_MS_MAX);
 const count = z.number().int().nonnegative().max(BEACON_COUNT_MAX);
 
@@ -82,6 +86,11 @@ export const beaconSchema = z.strictObject({
   dataVersion: z.string().regex(/^[A-Za-z0-9._-]{1,64}$/),
   /** 送った時の抽出率(0〜1]。集計は 1 / sampleRate で重み付けする。 */
   sampleRate: z.number().gt(0).max(1),
+  /**
+   * 計算の始め方(2026-11 に足した。RUN_TRIGGERS)。足す前の画面〔キャッシュに残った古い JS〕は送らないので省略できる
+   * (Worker は空文字〔未計測〕で書く。form と混ぜない＝AGENTS §8-7)。省略できる項目を足しただけなので版(v)は上げない。
+   */
+  trigger: z.enum(RUN_TRIGGERS).optional(),
 });
 export type BeaconEvent = z.infer<typeof beaconSchema>;
 

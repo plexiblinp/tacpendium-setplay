@@ -31,6 +31,11 @@ describe("集計スクリプト", () => {
     const zero = buildQueries("setplay_runs", 7).find((q) => q.title.startsWith("結果が 0 件")).sql;
     expect(zero).toContain(`sumIf(_sample_interval / ${col("sampleRate")}, ${col("resultCount")} = 0)`);
   });
+  it("始め方(trigger)ごとの実行数を出す(layout の列から引く)", () => {
+    const q = buildQueries("setplay_runs", 7).find((x) => x.title.startsWith("始め方"));
+    expect(q.sql).toContain(`${col("trigger")} AS trigger`);
+    expect(col("trigger")).toMatch(/^blob\d+$/);
+  });
   it("dataset・日数の不正は誤り(SQL に埋め込まない)", () => {
     expect(() => buildQueries("x; DROP", 7)).toThrow();
     expect(() => buildQueries("ok", 0)).toThrow();

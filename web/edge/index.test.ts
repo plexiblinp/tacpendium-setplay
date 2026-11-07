@@ -56,6 +56,7 @@ export function sampleBeacon(over: Partial<BeaconEvent> = {}): BeaconEvent {
     votesApplied: 0,
     dataVersion: "ffdb69e468a3f5c0b0e16255e68b6baa3266796d",
     sampleRate: 1,
+    trigger: "form",
     ...over,
   };
 }
@@ -164,6 +165,15 @@ describe("beacon", () => {
     expect(p.indexes).toEqual(["ryu"]);
   });
 
+  it("始め方(trigger)はそのまま書き、送らない古い画面の点は空文字(未計測。form と混ぜない)", async () => {
+    expect((await w.call("/api/beacon", post(sampleBeacon({ trigger: "trial" })))).status).toBe(204);
+    const old = sampleBeacon();
+    delete old.trigger;
+    expect((await w.call("/api/beacon", post(old))).status).toBe(204);
+    const trig = w.env.TELEMETRY.points.map((p) => p.blobs![layout.blobs.indexOf("trigger")]);
+    expect(trig).toEqual(["trial", ""]);
+  });
+
   it("生の IP は点に入らない(ハッシュだけ)", async () => {
     await w.call("/api/beacon", post(sampleBeacon(), { ip: "198.51.100.23" } as RequestInit));
     expect(JSON.stringify(w.env.TELEMETRY.points)).not.toContain("198.51.100.23");
@@ -176,6 +186,7 @@ describe("beacon", () => {
     ["技 code の形でない", { targetMove: "<script>" }],
     ["抽出率 0", { sampleRate: 0 }],
     ["所要が負", { ms: -1 }],
+    ["知らない始め方", { trigger: "auto" }],
   ])("検証で落とす: %s", async (_name, over) => {
     const r = await w.call("/api/beacon", post({ ...sampleBeacon(), ...over }));
     expect(r.status).toBe(400);

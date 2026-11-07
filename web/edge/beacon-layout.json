@@ -16,7 +16,8 @@
     "sort",
     "safeJump",
     "votesStatus",
-    "visitor"
+    "visitor",
+    "trigger"
   ],
   "doubles": [
     "v",
