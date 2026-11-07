@@ -31,8 +31,8 @@
 | `web/src/shared/api.ts`・`edge/beacon-layout.json`・`web/src/lib/telemetry.ts` | beacon に `trigger`（`RUN_TRIGGERS`）。**省略できる**（キャッシュに残った古い画面は送らない → Worker は空文字＝未計測で書く。`form` と混ぜない＝AGENTS §8-7）。layout の `blobs` の末尾に足した（順は変えない） |
 | `web/scripts/analytics/report.mjs` | 「始め方」の表 |
 | 全ロケール（ja・en・ko・zh-Hans は手で、zh-Hant は `pnpm gen:locales`） | `kaGuide.*`、`changelog.items.kaGuide`、`privacy.usageItem` に 1 句（例で試したか・共有のリンクからか） |
-| `PrivacyPolicy.tsx` | `PRIVACY_LAST_UPDATED` を 2026-11-08 |
-| `web/src/lib/changelog.ts` | `{ date: "2026-11-08", key: "kaGuide" }`（日付はデプロイの見込み。ずれたらデプロイの前に直す） |
+| `PrivacyPolicy.tsx` | `PRIVACY_LAST_UPDATED` を 2026-11-07 |
+| `web/src/lib/changelog.ts` | `{ date: "2026-11-07", key: "kaGuide" }`（日付はデプロイの見込み。ずれたらデプロイの前に直す） |
 | `web/src/styles.css` | 図・「これは何？」・開いた箱 |
 | docs | `docs/telemetry.md`（項目・プライバシーの対応・集計の表）、`docs/frontend.md`（新しい節）、`docs/maintenance.md`（data: リュウのデータが変わったら例を確かめる）、設計案に「実装した」 |
 
@@ -116,6 +116,6 @@ $ git diff --stat 347598d   # 設計案（2026-10-31）を含む。報告を書�
 
 ## 配信・PR・タグ
 
-- **デプロイが要る**（画面が変わる）。更新履歴とプライバシーポリシーの日付は 2026-11-08 の見込み。マージとデプロイの日がずれたら、その前に 2 か所を直す。
+- **デプロイが要る**（画面が変わる）。更新履歴とプライバシーポリシーの日付は 2026-11-07（開発者が今日出すと決めた）。
 - **ローカル版**: 画面が変わる（説明・お試しはローカル版にも出る。計測は送らない）。急がないので、次のローカル版のタグ（データの更新など）にまとめてよい。
 - PR は頼まれたら作る。
