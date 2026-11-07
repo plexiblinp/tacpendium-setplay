@@ -63,12 +63,49 @@
 全体（Node 22.23.4。出力はファイルへ書き、`EXIT=` と件数で判定）:
 
 ```
-FULL_RESULTS
+$ npx tsc --noEmit -p .                  TSC_EXIT=0（出力 0 行）
+$ pnpm test                              VITEST_EXIT=0  Test Files  22 passed (22) / Tests  247 passed (247)
+$ pnpm build                             BUILD_EXIT=0（違反: 0 件）
+$ bash scripts/local/build.sh            LOCALBUILD_EXIT=0
+$ PW_CHROMIUM_PATH=… pnpm e2e            E2E_EXIT=0  35 passed (56.7s)
+$ python3 -I scripts/check-private-refs.py   PRIVATE_REFS_EXIT=0（違反: 0 件）
 ```
 
 ```
-DIFFSTAT
+$ git diff --stat 347598d   # 設計案（2026-10-31）を含む。報告を書いた後に pnpm test を回し直して一致を確かめる（下）
+ docs/frontend.md                                   |   9 ++
+ docs/maintenance.md                                |   1 +
+ .../progress/2026-10-31-ux-ka-onboarding-design.md | 103 +++++++++++++++++
+ docs/progress/2026-11-07-ux-ka-guide-report.md     |  84 ++++++++++++++
+ docs/telemetry.md                                  |   6 +-
+ web/e2e/setplay.spec.ts                            |  45 ++++++++
+ web/e2e/telemetry.spec.ts                          |  14 +++
+ web/edge/beacon-layout.json                        |   3 +-
+ web/edge/index.test.ts                             |  11 ++
+ web/scripts/analytics/report.mjs                   |   4 +
+ web/scripts/analytics/report.test.mjs              |   5 +
+ web/src/components/App.test.tsx                    |  78 ++++++++++++-
+ web/src/components/App.tsx                         |  42 +++++--
+ web/src/components/ConditionsPanel.tsx             |   6 +-
+ web/src/components/KaFigure.tsx                    | 125 +++++++++++++++++++++
+ web/src/components/KaGuide.tsx                     |  55 +++++++++
+ web/src/components/PrivacyPolicy.tsx               |   2 +-
+ web/src/lib/appRun.ts                              |   8 +-
+ web/src/lib/changelog.ts                           |   1 +
+ web/src/lib/constants.ts                           |  13 +++
+ web/src/lib/telemetry.test.ts                      |   1 +
+ web/src/lib/telemetry.ts                           |   4 +
+ web/src/locales/en.json                            |  18 ++-
+ web/src/locales/ja.json                            |  18 ++-
+ web/src/locales/ko.json                            |  18 ++-
+ web/src/locales/zh-Hans.json                       |  18 ++-
+ web/src/locales/zh-Hant.json                       |  18 ++-
+ web/src/shared/api.ts                              |   9 ++
+ web/src/styles.css                                 |  63 +++++++++++
+ 29 files changed, 755 insertions(+), 27 deletions(-)
 ```
+
+試験は消していない（Web 単体 239 → 247 件、E2E 32 → 35 件）。
 
 ## 残課題
 
