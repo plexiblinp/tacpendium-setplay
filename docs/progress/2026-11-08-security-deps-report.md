@@ -34,9 +34,34 @@
   - (a) ruleset の必須チェックから `Analyze (go)` を外し、代わりに ruleset の「Require code scanning results」（CodeQL）を使う。推測: 解析を省いた PR では止めない。CodeQL の守りは残る。
   - (b) いまのまま、依存の PR は毎回このセッションで取り込む（今回の形）。
 
-## 検査
+## 検査（AGENTS §8。Node 22.23.4・pnpm 10.34.7。出力はファイルへ書き、`EXIT=` と件数で判定）
 
-（下の「全体」に逐語で貼る）
+```
+$ go mod verify                          GOMODVERIFY_EXIT=0
+$ go vet ./...                           GOVET_EXIT=0（出力はモジュールの取得だけ）
+$ go test -count=1 ./...                 GOTEST_EXIT=0（ok 13 パッケージ・FAIL 0・no test files 1）
+$ pnpm install --frozen-lockfile         FROZEN_EXIT=0
+$ pnpm audit                             AUDIT_EXIT=0（No known vulnerabilities found。固定を外した後）
+$ npx tsc --noEmit -p .                  TSC_EXIT=0
+$ pnpm test                              VITEST_EXIT=0  Test Files  22 passed (22) / Tests  247 passed (247)
+$ pnpm build                             BUILD_EXIT=0（違反: 0 件）
+$ npx wrangler deploy --dry-run          WRANGLER_EXIT=0（--dry-run: exiting now.）
+$ bash scripts/local/build.sh            LOCALBUILD_EXIT=0
+$ PW_CHROMIUM_PATH=… pnpm e2e            E2E_EXIT=0  35 passed (1.3m)
+```
+
+```
+$ git diff --stat 81d4420   # この報告の下書きを含む
+ docs/progress/2026-11-08-security-deps-report.md |  45 +++++++
+ go.mod                                           |   2 +-
+ go.sum                                           |   4 +-
+ web/package.json                                 |   8 +-
+ web/pnpm-lock.yaml                               | 149 +++++++++++------------
+ web/pnpm-workspace.yaml                          |   7 --
+ 6 files changed, 125 insertions(+), 90 deletions(-)
+```
+
+試験の件数は前回と同じ（単体 247・E2E 35）。
 
 ## 配信・PR・タグ
 
