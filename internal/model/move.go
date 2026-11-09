@@ -45,6 +45,8 @@ const (
 	//   (web/src/features/setplay/safeJump.ts)。
 	// ★M47-05: BE の提案の絞り込み「接近を含む提案だけ」が、接近の手の 1 つとして名指しする
 	//   (service/setplay の isApproachMove)。M47-04 の時点では BE は名指ししていなかった。
+	// ★M43-15: 確定反撃サーチの成立ツリーの照合で、レシピの先頭がこの技なら jump レーン
+	//   (service/punishfinder の leadMovementLanes)。
 	MoveCodeJumpForward = "jump_forward"
 
 	// MoveCodeDashForward は前ステップ(移動 system 技。全キャラに 1 行ずつ在る)。
@@ -52,13 +54,17 @@ const (
 	// ★M47-05: 提案の絞り込み「接近を含む提案だけ」の接近の手の 1 つ(service/setplay の
 	//   isApproachMove。開発者の回答＝前ステップ ／ 前ジャンプ ／ ラッシュから出す技＝D-1005)。
 	//   後ろステップ(dash_back)は接近に数えない(D-1007)。
+	// ★M43-15: 確定反撃サーチの成立ツリーの照合で、レシピの先頭がこの技なら dash レーン
+	//   (service/punishfinder の leadMovementLanes)。
 	MoveCodeDashForward = "dash_forward"
 
 	// MoveCodeJumpNeutral は垂直ジャンプ(移動 system 技。全キャラに 1 行ずつ在る)。
 	//
 	// ★M43-13: 確定反撃サーチの jump レーンから新規登録するとき、垂直ジャンプの攻撃
 	//   (code が neutral_jumping_ で始まる始動技)の前へ置く移動として、画面が名指しする
-	//   (FE 側 web/src/features/combo/lockedLead.ts)。BE は名指ししない(FE と 1:1 で同期するために置く)。
+	//   (FE 側 web/src/features/combo/lockedLead.ts)。
+	// ★M43-15: BE も名指しするようになった＝成立ツリーの照合で、レシピの先頭がこの技なら jump レーン
+	//   (service/punishfinder の leadMovementLanes)。M43-13 の時点では BE は名指ししていなかった。
 	MoveCodeJumpNeutral = "jump_neutral"
 )
 
