@@ -36,9 +36,54 @@
 - **verify-plan は `--all`**: lock と生成器（seedgen）が変わったので全部回す（迷ったら全部）。
 - **本家の ko・zh の文言は取り込まない**: 単体版の `setplay.*` に当たるキーは本家の ja・en で変わっていない。本家が ko・zh を持ったので、単体版の機械翻訳の文（ko・zh）を本家の訳に寄せる余地はある（残課題）。
 
-## 検証
+## 検証（手元。Node 22.23.4・pnpm 10.34.7。出力はファイルへ書き、`EXIT=` と件数で判定）
 
-（検査の結果を下に逐語で貼る）
+```
+$ bash upstream/watch.sh                         → 取り込み前 EXIT=1(変化あり 40 ファイル)/ lock 更新後 EXIT=0(変化なし)
+$ go run ./cmd/movesdb -out <tmp> -prev data/moves → EXIT=0 違反 0 件・版が変わったキャラ 0 []
+                                                    オラクル numeric・srk: 本家と同じ 2790
+                                                    diff -r <tmp> data/moves: 差は index.json だけ(dataVersion の SHA)
+$ bash scripts/upstream-oracle/run.sh <tmp>      → EXIT=0 cells 5376(本家 v0.4.0・echo v5 で 407 秒)
+                                                    cmp <tmp> engine/testdata/upstream_oracle.json → 一致(CMP_EXIT=0)
+$ gofmt -l internal engine cmd                   → 出力 0 行
+$ go vet ./...                                   → EXIT=0
+$ go test -count=1 -v ./...                      → EXIT=0 PASS 399(サブテスト込み。v0.3.0 の取り込み時 396 ＋ 移植した 3)/ FAIL 0 / SKIP 0
+                                                    突き合わせた条件: 5376(キャラ 32 ・不一致 0)
+$ go test -count=1 -v ./internal/seedgen/        → EXIT=0 PASS 118 / FAIL 0 / SKIP 0
+$ python3 -I scripts/ci/verify-plan.py check     → 違反 0 件(ack --all を記録)
+$ pnpm assets                                    → EXIT=0
+$ npx tsc --noEmit -p .                          → EXIT=0
+$ pnpm test                                      → EXIT=0 Test Files 22 passed (22) / Tests 247 passed (247)
+$ pnpm build                                     → EXIT=0 合計 6807646 bytes / 違反 0 件
+$ bash scripts/local/build.sh                    → EXIT=0
+$ PW_CHROMIUM_PATH=… pnpm e2e                    → EXIT=0 35 passed (1.0m)
+```
+
+- seedgen の試験が黙って減っていないこと（AGENTS §8-11）: 取り込み前の main（`601e18a`）の seedgen を、公開版 v0.3.0 のチェックアウト（`TACPENDIUM_SRC`）で回すと PASS 115（サブテスト込み）。取り込み後は 118。名前で突き合わせて、消えた試験 0、増えた試験 3（`TestResolveCharacterGolden`・`TestResolveLayerARow_MissingTokenIsIndexSkip`・`TestSortResolved_UnfilledTieBreaksByReason`）。v0.3.0 の報告の「seedgen PASS 126」は数え方が違う（移植した `internal/migrationpin` を含めた等。推測）。同じ数え方での比較は上の 115 → 118。
+- 本家の正解の作り直しは、ほかの重い処理と同時には回していない（時間は合否の判断に使っていない）。
+
+```
+$ git diff --stat 601e18a   # この報告と ux の修正を含む
+ data/moves/index.json                              |   2 +-
+ docs/progress/upstream-71c8d7a-report.md           |  46 +++
+ docs/upstream-diff.md                              |   2 +-
+ internal/model/move.go                             |   8 +-
+ internal/seedgen/generate_m2002.go                 | 255 +---------------
+ internal/seedgen/resolve_character.go              | 333 +++++++++++++++++++++
+ internal/seedgen/resolve_character_golden_test.go  | 243 +++++++++++++++
+ internal/seedgen/resolve_character_test.go         |  71 +++++
+ scripts/ci/logic-version.json                      |  22 +-
+ .../upstream-oracle/standalone_oracle_test.go.txt  |   5 +-
+ upstream/tacpendium.lock                           |   2 +-
+ web/src/components/App.test.tsx                    |   2 +-
+ web/src/lib/changelog.ts                           |   1 +
+ web/src/locales/en.json                            |   3 +-
+ web/src/locales/ja.json                            |   3 +-
+ web/src/locales/ko.json                            |   3 +-
+ web/src/locales/zh-Hans.json                       |   3 +-
+ web/src/locales/zh-Hant.json                       |   3 +-
+ 18 files changed, 736 insertions(+), 271 deletions(-)
+```
 
 ## 残課題
 
