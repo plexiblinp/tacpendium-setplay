@@ -28,7 +28,7 @@
 |---|---|---|
 | `internal/seedgen/generate_test.go` | `repoRoot` が go.mod のあるディレクトリではなく、公開版のチェックアウト（`TACPENDIUM_SRC` か `.upstream/tacpendium`）を返す。無ければ `t.Fatal`（skip しない） | 単体版は `character_data/`・`migrations/`・`internal/seedgen/testdata/` を持たない。テストは公開版の同じファイルと突き合わせる |
 | `internal/seedgen/testdata/` | 移植しない | 上と同じ。比較先は公開版のチェックアウトの同じパス |
-| `internal/seedgen/generate_m2002.go` | `resolveCharacter` の本体を `resolveCharacterWith(…, resolve collisionResolver)` へ切り出し、`collisionResolver` 型を追加。`resolveCharacter` は `resolve = nil` で呼ぶだけ（nil なら本家と同じ挙動）。衝突の解き方を選ぶ `resolveCollisions` の宣言を `collisionResolver` 型にし、`resolve != nil` なら差し替える | 単体版は逆引きしないので被りを落とさない（HANDOVER §2.6）。本家の差分を当てるときは、`resolveCharacter` への変更を `resolveCharacterWith` へ当てること |
+| `internal/seedgen/resolve_character.go`（公開版 v0.4.0 で `generate_m2002.go` から分かれた） | `resolveCharacter` の本体を `resolveCharacterWith(…, resolve collisionResolver)` へ切り出し、`collisionResolver` 型を追加。`resolveCharacter` は `resolve = nil` で呼ぶだけ（nil なら本家と同じ挙動）。衝突の解き方を選ぶ `resolveCollisions` の宣言を `collisionResolver` 型にし、`resolve != nil` なら差し替える | 単体版は逆引きしないので被りを落とさない（HANDOVER §2.6）。本家の差分を当てるときは、`resolveCharacter` への変更を `resolveCharacterWith` へ当てること。`generate_m2002.go` は v0.4.0 から本家と同じ（import のパスだけ） |
 | `internal/seedgen/standalone.go`（新規・本家に無い） | `ResolveAllAliases`（被りを落とさない解決）・`UpstreamUnfilled`（本家の規則で落ちる技と理由。オラクル突合用）・`MovementAlias`・`keepAllCollisions` | 単体版だけの追加。本家ファイルを変えずに済むよう別ファイルに置く |
 
 ### S3（セットプレイのエンジン）

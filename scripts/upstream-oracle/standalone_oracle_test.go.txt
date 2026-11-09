@@ -24,7 +24,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 
 	"github.com/plexiblinp/tacpendium/internal/model"
 	setplayrepo "github.com/plexiblinp/tacpendium/internal/repository/setplay"
@@ -272,8 +272,7 @@ func standaloneOracleDo(t *testing.T, h *Handler, q string) *httptest.ResponseRe
 	req := httptest.NewRequest(http.MethodGet, "/api/combos/1/setplay-suggestions?"+q, nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	c.SetParamNames("comboId")
-	c.SetParamValues("1")
+	c.SetPathValues(echo.PathValues{{Name: "comboId", Value: "1"}})
 	if err := h.GetSuggestions(c); err != nil {
 		t.Fatalf("handler error: %v", err)
 	}
