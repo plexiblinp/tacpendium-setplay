@@ -91,11 +91,15 @@ export const API_SECURITY_HEADERS: Readonly<Record<string, string>> = {
  * (S9 のセキュリティ修正 F-07)。_headers が env.ASSETS.fetch の 404 に掛かるかは Cloudflare の docs に書かれておらず
  * 確かめられないため(docs は「Worker のコードが作る応答には掛からない」まで)。中身はページではないので CSP は何も読ませない形でよい。
  * 2xx・3xx(アセットそのもの・転送)は _headers に任せて触らない。既にあるヘッダは上書きしない。
+ * ★ただし Cache-Control は必ず no-store にする(上書きする)。_headers の /assets/* の「1 年・immutable」が
+ * 404 にも付き、デプロイの切り替えの瞬間に新しい名前のスクリプトを求めた利用者のブラウザが、その 404 を覚えて
+ * 画面が出なくなった(2026-11-09。開発者の Chrome で実際に起きた。docs/progress/2026-11-09-ux-error-no-store-report.md)。
  */
 export function withErrorSecurityHeaders(res: Response): Response {
   if (res.status < 400) return res;
   const headers = new Headers(res.headers);
   for (const [k, v] of Object.entries(API_SECURITY_HEADERS)) if (!headers.has(k)) headers.set(k, v);
+  headers.set("cache-control", "no-store");
   return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
 }
 

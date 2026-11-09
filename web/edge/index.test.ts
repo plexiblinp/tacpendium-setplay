@@ -92,6 +92,9 @@ function fakeAssets() {
       if (p === MANIFEST_PATH && state.manifestStatus !== 200) return new Response("down", { status: state.manifestStatus });
       if (p === "/no-such-page") return new Response("", { status: 404 });
       if (p === "/no-such-page-with-csp") return new Response("", { status: 404, headers: { "content-security-policy": "default-src 'self'" } });
+      // デプロイの切り替えの瞬間に、まだ無い名前のアセットを求められた形(_headers の /assets/* の Cache-Control が 404 にも付いていた。2026-11-09 に開発者の Chrome で実際に起きた)。
+      if (p === "/assets/index-not-yet.js") return new Response("", { status: 404, headers: { "cache-control": "public, max-age=31536000, immutable" } });
+      if (p === "/assets/index-cached.js") return new Response("js", { status: 200, headers: { "cache-control": "public, max-age=31536000, immutable" } });
       if (p in files) return new Response(JSON.stringify(files[p]), { status: 200 });
       return new Response("asset", { status: 200 });
     },
@@ -479,6 +482,17 @@ describe("セキュリティのヘッダ(S7)", () => {
     const asset = await w.call("/index.html");
     expect(asset.status).toBe(200);
     expect(asset.headers.get("content-security-policy")).toBeNull();
+  });
+
+  it("誤りの応答はキャッシュさせない(no-store)。アセットの 404 に付いた長いキャッシュも上書きし、200 のアセットは触らない", async () => {
+    const w = world();
+    const missing = await w.call("/assets/index-not-yet.js");
+    expect(missing.status).toBe(404);
+    expect(missing.headers.get("cache-control")).toBe("no-store");
+    expect((await w.call("/no-such-page")).headers.get("cache-control")).toBe("no-store");
+    const cached = await w.call("/assets/index-cached.js");
+    expect(cached.status).toBe(200);
+    expect(cached.headers.get("cache-control")).toBe("public, max-age=31536000, immutable");
   });
 });
 
