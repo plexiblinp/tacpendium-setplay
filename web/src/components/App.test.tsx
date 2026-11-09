@@ -364,7 +364,7 @@ describe("App", () => {
     expect(document.title).toBe("Tacpendium-Setplay | セットプレイ自動提案(非公式)");
     expect(screen.getByTestId("guide-upstream")).toHaveTextContent("切り出した Web 版");
     expect(screen.getByTestId("guide-upstream")).toHaveTextContent("確定反撃と紐付け");
-    expect(screen.getByTestId("guide-upstream")).toHaveTextContent("日本語のみ対応です(英語は一部、ほかの言語は未対応)");
+    expect(screen.getByTestId("guide-upstream")).toHaveTextContent("日本語・英語・中国語(簡体字・繁体字)・韓国語に対応しています");
     const upstream = within(screen.getByTestId("guide-upstream")).getByRole("link");
     expect(upstream).toHaveAttribute("href", "https://github.com/plexiblinp/tacpendium");
     expect(screen.getByTestId("guide-howto")).toHaveTextContent("棒立ちで有利フレームを見る");

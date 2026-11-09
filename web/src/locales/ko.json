@@ -12,7 +12,7 @@
     "upstreamAbout": "이 사이트는 SF6 콤보 관리 앱 \"Tacpendium\"에서 세트플레이 자동 제안만 떼어 낸 웹 버전입니다.",
     "upstreamMerits": "Tacpendium(PC에서 동작하는 무료 앱)에서는 자신의 콤보를 저장해 세트플레이·확정 반격과 연결하고, 카운터나 상대 체격 등의 상황까지 기록·비교하며, CSV나 이미지로 내보낼 수 있습니다.",
     "upstreamLink": "Tacpendium 보기",
-    "upstreamLanguages": "참고: Tacpendium의 화면은 일본어만 지원합니다(영어는 일부만, 그 밖의 언어는 미지원).",
+    "upstreamLanguages": "Tacpendium의 화면은 일본어·영어·중국어(간체·번체)·한국어를 지원합니다.",
     "howToTitle": "사용법",
     "step1": "트레이닝 모드에서 프레임 표시를 켜고, 콤보 후 가만히 서서 유리 프레임을 확인",
     "step2": "캐릭터와 \"다운 후 유리 프레임\"을 입력하고 \"제안 생성\"",
@@ -55,6 +55,7 @@
     "latest": "업데이트 {{date}}: {{text}}",
     "title": "업데이트 기록(최근 {{n}}건)",
     "items": {
+      "upstreamLanguages": "Tacpendium(본가)의 지원 언어 안내를 갱신. 본가도 일본어·영어·중국어·한국어를 지원합니다",
       "arjun": "Arjun 대응. 타깃 콤보(5MP~5HP(TC))와 공중에서 내는 기술(j.)의 표기를 Tacpendium에 맞춰 변경",
       "meatyAdvantage": "겹치기 제안에 겹쳤을 때의 유리 프레임(가드/히트)을 표시. 사이트 이름을 누르면 조건 초기화",
       "kaGuide": "다운 후 유리 프레임 칸에 \"이게 뭔가요?\"를 추가. 측정 방법 그림과 예시로 시험하기 버튼"

@@ -12,7 +12,7 @@
     "upstreamAbout": "本站是从 SF6 连段管理应用“Tacpendium”中单独拆出定式推荐功能的网页版。",
     "upstreamMerits": "使用 Tacpendium（在电脑上运行的免费应用），可以保存自己的连段并与定式、确反关联，记录和比较反击、对手体型等细节，还能导出为 CSV 或图片。",
     "upstreamLink": "查看 Tacpendium",
-    "upstreamLanguages": "注意：Tacpendium 的界面仅支持日语(英语仅部分支持，其他语言不支持)。",
+    "upstreamLanguages": "Tacpendium 的界面支持日语、英语、中文（简体、繁体）和韩语。",
     "howToTitle": "使用方法",
     "step1": "在训练模式打开帧数显示，连段后站立不动查看有利帧",
     "step2": "输入角色和“击倒后的有利帧”，点击“生成推荐”",
@@ -55,6 +55,7 @@
     "latest": "更新 {{date}}：{{text}}",
     "title": "更新记录（最近 {{n}} 条）",
     "items": {
+      "upstreamLanguages": "更新了 Tacpendium（主程序）的语言说明：主程序现已支持日语、英语、中文和韩语",
       "arjun": "支持 Arjun。目标连段(5MP~5HP(TC))与空中招式(j.)的标记改为与 Tacpendium 一致",
       "meatyAdvantage": "压起身推荐会显示压制时的有利帧（防御/命中）。点击站名可重置条件",
       "kaGuide": "在击倒后的有利帧一栏加入“这是什么？”，附测量方法图示和示例试算按钮"
