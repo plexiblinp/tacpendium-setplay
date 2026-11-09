@@ -1,0 +1,78 @@
+# 2026-11-09 ux: 誤りの応答をキャッシュさせない（デプロイ直後に画面が出なくなる不具合）
+
+- 種類: `ux`（不具合の修正）。開始コミット `14bd8e4`（PR #26 のブランチ。Dependabot #24 の取り込みの後）。ブランチ `claude/beautiful-babbage-jm17hf`。
+- 開発者の依頼（2026-11-09）: 下の対策を入れる。同じ PR #26 で出す（デプロイを 1 回にし、切り替えの瞬間の害を先に塞ぐ）。
+
+## 起きたこと
+
+- PR #25 のデプロイ（2026-11-09 16:23 UTC。版 `ea9ec989-…`）の直後、開発者が Chrome で開くと「画面を表示できませんでした / failed to load: …/assets/index-BFxkon50.js」になった。
+- `boot.js` が、スクリプトの読み込みの失敗を拾って出した画面。
+- Edge では表示できた。
+- デプロイは成功していて、`/assets/index-BFxkon50.js` もアップロード済みだった（job のログ）。
+- 開発者の確認:
+  - Chrome の Network で、その要求は 404・ディスクキャッシュ。
+  - 応答のヘッダに `cache-control: … max-age=31536000 …` があった。
+  - キャッシュを消すと表示できた。
+  - デプロイの直後に開いていた。
+
+## 原因
+
+- 推測: 切り替えの数秒の間、ページ（`index.html`）は新しい版から届き、直後のスクリプトの要求はまだ古い版に当たって 404 になった。
+- 確認済み: その 404 には、`web/public/_headers` の `/assets/*` の `Cache-Control: public, max-age=31536000, immutable` が付いていた。
+- 確認済み: そのためブラウザがその 404 を 1 年覚え、キャッシュを消すまで画面が出なくなった。
+- `_headers` が `env.ASSETS.fetch` の 404 に掛かるかは、Cloudflare の docs に書かれていなかった（S9 の F-07 と同じ）。今回の開発者の確認で、**掛かる**と分かった。
+
+## やったこと
+
+- `web/edge/index.ts` の `withErrorSecurityHeaders`（静的アセットに無い要求の誤りの応答。Worker の最後の `env.ASSETS.fetch`）で、`Cache-Control` を必ず `no-store` にした（ほかのヘッダと違い、既にあっても上書きする）。
+- `/api` の誤りの応答は、もともと `no-store`（`json()` の既定）。
+- 200 のアセット（`/assets/*` の 1 年キャッシュ）は触らない。ハッシュ入りの名前のファイルを長くキャッシュするのは正しい。
+- 試験（`web/edge/index.test.ts`）を 1 本足した。
+  - `/assets/…` の 404 に 1 年キャッシュが付いた形（実際に起きた形）で `no-store` になること。
+  - ほかの 404 も `no-store` になること。
+  - 200 のアセットは元の `Cache-Control` のままであること。
+
+## 判断と理由
+
+- **Worker で直し、`_headers` は変えない**: `_headers` は応答の状態コードで分けられない（パスでしか分けない）。`/assets/*` の 1 年キャッシュをやめると、普段の表示が遅くなる。
+- **`boot.js` の自動の読み込み直しは入れない**: キャッシュに残った 404 は、普通に読み込み直しても同じ 404 が返る（覚えた応答を使うため）。原因（覚えさせること）を断つほうが確か。切り替えの瞬間に 1 回失敗すること自体は残る（推測: 数秒の間に開いた人だけ。読み込み直せば直る）。
+- **更新履歴には足さない**: 画面の見た目・機能は変わらない（`docs/maintenance.md`「更新履歴」4）。
+- **すでに 404 を覚えたブラウザは直らない**: 今回の修正は、これから返す 404 に効く。#25 の切り替えの瞬間に当たった人は、キャッシュを消すか、Chrome が自分で捨てるまで残る。推測: 人数はごく少ない（数秒の間に開いた人だけ）。推測: #26 のデプロイでスクリプトの名前が変わるので、その人も次に新しいページを受け取れば新しい名前を取りに行き、表示できる見込み。
+
+## 検査（AGENTS §8）
+
+赤の確認（§8-3。直す前に試験だけを足した）:
+
+```
+$ npx vitest --run edge/index.test.ts
+修正前 EXIT=1  Tests  1 failed | 54 passed (55)   Expected: "no-store" / Received: "public, max-age=31536000, immutable"
+修正後 EXIT=0  Tests  55 passed (55)
+```
+
+全体（Node 22.23.4。出力はファイルへ書き、`EXIT=` と件数で判定）:
+
+```
+$ npx tsc --noEmit -p .                  TSC_EXIT=0
+$ pnpm test                              VITEST_EXIT=0  Test Files  22 passed (22) / Tests  248 passed (248)
+$ pnpm build                             BUILD_EXIT=0（違反: 0 件）
+$ npx wrangler deploy --dry-run          WRANGLER_EXIT=0
+$ bash scripts/local/build.sh            LOCALBUILD_EXIT=0
+$ PW_CHROMIUM_PATH=… pnpm e2e            E2E_EXIT=0  35 passed (55.4s)
+```
+
+試験は 247 → 248 件（足した 1 件）。
+
+```
+$ git diff --stat 14bd8e4   # この報告を含む
+ .../2026-11-09-ux-error-no-store-report.md         | 56 ++++++++++++++++++++++
+ web/edge/index.test.ts                             | 14 ++++++
+ web/edge/index.ts                                  |  4 ++
+ 3 files changed, 74 insertions(+)
+```
+
+- 限界: 試験は Worker のコードと偽のアセット（404 に 1 年キャッシュを付けた形）で見ている。本物の Cloudflare で 404 にこのヘッダが付くことは開発者の確認による。デプロイの後、開発者が無い名前のアセット（例 `/assets/none.js`）の `cache-control` が `no-store` になっていることを確かめる。
+
+## 配信・PR・タグ
+
+- PR #26（Dependabot #24 の取り込み）に入れた。デプロイが要る。
+- ローカル版には効かない（ローカル版は Worker を使わず、`internal/localserver` が配る）。タグは要らない。
