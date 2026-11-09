@@ -60,7 +60,7 @@ $ PW_CHROMIUM_PATH=… pnpm e2e                    → EXIT=0 35 passed (1.0m)
 ```
 
 - seedgen の試験が黙って減っていないこと（AGENTS §8-11）: 取り込み前の main（`601e18a`）の seedgen を、公開版 v0.3.0 のチェックアウト（`TACPENDIUM_SRC`）で回すと PASS 115（サブテスト込み）。取り込み後は 118。名前で突き合わせて、消えた試験 0、増えた試験 3（`TestResolveCharacterGolden`・`TestResolveLayerARow_MissingTokenIsIndexSkip`・`TestSortResolved_UnfilledTieBreaksByReason`）。v0.3.0 の報告の「seedgen PASS 126」は数え方が違う（移植した `internal/migrationpin` を含めた等。推測）。同じ数え方での比較は上の 115 → 118。
-- 本家の正解の作り直しは、ほかの重い処理と同時には回していない（時間は合否の判断に使っていない）。
+- 本家の正解の作り直しは、seedgen の試験（2 回）と同時に回した。見たのは合否と出力の一致だけで、時間（407 秒）は判断に使っていない（AGENTS §8-6）。
 
 ```
 $ git diff --stat 601e18a   # この報告と ux の修正を含む
