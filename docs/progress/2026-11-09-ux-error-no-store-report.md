@@ -52,5 +52,27 @@ $ npx vitest --run edge/index.test.ts
 全体（Node 22.23.4。出力はファイルへ書き、`EXIT=` と件数で判定）:
 
 ```
-RESULTS
+$ npx tsc --noEmit -p .                  TSC_EXIT=0
+$ pnpm test                              VITEST_EXIT=0  Test Files  22 passed (22) / Tests  248 passed (248)
+$ pnpm build                             BUILD_EXIT=0（違反: 0 件）
+$ npx wrangler deploy --dry-run          WRANGLER_EXIT=0
+$ bash scripts/local/build.sh            LOCALBUILD_EXIT=0
+$ PW_CHROMIUM_PATH=… pnpm e2e            E2E_EXIT=0  35 passed (55.4s)
 ```
+
+試験は 247 → 248 件（足した 1 件）。
+
+```
+$ git diff --stat 14bd8e4   # この報告を含む
+ .../2026-11-09-ux-error-no-store-report.md         | 56 ++++++++++++++++++++++
+ web/edge/index.test.ts                             | 14 ++++++
+ web/edge/index.ts                                  |  4 ++
+ 3 files changed, 74 insertions(+)
+```
+
+- 限界: 試験は Worker のコードと偽のアセット（404 に 1 年キャッシュを付けた形）で見ている。本物の Cloudflare で 404 にこのヘッダが付くことは開発者の確認による。デプロイの後、開発者が無い名前のアセット（例 `/assets/none.js`）の `cache-control` が `no-store` になっていることを確かめる。
+
+## 配信・PR・タグ
+
+- PR #26（Dependabot #24 の取り込み）に入れた。デプロイが要る。
+- ローカル版には効かない（ローカル版は Worker を使わず、`internal/localserver` が配る）。タグは要らない。
