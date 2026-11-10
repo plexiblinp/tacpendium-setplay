@@ -55,6 +55,7 @@
     "latest": "업데이트 {{date}}: {{text}}",
     "title": "업데이트 기록(최근 {{n}}건)",
     "items": {
+      "langButtons": "언어 전환을 기술 표기와 같은 버튼 형태로 변경",
       "upstreamLanguages": "Tacpendium(본가)의 지원 언어 안내를 갱신. 본가도 일본어·영어·중국어·한국어를 지원합니다",
       "arjun": "Arjun 대응. 타깃 콤보(5MP~5HP(TC))와 공중에서 내는 기술(j.)의 표기를 Tacpendium에 맞춰 변경",
       "meatyAdvantage": "겹치기 제안에 겹쳤을 때의 유리 프레임(가드/히트)을 표시. 사이트 이름을 누르면 조건 초기화",

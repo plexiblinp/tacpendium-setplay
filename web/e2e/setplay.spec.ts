@@ -273,6 +273,23 @@ test.describe("セットプレイ提案", () => {
     }
   });
 
+  test("言語は技の表記と同じボタン: 5 言語・スマホ幅(360px)で、横にはみ出さず、ボタンの名前を途中で折らない", async ({ browser }) => {
+    for (const locale of ["ja-JP", "en-US", "zh-CN", "zh-TW", "ko-KR"]) {
+      const ctx = await browser.newContext({ locale, viewport: { width: 360, height: 800 } });
+      const page = await ctx.newPage();
+      await page.goto("/");
+      await expect(page.getByTestId("lang").locator("button")).toHaveCount(5);
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      expect(overflow, locale).toBe(0);
+      // 1 つのボタンの名前が 2 行以上に折れていない(高さが 1 行分)。
+      for (const id of ["lang", "notation"]) {
+        const heights = await page.getByTestId(id).locator("button").evaluateAll((bs) => bs.map((b) => b.getBoundingClientRect().height));
+        expect(Math.max(...heights), `${locale} ${id}`).toBeLessThan(Math.min(...heights) * 1.5);
+      }
+      await ctx.close();
+    }
+  });
+
   test("ストレージ・cookie を使わない(HANDOVER §7.3)", async ({ page, context }) => {
     await page.goto("/");
     await choose(page, "ryu", 20);
@@ -336,12 +353,12 @@ test.describe("セットプレイ提案", () => {
   test("フォントの並びが言語ごとに変わる(日本語の画面に中国語の字形のフォントを使わない。S7)", async ({ page }) => {
     await page.goto("/");
     const font = () => page.evaluate(() => getComputedStyle(document.documentElement).fontFamily);
-    await page.getByTestId("lang-select").selectOption("ja");
+    await page.getByTestId("lang-ja").click();
     await expect.poll(font).toMatch(/^"Hiragino Sans"/);
     expect(await font()).not.toMatch(/Noto Sans (SC|TC|KR)|YaHei|PingFang/);
-    await page.getByTestId("lang-select").selectOption("zh-Hans");
+    await page.getByTestId("lang-zh-Hans").click();
     await expect.poll(font).toMatch(/^"PingFang SC"/);
-    await page.getByTestId("lang-select").selectOption("ko");
+    await page.getByTestId("lang-ko").click();
     await expect.poll(font).toMatch(/^"Apple SD Gothic Neo"/);
   });
 });

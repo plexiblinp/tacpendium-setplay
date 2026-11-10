@@ -55,6 +55,7 @@
     "latest": "更新 {{date}}：{{text}}",
     "title": "更新记录（最近 {{n}} 条）",
     "items": {
+      "langButtons": "语言切换改为与招式表记相同的按钮形式",
       "upstreamLanguages": "更新了 Tacpendium（主程序）的语言说明：主程序现已支持日语、英语、中文和韩语",
       "arjun": "支持 Arjun。目标连段(5MP~5HP(TC))与空中招式(j.)的标记改为与 Tacpendium 一致",
       "meatyAdvantage": "压起身推荐会显示压制时的有利帧（防御/命中）。点击站名可重置条件",
