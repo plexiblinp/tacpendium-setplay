@@ -16,16 +16,15 @@ export function SettingsBar({ lang, onLang, notation, onNotation }: Props) {
   const { t } = useTranslation();
   return (
     <div className="settings">
-      <label>
-        {t("settings.language")}
-        <select value={lang} onChange={(e) => onLang(e.target.value as Lang)} data-testid="lang-select">
-          {LANGS.map((l) => (
-            <option key={l} value={l}>
-              {LANG_NAMES[l]}
-            </option>
-          ))}
-        </select>
-      </label>
+      {/* 言語も技の表記と同じ並びのボタンにする(開発者の要望 2026-11-10)。名前はその言語で書き、lang を付けて字形を合わせる。 */}
+      <fieldset className="segmented" data-testid="lang">
+        <legend>{t("settings.language")}</legend>
+        {LANGS.map((l) => (
+          <button key={l} type="button" lang={l} aria-pressed={lang === l} onClick={() => onLang(l)} data-testid={`lang-${l}`}>
+            {LANG_NAMES[l]}
+          </button>
+        ))}
+      </fieldset>
       <fieldset className="segmented" data-testid="notation">
         <legend>{t("settings.notation")}</legend>
         {NOTATION_KINDS.map((k) => (

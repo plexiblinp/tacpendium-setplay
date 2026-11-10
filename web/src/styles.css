@@ -81,6 +81,9 @@ button.link { border: none; background: none; color: var(--accent); padding: 0; 
 .segmented button:first-of-type { border-radius: 4px 0 0 4px; }
 .segmented button:last-of-type { border-radius: 0 4px 4px 0; }
 .segmented button[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+/* ヘッダの言語・技の表記: 名前を途中で折らず、幅が足りなければボタンごと次の行へ送る(スマホ幅で縦書きのように潰れないように。2026-11-10)。 */
+.settings fieldset.segmented { flex-wrap: wrap; row-gap: 4px; max-width: 100%; }
+.settings .segmented button { white-space: nowrap; }
 .help { font-size: 0.85rem; color: var(--muted); margin: 0; }
 .warn { color: var(--warn); font-size: 0.9rem; margin: 0; }
 ul.warn { padding-left: 1.2em; }

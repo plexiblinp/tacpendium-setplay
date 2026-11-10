@@ -455,15 +455,22 @@ describe("App", () => {
     const { engine } = renderApp();
     await search(user);
     await engine.finish();
-    await user.selectOptions(screen.getByTestId("lang-select"), "ko");
+    // 言語は技の表記と同じ並びのボタン(開発者の要望 2026-11-10)。選んだ 1 つだけが押された状態。名前はその言語で書く。
+    expect(screen.getByTestId("lang-ja")).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("group", { name: "言語" })).toBe(screen.getByTestId("lang"));
+    await user.click(screen.getByTestId("lang-ko"));
     expect(await screen.findByText("제안 생성")).toBeInTheDocument();
+    expect(screen.getByTestId("lang-ko")).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByTestId("lang-ja")).toHaveAttribute("aria-pressed", "false");
+    expect(screen.getByTestId("lang-ko")).toHaveTextContent("한국어");
+    expect(screen.getByTestId("lang-ko")).toHaveAttribute("lang", "ko");
     expect(screen.getByTestId("machine-translation")).toBeInTheDocument();
     // 改善の提案は Google フォームへ(S7)。
     expect(within(screen.getByTestId("machine-translation")).getByRole("link")).toHaveAttribute("href", expect.stringMatching(/^https:\/\/docs\.google\.com\/forms\//));
     expect(screen.getAllByTestId("recipe")[0]).toHaveTextContent("cr.LP > 236P");
-    await user.selectOptions(screen.getByTestId("lang-select"), "zh-Hant");
+    await user.click(screen.getByTestId("lang-zh-Hant"));
     expect(await screen.findByText("生成推薦")).toBeInTheDocument();
-    await user.selectOptions(screen.getByTestId("lang-select"), "ja");
+    await user.click(screen.getByTestId("lang-ja"));
     expect(screen.queryByTestId("machine-translation")).toBeNull();
   });
 

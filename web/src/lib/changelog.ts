@@ -13,6 +13,7 @@ export interface ChangelogEntry {
 export const CHANGELOG_SHOWN = 10;
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
+  { date: "2026-11-10", key: "langButtons" },
   { date: "2026-11-09", key: "upstreamLanguages" },
   { date: "2026-11-07", key: "kaGuide" },
   { date: "2026-10-27", key: "arjun" },
