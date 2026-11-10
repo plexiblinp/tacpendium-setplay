@@ -49,7 +49,27 @@ $ npx vitest --run src/components/App.test.tsx -t "言語を切り替える"
 全体（Node 22.23.4。出力はファイルへ書き、`EXIT=` と件数で判定）:
 
 ```
-RESULTS
+$ npx tsc --noEmit -p .                  TSC_EXIT=0
+$ pnpm test                              VITEST_EXIT=0  Test Files  22 passed (22) / Tests  248 passed (248)
+$ pnpm build                             BUILD_EXIT=0（違反: 0 件）
+$ bash scripts/local/build.sh            LOCALBUILD_EXIT=0
+$ PW_CHROMIUM_PATH=… pnpm e2e            E2E_EXIT=0  36 passed (1.2m)（足した 1 本で 35 → 36）
+```
+
+```
+$ git diff --stat 0fcd3f9   # この報告を含む
+ docs/progress/2026-11-10-ux-lang-buttons-report.md | 58 ++++++++++++++++++++++
+ web/e2e/setplay.spec.ts                            | 23 +++++++--
+ web/src/components/App.test.tsx                    | 13 +++--
+ web/src/components/SettingsBar.tsx                 | 19 ++++---
+ web/src/lib/changelog.ts                           |  1 +
+ web/src/locales/en.json                            |  1 +
+ web/src/locales/ja.json                            |  1 +
+ web/src/locales/ko.json                            |  1 +
+ web/src/locales/zh-Hans.json                       |  1 +
+ web/src/locales/zh-Hant.json                       |  1 +
+ web/src/styles.css                                 |  3 ++
+ 11 files changed, 106 insertions(+), 16 deletions(-)
 ```
 
 ## 配信・PR・タグ
