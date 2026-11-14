@@ -91,6 +91,31 @@ $ git diff --stat d9c620b   # この報告を含む
   - 入口のスクリプトを偽のトークンで回すと、表の数は 13（通信できないので全部「失敗」）。トークンの出現は 0。
 - docs: `docs/telemetry.md` の「出す表」に 2 つ足した。
 
+## 追加: Go 1.26.11（GO-2026-6859。同じ PR #30）
+
+- PR #30 の CI で、「Go・WASM・リポジトリ検査」の govulncheck の段だけが赤になった。ほかの段はすべて緑で、#30 の変更とは関係が無い。
+- 原因: 新しく公表された標準ライブラリの脆弱性 **GO-2026-6859**。
+  - 内容: `net/http` の HTTP/1 サーバが、MaxBytesReader とヘッダの競合で落ちうる。
+  - 該当: `net/http@go1.26.10`。修正: `go1.26.11`。
+  - 手元の govulncheck（`GOVULNCHECK_DB=https://storage.googleapis.com/go-vulndb`。既定の vuln.go.dev はこのコンテナの proxy で 403）で再現した。
+  - 検出されたのは、全パッケージとローカル版（windows・darwin・linux。`cmd/local` の `http.Server.Serve` など）の 4 件。WASM（サイト）は検出なし。
+- 対応: `go.mod` の `go` の行を 1.26.10 → **1.26.11** に上げた。CI は `go-version-file: go.mod`。
+  - go1.26.11 は 2026-11-02 公開（proxy.golang.org の toolchain の時刻）。公開 7 日の決まりを満たす。
+  - 前回の Go の修正（GO-2026-6809。go1.26.9 → 1.26.10）と同じやり方。
+- 検査（go1.26.11）:
+
+```
+$ GOVULNCHECK_DB=… bash scripts/govulncheck.sh   GOVULN_EXIT=0  対象: 5 件 / 違反: 0 件（上げる前は 違反: 4 件）
+$ gofmt -l internal engine cmd                    出力 0 行
+$ go vet ./...                                    GOVET_EXIT=0
+$ go test -count=1 -v ./...                       GOTEST_EXIT=0  PASS 399 / FAIL 0 / SKIP 0（本家との突き合わせ 5376 条件・不一致 0）
+$ bash scripts/wasm/build.sh                      WASMBUILD_EXIT=0  setplay.wasm 3926564 bytes
+$ node --test scripts/wasm/wasm.test.mjs          NODETEST
+$ bash scripts/local/build.sh                     LOCALBUILD_EXIT=0
+```
+
+- **ローカル版は作り直さないと直らない**（標準ライブラリを埋め込んだ単一バイナリ。`docs/maintenance.md`「Go の修正のとき」）。マージ後に main へタグ `v1.1.1` → draft の Release → 開発者が照合して公開する。サイトは WASM に該当が無いが、デプロイで Worker 以外も作り直される。
+
 ## 配信・PR・タグ
 
 - 配信物が変わる（計測のコード）。マージ後の「Cloudflare へ出す」を Approve する。画面の見た目は変わらない（更新履歴には足さない）。
