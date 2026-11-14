@@ -36,7 +36,7 @@ Cloudflare Worker(web/edge/index.ts。/api/* だけが来る。ほかは静的�
 ## 実行計測（beacon）
 
 - 送るとき: 「提案を出す」ごとに 1 回。結果・誤り・中断・キャッシュからの表示のどれも送る（`outcome`・`cacheHit`）。
-- 中身（`beaconSchema`）: キャラ・KA・モード・N/G/remain（モードで当てはまらないものは null）・安全飛びの種類・当てる技の種別・特定の技・ダメージ 0・絞り込み 3 つ・並び順・表記・言語・結果（`outcome`・誤りの code）・総数・受け取った件数・打ち切り・キャッシュ・所要（押してから結果まで `ms`、Worker の計算だけ `computeMs`）・票の読み込み（`votesStatus`・`votesApplied`）・データ版・抽出率・始め方（`trigger`: `form`＝「提案を出す」／`share`＝共有の URL を開いた自動の計算／`trial`＝KA の説明の「この例で試す」。2026-11 に足した省略できる項目で、足す前の画面の点は空文字＝未計測。`form` と混ぜない。省略できる項目を足しただけなので版 `v` は 1 のまま）。
+- 中身（`beaconSchema`）: キャラ・KA・モード・N/G/remain（モードで当てはまらないものは null）・安全飛びの種類・当てる技の種別・特定の技・ダメージ 0・絞り込み 3 つ・並び順・表記・言語・結果（`outcome`・誤りの code）・総数・受け取った件数・打ち切り・キャッシュ・所要（押してから結果まで `ms`、Worker の計算だけ `computeMs`）・票の読み込み（`votesStatus`・`votesApplied`）・データ版・抽出率（N〔`nMin`・`nMax`〕は `N_MAX_LIMIT`＝999、残すフレーム〔`remain`〕は `KA_MAX_SITE`＝100 に丸めて送る。画面の欄はこれらに上限を持たず、丸めないと形に合わずに黙って送られなかった＝独立監査 SP-01。2026-11-14。どちらも実在の技・サイトの KA を超える「事実上の上限なし」なので、上限ちょうどの値と区別しない）・始め方（`trigger`: `form`＝「提案を出す」／`share`＝共有の URL を開いた自動の計算／`trial`＝KA の説明の「この例で試す」。2026-11 に足した省略できる項目で、足す前の画面の点は空文字＝未計測。`form` と混ぜない。省略できる項目を足しただけなので版 `v` は 1 のまま）。
 - **null と 0 を区別する**（AGENTS §8-7）: Analytics Engine の double では null を **-1**、blob では **空文字**にする。`nMax` の 0 は「上限なし」（本家と同じ）で -1 とは別。当てる技の種別の空（blob が空文字）は「当てはまらない（有利調整・特定の技）」（画面は 0 個では押せない）。
 - プライバシーポリシーの「実行の計測」は**要約**（開発者の目視の要望 2026-10-17: 長いと読まれない）で、全項目の一覧は本書を指す。項目を足したら下の対応も直し、要約に収まらない種類の項目（例: 新しい識別子）なら 5 言語の `privacy.usageItem` も直し、`PRIVACY_LAST_UPDATED`（`web/src/components/PrivacyPolicy.tsx`）を更新する。文面は開発者が依頼したレビューの修正案（2026-10-17。法的には問題なし・信頼のための説明という位置づけ）。対応: キャラ=`char`／有利フレーム=`ka`／モードと絞り込みの条件=`mode`〜`sort`／表記と言語=`notation`・`lang`／実行の結果=`outcome`・`errorCode`／件数と打ち切り=`resultCount`・`items`・`truncated`／計算済みの結果=`cacheHit`／時間=`ms`・`computeMs`／グッド/バッドの読み込み=`votesStatus`・`votesApplied`／データ版=`dataVersion`／送る割合=`sampleRate`／例で試したか・共有のリンクからか=`trigger`（2026-11-07 に `privacy.usageItem` へ 1 句足した）／利用者の区別のハッシュ=`visitor`（Worker が付ける）。
 - 抽出率: `web/public/config.json` の `beaconSampleRate`（0〜1）。混雑時に下げる（静的ファイルの書き換え＝再デプロイ）。読めなければ 1（全部送る）。集計は `_sample_interval / sampleRate` で割り戻す。
@@ -110,7 +110,7 @@ Remove-Item Env:CLOUDFLARE_API_TOKEN
 - 別の workflow（`workflow_run`）にしなかった理由: フォークの PR の CI の完了でも起動し main の扱いで動く。CodeQL がキャッシュ汚染（actions/cache-poisoning）として指摘した（S9。PR #6）。守りが消えたら `scripts/check-deploy-workflow.py`（CI のリポジトリ検査）が赤になる。
 - `wrangler` は `web/package.json` の devDependency（lockfile で固定。`pnpm-workspace.yaml` の `minimumReleaseAge` で公開 7 日未満の版は入らない）。
 
-無料枠を超えたとき: Worker は 1 日 10 万リクエストを超えると Error 1027（S1 ⑥。静的アセットへの要求は Worker を通らず無料・無制限なので、止まるのは `/api` だけの見込み）。D1 は UTC 0 時まで誤り（票は読めず `unavailable`、投票は 503）。Analytics Engine の超過時の挙動は docs に記載が無い（S1 ⑥。実アカウントで確かめる）。どれも課金には移らない（カード未登録）。
+無料枠を超えたとき: Worker は 1 日 10 万リクエストを超えると Error 1027（S1 ⑥。静的アセットへの要求は Worker を通らず無料・無制限なので、止まるのは `/api` だけの見込み）。D1 は UTC 0 時まで誤り（票は読めず `unavailable`、投票は 503）。Analytics Engine の超過時の挙動は docs に記載が無い（S1 ⑥。実アカウントで確かめる）。どれも課金には移らない（カード未登録）。**D1 の無料枠（1 日の読み取り・書き込みの行数）はアカウント単位**なので、同じ Cloudflare アカウントでほかの D1 を使うサービス（例: 開発者の別のプロジェクト）を公開すると、その使用量も同じ枠に数えられ、向こうが枠を使い切った日はこちらの票と利用者のハッシュも止まる（独立監査の仮説 1。2026-11-14。止まっても画面は票なし・計測は `visitor="unavailable"` で動く＝上の「利用者のハッシュと日替わりソルト」）。別のアカウントに分ければ枠も分かれる。
 
 ### デプロイ用の API トークン
 

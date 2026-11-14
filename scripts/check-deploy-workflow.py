@@ -7,6 +7,11 @@
 4. deploy 以外の job は Environment を持たない(トークンを持たない)
 5. 出す dist の成果物は、deploy job と同じ条件のときだけ作る
 
+★独立監査 SP-02(2026-11-10)で、文字列の一致だけでは次を見逃すと分かったので、形で見るようにした:
+  条件の && を || に変える(→ 条件は許した形のどれかと完全に一致することを見る)、
+  secrets['…']・toJSON(secrets)(→ ${{ }} の中の語 secrets を数える)、
+  on: [push, pull_request_target] の 1 行の形(→ コメントを除いた全文で語を探す)。
+
 使い方: python3 -I scripts/check-deploy-workflow.py [workflow のパス]
 終了コード: 0 = 違反なし / 1 = 違反あり / 2 = 実行エラー
 """
@@ -17,13 +22,41 @@ import sys
 DEFAULT = pathlib.Path(__file__).resolve().parent.parent / ".github/workflows/ci.yml"
 DEPLOY_JOB = "deploy"
 REQUIRED_NEEDS = ("go", "web")
-REQUIRED_CONDITIONS = (
-    "github.ref == 'refs/heads/main'",
-    "github.event_name == 'push'",
+# deploy job と成果物の段の条件として許す形(空白を除き、${{ }} を外した形で比べる)。main への push か手動起動だけ。
+_MAIN = "github.ref=='refs/heads/main'"
+_EVENTS = (
+    "(github.event_name=='push'||github.event_name=='workflow_dispatch')",
+    "(github.event_name=='workflow_dispatch'||github.event_name=='push')",
 )
+DEPLOY_CONDITIONS = frozenset([f"{_MAIN}&&{e}" for e in _EVENTS] + [f"{e}&&{_MAIN}" for e in _EVENTS])
+UPLOAD_CONDITIONS = frozenset(f"success()&&{c}" for c in DEPLOY_CONDITIONS)
 FORBIDDEN_TRIGGERS = ("workflow_run", "pull_request_target")
 DEPLOY_STEP = "- name: wrangler deploy"
 ARTIFACT_NAME = "name: site-dist"
+
+
+def strip_comments(text):
+    """YAML のコメント(行頭の # と、空白の後の #)を除く。説明の文の語を数えないため。"""
+    out = []
+    for line in text.splitlines():
+        if line.lstrip().startswith("#"):
+            out.append("")
+        else:
+            out.append(re.sub(r"\s+#.*$", "", line))
+    return "\n".join(out)
+
+
+def normalize_condition(expr):
+    """if: の値を比べる形にする(${{ }} を外し、空白を除く)。"""
+    e = re.sub(r"\s+", "", expr or "")
+    if e.startswith("${{") and e.endswith("}}"):
+        e = e[3:-2]
+    return e
+
+
+def secret_refs(text):
+    """${{ }} の式のうち、語 secrets を含むものの数(secrets.X・secrets['X']・toJSON(secrets) のどれも)。"""
+    return sum(1 for expr in re.findall(r"\$\{\{(.*?)\}\}", strip_comments(text)) if re.search(r"\bsecrets\b", expr))
 
 
 def jobs(text):
@@ -70,8 +103,9 @@ def step_range(lines, start_text):
 
 def check(text):
     errs = []
+    code = strip_comments(text)
     for trig in FORBIDDEN_TRIGGERS:
-        if re.search(rf"^\s+{trig}:", text, re.M):
+        if re.search(rf"\b{trig}\b", code):
             errs.append(f"{trig} を使っている")
     js = jobs(text)
     if DEPLOY_JOB not in js:
@@ -79,11 +113,8 @@ def check(text):
         return errs
     deploy = js[DEPLOY_JOB]
     cond = job_key(deploy, "if") or ""
-    for c in REQUIRED_CONDITIONS:
-        if c not in cond:
-            errs.append(f"deploy job の起動条件が無い: {c}")
-    if "pull_request" in cond:
-        errs.append("deploy job の条件に pull_request が入っている")
+    if normalize_condition(cond) not in DEPLOY_CONDITIONS:
+        errs.append(f"deploy job の起動条件が「main への push か手動起動だけ」の形でない: {cond!r}")
     needs = job_key(deploy, "needs") or ""
     for n in REQUIRED_NEEDS:
         if not re.search(rf"\b{n}\b", needs):
@@ -98,8 +129,8 @@ def check(text):
     if rng is None:
         errs.append(f"deploy job に段 {DEPLOY_STEP!r} が無い")
         return errs
-    total = text.count("secrets.")
-    inside = sum(deploy[i].count("secrets.") for i in rng)
+    total = secret_refs(text)
+    inside = secret_refs("\n".join(deploy[i] for i in rng))
     if total != inside:
         errs.append(f"wrangler deploy の段の外で secrets を参照している({total - inside} 件)")
     # 出す dist の成果物は deploy job と同じ条件のときだけ作る。
@@ -111,8 +142,8 @@ def check(text):
             continue
         lines = js[name]
         start = max(j for j in range(i + 1) if lines[j].strip().startswith("- "))
-        step = "\n".join(lines[start:i])
-        if not all(c in step for c in REQUIRED_CONDITIONS):
+        conds = [m.group(1) for l in lines[start:i] if (m := re.match(r"^\s*(?:- )?if:\s*(.*)$", l))]
+        if not conds or normalize_condition(conds[0]) not in UPLOAD_CONDITIONS:
             errs.append(f"job {name} の成果物 site-dist が deploy job と同じ条件で絞られていない")
     return errs
 

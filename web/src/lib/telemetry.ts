@@ -5,6 +5,7 @@ import { z } from "zod";
 import {
   API_BEACON_PATH,
   BEACON_SCHEMA_VERSION,
+  N_MAX_LIMIT,
   beaconSchema,
   type BeaconEvent,
   type Outcome,
@@ -12,6 +13,7 @@ import {
   type VotesStatus,
 } from "../shared/api";
 import type { Conditions } from "./conditions";
+import { KA_MAX_SITE } from "./constants";
 import type { NotationKind } from "./data";
 import type { Lang } from "./langs";
 import type { FetchFn } from "./loader";
@@ -57,7 +59,12 @@ export interface RunRecord {
   trigger: RunTrigger;
 }
 
-/** 実行の記録を beacon にする。当てはまらない項目は null(0 と区別する。AGENTS §8-7)。 */
+/**
+ * 実行の記録を beacon にする。当てはまらない項目は null(0 と区別する。AGENTS §8-7)。
+ * 画面の欄は N・残すフレームに上限を持たないので、受け口の上限(N_MAX_LIMIT・KA_MAX_SITE)に丸めて送る
+ * (丸めないと形に合わず黙って送られなかった。独立監査 SP-01)。どちらの上限も、実在の技・サイトの KA を
+ * 超える「事実上の上限なし」なので、上限ちょうどの値と区別しない。
+ */
 export function buildBeacon(r: RunRecord, sampleRate: number): BeaconEvent {
   const c = r.conditions;
   return {
@@ -65,11 +72,11 @@ export function buildBeacon(r: RunRecord, sampleRate: number): BeaconEvent {
     char: c.character,
     ka: c.ka,
     mode: c.mode,
-    nMin: c.mode === "meaty" ? c.nMin : null,
-    nMax: c.mode === "meaty" ? c.nMax : null,
+    nMin: c.mode === "meaty" ? Math.min(c.nMin, N_MAX_LIMIT) : null,
+    nMax: c.mode === "meaty" ? Math.min(c.nMax, N_MAX_LIMIT) : null,
     gMin: c.mode === "gap" ? c.gMin : null,
     gMax: c.mode === "gap" ? c.gMax : null,
-    remain: c.mode === "filler" ? c.remain : null,
+    remain: c.mode === "filler" ? Math.min(c.remain, KA_MAX_SITE) : null,
     safeJump: c.mode === "filler" ? c.safeJump : null,
     targetTypes: c.mode === "filler" || c.targetMove != null ? [] : [...c.targetTypes],
     targetMove: c.mode === "filler" ? null : c.targetMove,
