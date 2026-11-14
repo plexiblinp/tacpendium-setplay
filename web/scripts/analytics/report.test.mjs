@@ -36,6 +36,16 @@ describe("集計スクリプト", () => {
     expect(q.sql).toContain(`${col("trigger")} AS trigger`);
     expect(col("trigger")).toMatch(/^blob\d+$/);
   });
+  it("キャラ別の推定利用者数と、キャラ別×始め方を出す(少人数が何回も回したか・お試しを除くかを見分ける。2026-11-14)", () => {
+    const qs = buildQueries("setplay_runs", 7);
+    const visitors = qs.find((q) => q.title.startsWith("キャラ別の推定利用者数"));
+    expect(visitors.sql).toContain(`count(DISTINCT ${col("visitor")}) AS visitorDays`);
+    expect(visitors.sql).toContain(`GROUP BY char`);
+    expect(visitors.sql).not.toMatch(/(?<![A-Za-z])if\s*\(/i);
+    const byTrigger = qs.find((q) => q.title.startsWith("キャラ別×始め方"));
+    expect(byTrigger.sql).toContain(`${col("trigger")} AS trigger`);
+    expect(byTrigger.sql).toContain("GROUP BY char, trigger");
+  });
   it("dataset・日数の不正は誤り(SQL に埋め込まない)", () => {
     expect(() => buildQueries("x; DROP", 7)).toThrow();
     expect(() => buildQueries("ok", 0)).toThrow();

@@ -63,5 +63,32 @@ class CheckDeployWorkflowTest(unittest.TestCase):
         self.assertEqual(len(cdw.check(broken(UPLOAD_IF, ""))), 1)
 
 
+    # ── 独立監査 SP-02(2026-11-10): 文字列の一致だけでは見逃した書き換え ──
+    def test_condition_or_instead_of_and(self):
+        # 2 つの文字列が残っていても、&& を || にすると main 以外でも走る。
+        text = broken(DEPLOY_IF, DEPLOY_IF.replace("'refs/heads/main' && (", "'refs/heads/main' || ("))
+        self.assertGreaterEqual(len(cdw.check(text)), 1)
+        text = broken(UPLOAD_IF, UPLOAD_IF.replace("'refs/heads/main' && (", "'refs/heads/main' || ("))
+        self.assertGreaterEqual(len(cdw.check(text)), 1)
+
+    def test_secrets_by_index_or_tojson(self):
+        for expr in ("${{ secrets['CLOUDFLARE_API_TOKEN'] }}", "${{ toJSON(secrets) }}", "${{ secrets [ 'X' ] }}"):
+            with self.subTest(expr=expr):
+                text = broken("        run: pnpm install --frozen-lockfile --ignore-scripts\n",
+                              f"        env:\n          T: {expr}\n        run: pnpm install --frozen-lockfile --ignore-scripts\n")
+                self.assertEqual(len(cdw.check(text)), 1)
+
+    def test_forbidden_triggers_inline(self):
+        for line in ("on: [push, pull_request_target, workflow_dispatch]\n", "on: workflow_run\n", "on: [push, workflow_run]\n"):
+            with self.subTest(line=line):
+                text = broken("on:\n  pull_request:\n    branches: [main]\n  push:\n    branches: [main, 'claude/**']\n  workflow_dispatch:\n", line)
+                self.assertGreaterEqual(len(cdw.check(text)), 1)
+
+    def test_comments_do_not_count(self):
+        # コメントの中の語(secrets・workflow_run の説明)は数えない(誤検知しない)。
+        text = broken("permissions:\n  contents: read\n", "permissions:\n  contents: read\n# workflow_run・pull_request_target は使わない。secrets['X'] も書かない\n")
+        self.assertEqual(cdw.check(text), [])
+
+
 if __name__ == "__main__":
     unittest.main()

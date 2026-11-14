@@ -12,17 +12,17 @@
     "internal": "d9e59035feea38eaee0cc60a4f92eceb8ca9455fc93e7daffe40e6f08b32094b",
     "engine": "536fb246b93ef1a84fb6c84bbef9da98363bbe87f3c1cba87d1bcb7375012531",
     "cmd": "610740a69aae39b89a544e73593478fa28f8da2078c0485d339f99bea434eb88",
-    "go.mod": "2b5bc18aa04c8afe2887fb20c7ec67fdf94ec275ba884c65626bb498a318f63e",
+    "go.mod": "936074e5e14866743745ec844afec441641fc2a0db69450d87adaa0ba258c439",
     "upstream/tacpendium.lock": "0ad0214b7b1664ac92bbc8d487cbaf8ec3c95b37900f161b7f37f8810349f00e",
     "scripts/wasm": "4ed68029b1a31954960d131bdeefec0543ecaabfcf87bfa6f445333f66bfbf82"
   },
   "kinds": {
     "oracle": {
-      "version": 3,
+      "version": 4,
       "chars": {}
     },
     "wasm": {
-      "version": 3,
+      "version": 4,
       "chars": {}
     }
   },
@@ -209,6 +209,19 @@
         "upstream/tacpendium.lock"
       ],
       "reason": "公開版 v0.4.0 の取り込み: lock の更新、seedgen の resolveCharacter の分割(本家の整理。moves DB は全 32 キャラで変化なし)、本家の echo v5 への移行に合わせた正解の生成器の修正"
+    },
+    {
+      "at": "2026-11-14T10:01:22Z",
+      "decision": "all",
+      "kinds": [
+        "oracle",
+        "wasm"
+      ],
+      "chars": [],
+      "changed": [
+        "go.mod"
+      ],
+      "reason": "go の行を 1.26.10→1.26.11 に上げた(GO-2026-6859: net/http の HTTP/1 サーバが落ちうる。ローカル版が該当、WASM は該当なし)。計算のコードは変えていない。手元の go1.26.11 で go test -count=1 ./... EXIT=0・PASS 399・FAIL 0・本家との突き合わせ 5376 条件・不一致 0、govulncheck 違反 0 件。Go の版が変わったので CI で全部回し直す"
     }
   ]
 }

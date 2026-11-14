@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { beaconSchema } from "../shared/api";
+import { beaconSchema, N_MAX_LIMIT } from "../shared/api";
+import { KA_MAX_SITE } from "./constants";
 import { defaultConditions } from "./conditions";
 import { buildBeacon, loadConfig, sendRun, type RunRecord } from "./telemetry";
 
@@ -43,6 +44,16 @@ describe("sendRun", () => {
     expect(sendRun(send, "https://x.test/", rec(), 0, () => 0)).toBeNull();
     expect(send).toHaveBeenCalledTimes(1);
     expect(send.mock.calls[0]).toEqual(["https://x.test/api/beacon", expect.stringContaining('"char":"ryu"')]);
+  });
+  it("画面で押せる大きな N・残すフレームも計測に載せる(受け口の上限に丸める。独立監査 SP-01)", () => {
+    const send = vi.fn(() => true);
+    const meaty = { ...defaultConditions("ryu", 40), nMin: 1000, nMax: 5000 };
+    expect(sendRun(send, "https://x.test/", rec({ conditions: meaty }), 1, () => 0)).toMatchObject({ nMin: N_MAX_LIMIT, nMax: N_MAX_LIMIT });
+    const filler = { ...defaultConditions("ryu", 40), mode: "filler" as const, remain: 150 };
+    expect(sendRun(send, "https://x.test/", rec({ conditions: filler }), 1, () => 0)).toMatchObject({ remain: KA_MAX_SITE });
+    expect(send).toHaveBeenCalledTimes(2);
+    // 上限より小さい値はそのまま(nMax の 0 は「上限なし」のまま)。
+    expect(buildBeacon(rec({ conditions: { ...defaultConditions("ryu", 40), nMin: 3, nMax: 0 } }), 1)).toMatchObject({ nMin: 3, nMax: 0 });
   });
   it("形に合わない記録は送らない・送る口の例外で落ちない", () => {
     const send = vi.fn(() => true);

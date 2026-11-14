@@ -66,6 +66,15 @@ export function buildQueries(dataset, days) {
       sql: `SELECT ${col("char")} AS char, round(SUM(${W()})) AS runs FROM ${from} GROUP BY char ORDER BY runs DESC`,
     },
     {
+      // 利用者のハッシュは日替わりなので、期間で数えた種類数は「日ごとの利用者数の合計」(同じ人が 3 日来れば 3)。
+      title: "キャラ別の推定利用者数(visitorDays は日ごとの利用者数の合計＝延べ人日。runsPerVisitor が大きいほど少人数が何回も回している。抽出率 1 未満の日は過小。ハッシュを作れなかった実行〔空文字・unavailable〕はそれぞれ 1 人に数える)",
+      sql: `SELECT ${col("char")} AS char, count(DISTINCT ${col("visitor")}) AS visitorDays, round(SUM(${W()})) AS runs, round(SUM(${W()}) / count(DISTINCT ${col("visitor")}), 1) AS runsPerVisitor FROM ${from} GROUP BY char ORDER BY visitorDays DESC`,
+    },
+    {
+      title: "キャラ別×始め方(trial＝「この例で試す」はリュウの例。form だけを見ればお試しを除ける。空は未計測＝2026-11 に足す前の画面)",
+      sql: `SELECT ${col("char")} AS char, ${col("trigger")} AS trigger, round(SUM(${W()})) AS runs FROM ${from} GROUP BY char, trigger ORDER BY char, runs DESC`,
+    },
+    {
       title: "モード別",
       sql: `SELECT ${col("mode")} AS mode, round(SUM(${W()})) AS runs FROM ${from} GROUP BY mode ORDER BY runs DESC`,
     },
