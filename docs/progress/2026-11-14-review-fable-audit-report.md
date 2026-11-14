@@ -50,7 +50,27 @@
 ## 検査（AGENTS §8。Node 22.23.4。出力はファイルへ書き、`EXIT=` と件数で判定）
 
 ```
-RESULTS
+$ python3 -I scripts/check_deploy_workflow_test.py   CDW_TEST_EXIT=0  Ran 14 tests / OK
+$ python3 -I scripts/check-deploy-workflow.py        CDW_EXIT=0  違反: 0 件
+$ python3 -I scripts/check-private-refs.py           PRIVATE_REFS_EXIT=0  違反: 0 件
+$ npx tsc --noEmit -p .                              TSC_EXIT=0
+$ pnpm test                                          VITEST_EXIT=0  Test Files  22 passed (22) / Tests  249 passed (249)
+$ pnpm build                                         BUILD_EXIT=0（違反: 0 件）
+$ bash scripts/local/build.sh                        LOCALBUILD_EXIT=0
+$ PW_CHROMIUM_PATH=… pnpm e2e                        E2E_EXIT=0  36 passed (1.2m)
+```
+
+試験は単体 248 → 249（SP-01 の 1 本）、workflow の検査の試験 10 → 14（SP-02 の 4 本）。Go は変えていない。
+
+```
+$ git diff --stat d9c620b   # この報告を含む
+ .../2026-11-14-review-fable-audit-report.md        | 59 ++++++++++++++++++++++
+ docs/telemetry.md                                  |  4 +-
+ scripts/check-deploy-workflow.py                   | 57 ++++++++++++++++-----
+ scripts/check_deploy_workflow_test.py              | 27 ++++++++++
+ web/src/lib/telemetry.test.ts                      | 13 ++++-
+ web/src/lib/telemetry.ts                           | 15 ++++--
+ 6 files changed, 155 insertions(+), 20 deletions(-)
 ```
 
 ## 配信・PR・タグ
