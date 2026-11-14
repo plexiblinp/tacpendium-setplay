@@ -110,10 +110,11 @@ $ gofmt -l internal engine cmd                    出力 0 行
 $ go vet ./...                                    GOVET_EXIT=0
 $ go test -count=1 -v ./...                       GOTEST_EXIT=0  PASS 399 / FAIL 0 / SKIP 0（本家との突き合わせ 5376 条件・不一致 0）
 $ bash scripts/wasm/build.sh                      WASMBUILD_EXIT=0  setplay.wasm 3926564 bytes
-$ node --test scripts/wasm/wasm.test.mjs          NODETEST
+$ node --test scripts/wasm/wasm.test.mjs          NODETEST_EXIT=0  tests 6 / pass 6 / fail 0
 $ bash scripts/local/build.sh                     LOCALBUILD_EXIT=0
 ```
 
+- verify-plan は `--all` を記録した（Go の版が変わったので、CI で本家の正解と WASM を全部回し直す）。
 - **ローカル版は作り直さないと直らない**（標準ライブラリを埋め込んだ単一バイナリ。`docs/maintenance.md`「Go の修正のとき」）。マージ後に main へタグ `v1.1.1` → draft の Release → 開発者が照合して公開する。サイトは WASM に該当が無いが、デプロイで Worker 以外も作り直される。
 
 ## 配信・PR・タグ
