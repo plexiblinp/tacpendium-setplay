@@ -54,7 +54,7 @@ Actions の失敗通知は GitHub の Settings → Notifications → Actions で
 | wrangler | `web/package.json`（Dependabot が上げる。メジャー版は手で） | |
 
 - どれも、公開から 7 日たった修正版を選ぶ（依存の `minimumReleaseAge` と同じ考え方）。急ぐ修正で 7 日を待てないときは、報告に理由を書く。
-- 依存を足す・上げるのは Node ≥ 22.23.4 の環境で（AGENTS §5）。
+- 依存を足す・上げるのは Node ≥ 22.23.5 の環境で（AGENTS §5）。
 - 点検の結果は、変えるものが無くても `docs/progress/<日付>-security-toolchain-report.md` に 5 行ほどで残す（調べた版と出典）。
 
 ### Go の修正（標準ライブラリを含む）のとき
