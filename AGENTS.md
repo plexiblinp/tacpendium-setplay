@@ -122,7 +122,7 @@ HANDOVER §9 の段階は S9（2026-10-25 に一般公開）で終わり。以�
 - Dependabot の PR は **CI が緑なら受け入れる**（開発者がマージ）。メジャー版の更新だけは、リリースノートで入力・挙動の変更を確かめる。非推奨の警告など、版上げだけで片付かないものは段階のセッションで直す。
 - 版を固定したら（`pnpm.overrides`・`go.mod` の `replace` 等）、理由と解除条件を完了報告に書く。
 - **【凍結の解除 2026-10-22】** eMudhra の中間 CA 鍵の漏えいで止めていた依存の追加・更新は、Node.js の修正版（22.23.4。CI・`engines` に反映）が出たので **Node（pnpm）と Go は解除**した。
-  - 依存を足す・上げる操作（`pnpm add`・`pnpm update`）は **Node ≥ 22.23.4 で行う**（古い Node はレジストリとの通信で偽の証明書を受け入れうる）。
+  - 依存を足す・上げる操作（`pnpm add`・`pnpm update`）は **Node ≥ 22.23.5 で行う**（古い Node はレジストリとの通信で偽の証明書を受け入れうる。2026-11-18 に 22.23.5〔TLS・HTTP/2・https.Agent の修正〕へ上げた）。
   - **Python パッケージの追加は、pip ≥ 26.2.2（certifi ≥ 2026.10.19／uv ≥ 0.13.4）の環境でだけ**行う（いまこのリポジトリは Python の依存を持たない）。
 - **pnpm 本体の版**は `web/package.json` の `packageManager`（いまは 10.34.7）で、`engines.pnpm` が下限（≥ 10.34.7。GHSA-vq4v-j7r6-jq4m の修正版 10.34.5 以上）。`web/` で `pnpm --version` がこの版になってから `pnpm install` する（pnpm は `packageManager` の版へ自動で切り替える。CI の web job も版の一致を確かめる）。`--frozen-lockfile` と `pnpm audit` は依存の検査で、pnpm 本体の脆弱性は防がない。上げるときは pnpm の公式アドバイザリを全部見て、公開から 7 日たった版を選ぶ（`docs/progress/fix-pnpm-report.md`）。
 
